@@ -105,7 +105,6 @@ const Login = () => {
                       name: username,
                       password,
                       profile,
-                      isSignup: true,
                     });
                     if (user) {
                       setCurrentPage('home');
