@@ -1,0 +1,24 @@
+.chat-dropdown {
+  position: absolute;
+  bottom: 60px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  min-width: 120px;
+  max-height: 200px;
+  overflow-y: auto;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 9999;
+}
+
+.chat-dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.chat-dropdown-item:hover {
+  background-color: #f2f2f2;
+}
