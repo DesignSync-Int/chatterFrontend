@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { login, isLoggingIn, checkUser, signup } = useAuthStore();
+  const { login, isLoggingIn, checkUser, signup, isSigningUp } = useAuthStore();
   const setCurrentPage = usePageStore(state => state.setCurrentPage);
   const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const navigate = useNavigate();
@@ -91,6 +91,9 @@ const Login = () => {
         <div className="flex flex-col md:flex-row gap-6">
           {activeTab === 'signup' && (
             <div className="flex-1 flex flex-col gap-4">
+              {errorMessage && (
+                <div className="text-red-600 text-center font-medium">{errorMessage}</div>
+              )}
               <form
                 className="flex flex-col gap-3 w-full max-w-[800px] mx-auto"
                 onSubmit={async e => {
@@ -138,6 +141,7 @@ const Login = () => {
                 />
                 <button
                   type="submit"
+                  disabled={isLoggingIn}
                   className="bg-blue-500 text-white rounded-md py-2 transition w-full hover:bg-blue-600"
                 >
                   Signup
@@ -173,7 +177,7 @@ const Login = () => {
                 />
                 <button
                   type="submit"
-                  disabled={isLoggingIn}
+                  disabled={isSigningUp}
                   className={`bg-blue-500 text-white rounded-md py-2 transition w-full ${
                     isLoggingIn ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-600'
                   }`}
