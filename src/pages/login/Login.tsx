@@ -1,4 +1,3 @@
-import Logo from '../../assets/logo.svg';
 import { useAuthStore } from '../../store/auth.store.ts';
 import { useState } from 'react';
 import usePageStore from '../../store/page.store.ts';
@@ -59,7 +58,6 @@ const Login = () => {
     <div className="flex flex-col h-full">
       <div className="text-center py-8 px-4 bg-gradient-to-b from-white to-gray-50 border-b border-gray-100">
         <div className="flex flex-col items-center gap-3">
-          <img src={Logo} alt="Logo" className="w-[150px] drop-shadow-sm" />
           <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Chatter</h1>
           <p className="text-gray-600 max-w-md">Connect back with your friends in a simple way.</p>
         </div>
