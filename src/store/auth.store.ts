@@ -118,6 +118,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       auth: {
         userId: authUser._id,
       },
+      withCredentials: true,
     });
     socket.connect();
 
