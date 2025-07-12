@@ -6,6 +6,7 @@ import type { AxiosResponse } from 'axios';
 import type { Socket } from 'socket.io-client';
 import type { AuthStore, User } from '../types/auth';
 import { BasePath } from '../config';
+import { TokenStorage } from '../utils/tokenStorage';
 
 interface AuthStoreFun extends AuthStore {
   socket: Socket | null;
@@ -72,20 +73,18 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       set({ isLoggingIn: false });
     }
   },
+
   logout: async () => {
     try {
-      await axiosInstance.post(
-        '/auth/logout',
-        {},
-        {
-          withCredentials: true, // Include this if not set globally
-        }
-      );
+      await axiosInstance.post('/auth/logout');
       set({ authUser: null });
-      toast.success('Logged out successfully');
+      TokenStorage.removeToken(); // Clear stored token
       get().disconnectSocket();
+      toast.success('Logged out successfully');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Logout failed');
+      // Clear token even if logout request fails
+      TokenStorage.removeToken();
     }
   },
 
