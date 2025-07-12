@@ -3,11 +3,11 @@ import { useState } from 'react';
 import usePageStore from '../../store/page.store.ts';
 import useUserStore from '../../store/user.store.ts';
 import type { User } from '../../types/auth';
-// import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { login, isLoggingIn } = useAuthStore();
+  const { login, isLoggingIn, checkUser } = useAuthStore();
   const setCurrentPage = usePageStore(state => state.setCurrentPage);
   const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const navigate = useNavigate();
