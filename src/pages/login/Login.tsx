@@ -3,11 +3,11 @@ import { useState } from 'react';
 import usePageStore from '../../store/page.store.ts';
 import useUserStore from '../../store/user.store.ts';
 import type { User } from '../../types/auth';
-// import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { login, isLoggingIn } = useAuthStore();
+  const { login, isLoggingIn, checkUser } = useAuthStore();
   const setCurrentPage = usePageStore(state => state.setCurrentPage);
   const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const navigate = useNavigate();
@@ -37,22 +37,22 @@ const Login = () => {
       });
   };
 
-  // useEffect(() => {
-  //   checkUser()
-  //     .then((user: User | null) => {
-  //       if (user) {
-  //         setCurrentUser(user);
-  //         navigate('/home');
-  //         setCurrentPage('home');
-  //         useAuthStore.getState().connectSocket();
-  //       } else {
-  //         console.error('Login failed: No user returned');
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error('Login failed:', error);
-  //     });
-  // }, [checkUser, setCurrentUser, navigate, setCurrentPage]);
+  useEffect(() => {
+    checkUser()
+      .then((user: User | null) => {
+        if (user) {
+          setCurrentUser(user);
+          navigate('/home');
+          setCurrentPage('home');
+          useAuthStore.getState().connectSocket();
+        } else {
+          console.error('Login failed: No user returned');
+        }
+      })
+      .catch(error => {
+        console.error('Login failed:', error);
+      });
+  }, [checkUser, setCurrentUser, navigate, setCurrentPage]);
 
   return (
     <div className="flex flex-col h-full">
