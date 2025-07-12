@@ -1,6 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes';
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
 
 function App() {
   return (
