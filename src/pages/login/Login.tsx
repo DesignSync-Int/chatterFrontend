@@ -37,22 +37,22 @@ const Login = () => {
       });
   };
 
-  useEffect(() => {
-    checkUser()
-      .then((user: User | null) => {
-        if (user) {
-          setCurrentUser(user);
-          navigate('/home');
-          setCurrentPage('home');
-          useAuthStore.getState().connectSocket();
-        } else {
-          console.error('Login failed: No user returned');
-        }
-      })
-      .catch(error => {
-        console.error('Login failed:', error);
-      });
-  }, [checkUser, setCurrentUser, navigate, setCurrentPage]);
+  // useEffect(() => {
+  //   checkUser()
+  //     .then((user: User | null) => {
+  //       if (user) {
+  //         setCurrentUser(user);
+  //         navigate('/home');
+  //         setCurrentPage('home');
+  //         useAuthStore.getState().connectSocket();
+  //       } else {
+  //         console.error('Login failed: No user returned');
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error('Login failed:', error);
+  //     });
+  // }, [checkUser, setCurrentUser, navigate, setCurrentPage]);
 
   return (
     <div className="flex flex-col h-full">
