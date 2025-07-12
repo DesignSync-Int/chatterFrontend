@@ -7,8 +7,6 @@ import type { Socket } from 'socket.io-client';
 import type { AuthStore, User } from '../types/auth';
 import { BasePath } from '../config';
 
-const BASE_URL = import.meta.env.MODE === 'development' ? `${BasePath}` : '/';
-
 interface AuthStoreFun extends AuthStore {
   socket: Socket | null;
   checkAuth: () => Promise<void>;
@@ -39,7 +37,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       console.error('Error in checkAuth:', error);
       set({ authUser: null });
       get().disconnectSocket();
-      window.location.href = '/login'; 
+      window.location.href = '/login';
     } finally {
       set({ isCheckingAuth: false });
     }
@@ -116,7 +114,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket: Socket = io(BASE_URL, {
+    const socket: Socket = io(BasePath, {
       auth: {
         userId: authUser._id,
       },
