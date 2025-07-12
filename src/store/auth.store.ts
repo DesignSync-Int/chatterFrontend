@@ -30,17 +30,11 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   checkAuth: async () => {
     try {
-      console.log(
-        'checkAuth: Making request to:',
-        `${import.meta.env.VITE_BASE_URL || 'http://localhost:4001'}/api/auth/check`
-      );
       const res: AxiosResponse<User> = await axiosInstance.get('/auth/check');
-      console.log('checkAuth: Success, user:', res.data);
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error: unknown) {
       console.error('Error in checkAuth:', error);
-      console.log('checkAuth: Failed, redirecting to login');
       set({ authUser: null });
       get().disconnectSocket();
       window.location.href = '/login';
@@ -68,18 +62,12 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   login: async (data: Record<string, any>) => {
     set({ isLoggingIn: true });
     try {
-      console.log(
-        'login: Making request to:',
-        `${import.meta.env.VITE_BASE_URL || 'http://localhost:4001'}/api/auth/login`
-      );
       const res: AxiosResponse<User> = await axiosInstance.post('/auth/login', data);
-      console.log('login: Success, user:', res.data);
       set({ authUser: res.data });
       toast.success('Logged in successfully');
       get().connectSocket();
       return res.data;
     } catch (error: any) {
-      console.error('login: Error:', error.response?.data || error.message);
       toast.error(error.response?.data?.message || 'Login failed');
       return null;
     } finally {
