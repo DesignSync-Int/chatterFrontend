@@ -6,9 +6,9 @@ describe("ProfileTab Component", () => {
   beforeEach(() => {
     useUserStore.setState({
       currentRecipient: {
-        _id: 1,
-        name: "Recipient User",
-        profile: "https://randomuser.me/api/portraits",
+        _id: '1',
+        name: 'Recipient User',
+        profile: 'https://randomuser.me/api/portraits',
       },
     });
   });

@@ -8,7 +8,7 @@ vi.mock('../auth.store');
 describe('useChatStore', () => {
   beforeEach(() => {
     useChatStore.setState({
-      messages: [],
+      messages: {},
       users: [],
       selectedUser: null,
       isUsersLoading: false,

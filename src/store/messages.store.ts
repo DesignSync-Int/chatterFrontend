@@ -22,7 +22,7 @@ interface ChatStoreFun extends Omit<ChatStore, 'messages'> {
 
 const messageListeners: { [recipientId: string]: (msg: Message) => void } = {};
 
-export const useChatStore = create<ChatStoreFun>((set, get) => ({
+export const useChatStore = create<ChatStoreFun>(set => ({
   messages: {},
   users: [],
   selectedUser: null,
@@ -59,7 +59,6 @@ export const useChatStore = create<ChatStoreFun>((set, get) => ({
   },
 
   sendMessage: async messageData => {
-    const { messages } = get();
     try {
       const res: AxiosResponse<Message> = await axiosInstance.post(
         `/messages/send/${messageData.recipientId}`,

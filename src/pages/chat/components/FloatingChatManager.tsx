@@ -1,6 +1,6 @@
 import ChatWindow from './ChatWindowViewer';
 import { useChatWindowsStore } from '../../../store/chatWindows.store';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './FloatingChatDropdown.css';
 
 const CHAT_WIDTH = 340;
