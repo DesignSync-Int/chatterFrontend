@@ -38,19 +38,31 @@ const Login = () => {
   };
 
   useEffect(() => {
+    // Check if user just logged out
+    const justLoggedOut = sessionStorage.getItem('justLoggedOut');
+
+    if (justLoggedOut) {
+      // Clear the flag and don't auto-check
+      sessionStorage.removeItem('justLoggedOut');
+      console.log('🚪 Skipping auto-auth check - user just logged out');
+      return;
+    }
+
+    console.log('🔍 Auto-checking authentication...');
     checkUser()
       .then((user: User | null) => {
         if (user) {
+          console.log('✅ Found existing session, redirecting to home');
           setCurrentUser(user);
           navigate('/home');
           setCurrentPage('home');
           useAuthStore.getState().connectSocket();
         } else {
-          console.error('Login failed: No user returned');
+          console.log('❌ No existing session found');
         }
       })
       .catch(error => {
-        console.error('Login failed:', error);
+        console.error('❌ Auth check failed:', error);
       });
   }, [checkUser, setCurrentUser, navigate, setCurrentPage]);
 

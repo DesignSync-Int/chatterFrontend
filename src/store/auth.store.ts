@@ -76,15 +76,35 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   logout: async () => {
     try {
-      await axiosInstance.post('/auth/logout');
+      console.log('🚪 Starting logout process...');
+
+      // Clear frontend state first
       set({ authUser: null });
-      TokenStorage.removeToken(); // Clear stored token
+      TokenStorage.removeToken();
       get().disconnectSocket();
+
+      // Set flag to prevent auto-login check
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('justLoggedOut', 'true');
+      }
+
+      // Call backend logout to clear cookie
+      await axiosInstance.post('/auth/logout');
+
+      console.log('✅ Logout successful');
       toast.success('Logged out successfully');
     } catch (error: any) {
+      console.error('❌ Logout error:', error);
       toast.error(error.response?.data?.message || 'Logout failed');
-      // Clear token even if logout request fails
+
+      // Clear frontend state even if backend fails
+      set({ authUser: null });
       TokenStorage.removeToken();
+      get().disconnectSocket();
+
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('justLoggedOut', 'true');
+      }
     }
   },
 
