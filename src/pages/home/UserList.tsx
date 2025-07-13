@@ -3,7 +3,7 @@ import Button from '../../components/button/Button.tsx';
 import useUserStore from '../../store/user.store.ts';
 import { useChatStore } from '../../store/messages.store.ts';
 import { useAuthStore } from '../../store/auth.store.ts';
-import { useEffect } from 'react';
+import { useEffect, useCallback, useMemo } from "react";
 import type { User } from '../../types/auth.ts';
 
 const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
@@ -12,20 +12,30 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
   const { getUsers, users, setSelectedUser } = useChatStore();
   const onlineUsers = useAuthStore(state => state.onlineUsers);
 
-  const messageUser = (user: User) => {
-    if (user) {
-      setCurrentRecipient(user);
-      setSelectedUser({
-        _id: user._id,
-        name: user.name,
-      });
-      onUserClick(user);
-    }
-  };
+  const messageUser = useCallback(
+    (user: User) => {
+      if (user) {
+        setCurrentRecipient(user);
+        setSelectedUser({
+          _id: user._id,
+          name: user.name,
+        });
+        onUserClick(user);
+      }
+    },
+    [setCurrentRecipient, setSelectedUser, onUserClick]
+  );
 
-  const isUserOnline = (userId: string) => {
-    return onlineUsers.includes(userId);
-  };
+  const isUserOnline = useCallback(
+    (userId: string) => {
+      return onlineUsers.includes(userId);
+    },
+    [onlineUsers]
+  );
+
+  const filteredUsers = useMemo(() => {
+    return users?.filter((user) => user._id !== currentUser?._id) || [];
+  }, [users, currentUser?._id]);
 
   useEffect(() => {
     getUsers();
@@ -36,7 +46,7 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
       <div className="flex-1">
         <h2 className="text-lg font-semibold mb-4">Message Someone</h2>
         <div className="flex flex-col gap-2.5">
-          {users?.map(user => (
+          {filteredUsers.map((user) => (
             <div className="flex items-center" key={user._id}>
               <UserCard user={user} />
               {isUserOnline(user._id) && (
@@ -45,7 +55,7 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
                 </span>
               )}
               <div className="ml-auto">
-                <Button onClick={() => messageUser(user)} disabled={user._id === currentUser?._id}>
+                <Button onClick={() => messageUser(user)} disabled={false}>
                   Message
                 </Button>
               </div>
