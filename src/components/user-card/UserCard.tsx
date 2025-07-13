@@ -1,10 +1,10 @@
 import type { User } from '../../types/auth';
 
-const UserCard = ({ user, onClick }: { user: User; onClick: () => void }) => {
+const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
   return (
     <div
       className="flex gap-2.5 items-center justify-center cursor-pointer"
-      onClick={onClick}
+      {...(onClick ? { onClick } : {})}
     >
       <img
         className="w-10 h-auto rounded-full"
