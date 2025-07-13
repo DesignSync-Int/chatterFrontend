@@ -23,3 +23,19 @@ export interface AuthStore {
   isCheckingAuth: boolean;
   onlineUsers: string[];
 }
+
+export interface LoginData {
+  name: string;
+  password: string;
+}
+
+export interface SignupData {
+  name: string;
+  password: string;
+  profile?: string;
+}
+
+export interface UpdateProfileData {
+  name?: string;
+  profile?: string;
+}

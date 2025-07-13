@@ -21,7 +21,6 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
   const chatContentRef = useRef<HTMLDivElement>(null);
 
   const recipientMessages = messages[recipient._id] || [];
-  console.log('recipientMessages', messages, recipientMessages);
   const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!recipient || !currentMessage.trim()) return;

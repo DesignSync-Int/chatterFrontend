@@ -1,5 +1,5 @@
 type ButtonProps = {
-  onClick?: (...args: any[]) => void;
+  onClick?: () => void;
   children: string;
   buttonType?: "submit" | "reset" | "button";
   disabled?: boolean;
