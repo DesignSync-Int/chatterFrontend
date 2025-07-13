@@ -84,7 +84,6 @@ const Home = () => {
             {displayUser && <UserCard user={displayUser} />}
             <div className="text-sm text-gray-500">Currently logged in</div>
             <div className="flex-grow text-right flex gap-2 items-center justify-end">
-              <TestNotificationButton />
               <button className="text-sm text-blue-500 hover:underline" onClick={handleLogout}>
                 Logout
               </button>
