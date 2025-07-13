@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { useAuthStore } from "../../../store/auth.store";
-import { axiosInstance } from "../../../lib/axios";
+// Update the import path if the file is located elsewhere, for example:
+import { useAuthStore } from "../auth.store";
+// Or, if the file is named differently, update accordingly:
+// import { useAuthStore } from "../../../store/authStore";
+import { axiosInstance } from "../../lib/axios";
 
 vi.mock("../../../lib/axios", () => ({
   axiosInstance: {
