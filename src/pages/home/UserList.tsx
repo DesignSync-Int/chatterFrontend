@@ -48,7 +48,7 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
         <div className="flex flex-col gap-2.5">
           {filteredUsers.map((user) => (
             <div className="flex items-center" key={user._id}>
-              <UserCard user={user} />
+              <UserCard user={user} onClick={() => messageUser(user)} />
               {isUserOnline(user._id) && (
                 <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
                   🟢 Live
