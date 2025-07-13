@@ -11,7 +11,7 @@ import { TokenStorage } from '../utils/tokenStorage';
 interface AuthStoreFun extends AuthStore {
   socket: Socket | null;
   checkAuth: () => Promise<void>;
-  signup: (data: Record<string, any>) => Promise<void>;
+  signup: (data: Record<string, any>) => Promise<User | null>;
   login: (data: Record<string, any>) => Promise<User | null>;
   logout: () => Promise<void>;
   checkUser: () => Promise<User | null>;
@@ -51,8 +51,10 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       set({ authUser: res.data });
       toast.success('Account created successfully');
       get().connectSocket();
+      return res.data;
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Signup failed');
+      return null;
     } finally {
       set({ isSigningUp: false });
     }

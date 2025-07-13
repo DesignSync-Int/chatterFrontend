@@ -65,9 +65,7 @@ const Home = () => {
       <header className="text-center py-8 px-4 bg-gradient-to-b from-white to-gray-50 border-b border-gray-100">
         <div className="flex flex-col items-center gap-3">
           <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Chatter</h1>
-          <p className="text-gray-600 max-w-md">
-            Connect and chat with your friends in a simple and elegant way.
-          </p>
+          <p className="text-gray-600 max-w-md">Connect back with your friends in a simple way.</p>
         </div>
       </header>
       <main className="p-6 flex-grow flex flex-col gap-6">
