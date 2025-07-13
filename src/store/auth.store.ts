@@ -5,11 +5,13 @@ import { io } from 'socket.io-client';
 import type { AxiosResponse } from 'axios';
 import type { Socket } from 'socket.io-client';
 import type { AuthStore, User } from '../types/auth';
+import type { Notification } from '../types/notifications';
 import { BasePath } from '../config';
 import { TokenStorage } from '../utils/tokenStorage';
 
 interface AuthStoreFun extends AuthStore {
   socket: Socket | null;
+  notifications: Notification[];
   checkAuth: () => Promise<void>;
   signup: (data: Record<string, any>) => Promise<User | null>;
   login: (data: Record<string, any>) => Promise<User | null>;
@@ -18,6 +20,9 @@ interface AuthStoreFun extends AuthStore {
   updateProfile: (data: Record<string, any>) => Promise<void>;
   connectSocket: () => void;
   disconnectSocket: () => void;
+  addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
+  markNotificationAsRead: (id: string) => void;
+  clearAllNotifications: () => void;
 }
 
 export const useAuthStore = create<AuthStoreFun>((set, get) => ({
@@ -28,6 +33,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
+  notifications: [],
 
   checkAuth: async () => {
     try {
@@ -150,13 +156,95 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
     set({ socket });
 
+    // Listen for online users
     socket.on('getOnlineUsers', (userIds: string[]) => {
+      const previousOnlineUsers = get().onlineUsers;
       set({ onlineUsers: userIds });
+
+      // Check for newly online users
+      const newlyOnlineUsers = userIds.filter(
+        id => !previousOnlineUsers.includes(id) && id !== authUser._id
+      );
+
+      newlyOnlineUsers.forEach(userId => {
+        get().addNotification({
+          type: 'user_online',
+          title: 'User Online',
+          message: 'A friend came online',
+          fromUser: { _id: userId, name: 'User' }, // You might want to get actual user info
+        });
+      });
     });
+
+    // Listen for new messages
+    socket.on('newMessage', (messageData: any) => {
+      if (messageData.senderId !== authUser._id) {
+        // Note: We'll handle chat window checking in the notification panel component
+        get().addNotification({
+          type: 'message',
+          title: 'New Message',
+          message: `${messageData.senderName || 'Someone'}: ${messageData.content || messageData.message || 'New message'}`,
+          fromUser: {
+            _id: messageData.senderId,
+            name: messageData.senderName || 'Unknown',
+            profile: messageData.senderProfile,
+          },
+        });
+      }
+    });
+
+    // Listen for user offline
+    socket.on('userDisconnected', (userData: any) => {
+      if (userData.userId !== authUser._id) {
+        get().addNotification({
+          type: 'user_offline',
+          title: 'User Offline',
+          message: `${userData.userName || 'A friend'} went offline`,
+          fromUser: {
+            _id: userData.userId,
+            name: userData.userName || 'User',
+          },
+        });
+      }
+    });
+
+    console.log('🔌 Socket connected with notifications enabled');
   },
 
   disconnectSocket: () => {
     const socket = get().socket;
     if (socket && socket.connected) socket.disconnect();
+  },
+
+  addNotification: (notificationData: Omit<Notification, 'id' | 'timestamp' | 'read'>) => {
+    const notification: Notification = {
+      ...notificationData,
+      id: Date.now().toString(),
+      timestamp: new Date(),
+      read: false,
+    };
+
+    set(state => ({
+      notifications: [notification, ...state.notifications.slice(0, 49)], // Keep max 50 notifications
+    }));
+
+    // Show toast notification
+    toast(notification.message, {
+      icon:
+        notification.type === 'message' ? '💬' : notification.type === 'user_online' ? '🟢' : '🔴',
+      duration: 4000,
+    });
+  },
+
+  markNotificationAsRead: (id: string) => {
+    set(state => ({
+      notifications: state.notifications.map(notification =>
+        notification.id === id ? { ...notification, read: true } : notification
+      ),
+    }));
+  },
+
+  clearAllNotifications: () => {
+    set({ notifications: [] });
   },
 }));

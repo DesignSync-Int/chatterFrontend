@@ -5,6 +5,8 @@ import { useAuthStore } from '../../store/auth.store.ts';
 import usePageStore from '../../store/page.store.ts';
 import FloatingChatManager from '../chat/components/FloatingChatManager.tsx';
 import { useChatWindowsStore } from '../../store/chatWindows.store';
+import NotificationPanel from '../../components/notifications/NotificationPanel.tsx';
+import TestNotificationButton from '../../components/notifications/TestNotificationButton.tsx';
 import type { User } from '../../types/auth.ts';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -25,6 +27,10 @@ const Home = () => {
     if (authUser && !currentUser) {
       console.log('🔄 Home: Setting currentUser from authUser');
       setCurrentUser(authUser);
+
+      // Initialize socket connection with notifications when user is authenticated
+      const { connectSocket } = useAuthStore.getState();
+      connectSocket();
     } else if (!authUser && !currentUser) {
       console.log('🔍 Home: No user found, checking auth...');
       checkAuth();
@@ -63,7 +69,11 @@ const Home = () => {
   return (
     <div className="flex flex-col h-full">
       <header className="text-center py-8 px-4 bg-gradient-to-b from-white to-gray-50 border-b border-gray-100">
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex flex-col items-center gap-3 relative">
+          {/* Notification panel in top right */}
+          <div className="absolute top-0 right-0">
+            <NotificationPanel />
+          </div>
           <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Chatter</h1>
           <p className="text-gray-600 max-w-md">Connect back with your friends in a simple way.</p>
         </div>
@@ -73,7 +83,8 @@ const Home = () => {
           <div className="flex items-center gap-3 mb-2">
             {displayUser && <UserCard user={displayUser} />}
             <div className="text-sm text-gray-500">Currently logged in</div>
-            <div className="flex-grow text-right">
+            <div className="flex-grow text-right flex gap-2 items-center justify-end">
+              <TestNotificationButton />
               <button className="text-sm text-blue-500 hover:underline" onClick={handleLogout}>
                 Logout
               </button>
