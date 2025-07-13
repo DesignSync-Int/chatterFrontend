@@ -38,7 +38,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       console.error('Error in checkAuth:', error);
       set({ authUser: null });
       get().disconnectSocket();
-      window.location.href = '/login';
+      window.location.href = '/';
     } finally {
       set({ isCheckingAuth: false });
     }

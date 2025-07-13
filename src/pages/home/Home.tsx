@@ -7,13 +7,46 @@ import FloatingChatManager from '../chat/components/FloatingChatManager.tsx';
 import { useChatWindowsStore } from '../../store/chatWindows.store';
 import type { User } from '../../types/auth.ts';
 import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+
 const Home = () => {
   const currentUser = useUserStore(state => state.currentUser);
+  const authUser = useAuthStore(state => state.authUser);
+  const isCheckingAuth = useAuthStore(state => state.isCheckingAuth);
+  const setCurrentUser = useUserStore(state => state.setCurrentUser);
   const setCurrentPage = usePageStore(state => state.setCurrentPage);
   const resetCurrentUser = useUserStore(state => state.resetCurrentUser);
-  const { logout } = useAuthStore();
+  const { logout, checkAuth } = useAuthStore();
   const openChat = useChatWindowsStore(state => state.openChat);
   const navigate = useNavigate();
+
+  // Sync currentUser with authUser on component mount and when authUser changes
+  useEffect(() => {
+    if (authUser && !currentUser) {
+      console.log('🔄 Home: Setting currentUser from authUser');
+      setCurrentUser(authUser);
+    } else if (!authUser && !currentUser) {
+      console.log('🔍 Home: No user found, checking auth...');
+      checkAuth();
+    }
+  }, [authUser, currentUser, setCurrentUser, checkAuth]);
+
+  const displayUser = currentUser || authUser;
+
+  // Show loading only when actively checking auth and no user data exists
+  if (isCheckingAuth && !authUser && !currentUser) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
+
+  // If no user after auth check, redirect to login
+  if (!isCheckingAuth && !displayUser) {
+    navigate('/');
+    return null;
+  }
 
   const handleLogout = async () => {
     try {
@@ -40,7 +73,7 @@ const Home = () => {
       <main className="p-6 flex-grow flex flex-col gap-6">
         <section className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
           <div className="flex items-center gap-3 mb-2">
-            {currentUser && <UserCard user={currentUser} />}
+            {displayUser && <UserCard user={displayUser} />}
             <div className="text-sm text-gray-500">Currently logged in</div>
             <div className="flex-grow text-right">
               <button className="text-sm text-blue-500 hover:underline" onClick={handleLogout}>
