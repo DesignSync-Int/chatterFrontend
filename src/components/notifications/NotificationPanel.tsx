@@ -25,13 +25,16 @@ const NotificationPanel: React.FC = () => {
   const handleNotificationClick = (notification: any) => {
     // Mark as read
     handleMarkAsRead(notification.id);
-    
-    // If it's a message notification, open the chat window
-    if (notification.type === 'message' && notification.fromUser) {
+
+    // If it's a message or user online notification, open the chat window
+    if (
+      (notification.type === 'message' || notification.type === 'user_online') &&
+      notification.fromUser
+    ) {
       openChat({
         _id: notification.fromUser._id,
         name: notification.fromUser.name,
-        profile: notification.fromUser.profile
+        profile: notification.fromUser.profile,
       });
       setIsOpen(false); // Close the notification panel
     }
@@ -77,11 +80,9 @@ const NotificationPanel: React.FC = () => {
 
           <div className="max-h-80 overflow-y-auto">
             {filteredNotifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
-                No notifications yet
-              </div>
+              <div className="p-4 text-center text-gray-500">No notifications yet</div>
             ) : (
-              filteredNotifications.map((notification) => (
+              filteredNotifications.map(notification => (
                 <div
                   key={notification.id}
                   className={`p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
@@ -96,16 +97,10 @@ const NotificationPanel: React.FC = () => {
                       {notification.type === 'user_offline' && '🔴'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800">
-                        {notification.title}
-                      </p>
-                      <p className="text-sm text-gray-600 truncate">
-                        {notification.message}
-                      </p>
-                      {notification.type === 'message' && (
-                        <p className="text-xs text-blue-500 mt-1">
-                          Click to open chat
-                        </p>
+                      <p className="text-sm font-medium text-gray-800">{notification.title}</p>
+                      <p className="text-sm text-gray-600 truncate">{notification.message}</p>
+                      {(notification.type === 'message' || notification.type === 'user_online') && (
+                        <p className="text-xs text-blue-500 mt-1">Click to open chat</p>
                       )}
                       <p className="text-xs text-gray-400 mt-1">
                         {notification.timestamp.toLocaleTimeString()}

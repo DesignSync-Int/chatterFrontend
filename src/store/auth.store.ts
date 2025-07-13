@@ -170,8 +170,11 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
         get().addNotification({
           type: 'user_online',
           title: 'User Online',
-          message: 'A friend came online',
-          fromUser: { _id: userId, name: 'User' }, // You might want to get actual user info
+          message: `Someone is now online`,
+          fromUser: {
+            _id: userId,
+            name: 'Friend',
+          },
         });
       });
     });

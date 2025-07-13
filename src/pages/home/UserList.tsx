@@ -2,6 +2,7 @@ import UserCard from '../../components/user-card/UserCard.tsx';
 import Button from '../../components/button/Button.tsx';
 import useUserStore from '../../store/user.store.ts';
 import { useChatStore } from '../../store/messages.store.ts';
+import { useAuthStore } from '../../store/auth.store.ts';
 import { useEffect } from 'react';
 import type { User } from '../../types/auth.ts';
 
@@ -9,6 +10,7 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
   const currentUser = useUserStore(state => state.currentUser);
   const setCurrentRecipient = useUserStore(state => state.setCurrentRecipient);
   const { getUsers, users, setSelectedUser } = useChatStore();
+  const onlineUsers = useAuthStore(state => state.onlineUsers);
 
   const messageUser = (user: User) => {
     if (user) {
@@ -19,6 +21,10 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
       });
       onUserClick(user);
     }
+  };
+
+  const isUserOnline = (userId: string) => {
+    return onlineUsers.includes(userId);
   };
 
   useEffect(() => {
@@ -33,6 +39,11 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
           {users?.map(user => (
             <div className="flex items-center" key={user._id}>
               <UserCard user={user} />
+              {isUserOnline(user._id) && (
+                <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
+                  🟢 Live
+                </span>
+              )}
               <div className="ml-auto">
                 <Button onClick={() => messageUser(user)} disabled={user._id === currentUser?._id}>
                   Message
