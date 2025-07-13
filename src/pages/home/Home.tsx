@@ -6,7 +6,6 @@ import usePageStore from '../../store/page.store.ts';
 import FloatingChatManager from '../chat/components/FloatingChatManager.tsx';
 import { useChatWindowsStore } from '../../store/chatWindows.store';
 import NotificationPanel from '../../components/notifications/NotificationPanel.tsx';
-import TestNotificationButton from '../../components/notifications/TestNotificationButton.tsx';
 import type { User } from '../../types/auth.ts';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
