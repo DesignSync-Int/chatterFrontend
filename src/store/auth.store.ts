@@ -1,9 +1,7 @@
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import toast from 'react-hot-toast';
-import { io } from 'socket.io-client';
-import type { AxiosResponse } from 'axios';
-import type { Socket } from 'socket.io-client';
+import io from "socket.io-client";
 import type {
   AuthStore,
   User,
@@ -11,18 +9,18 @@ import type {
   SignupData,
   UpdateProfileData,
 } from "../types/auth";
-import type { Notification } from '../types/notifications';
-import { BasePath } from '../config';
-import { TokenStorage } from '../utils/tokenStorage';
+import type { Notification } from "../types/notifications";
+import { BasePath } from "../config";
+import { TokenStorage } from "../utils/tokenStorage";
 import {
   clearUserSession,
   isUserLoggedOut,
   setLogoutFlag,
-} from '../utils/sessionCleanup';
-import useChatStore from './messages.store';
+} from "../utils/sessionCleanup";
+import useChatStore from "./messages.store";
 
 interface AuthStoreFun extends AuthStore {
-  socket: Socket | null;
+  socket: any;
   notifications: Notification[];
   checkAuth: () => Promise<void>;
   signup: (data: SignupData) => Promise<User | null>;
@@ -51,7 +49,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   checkAuth: async () => {
     try {
-      const res: AxiosResponse<User> = await axiosInstance.get("/auth/check");
+      const res: any = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
       get().connectSocket();
     } catch (error: unknown) {
@@ -67,10 +65,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   signup: async (data: SignupData) => {
     set({ isSigningUp: true });
     try {
-      const res: AxiosResponse<User> = await axiosInstance.post(
-        "/auth/signup",
-        data
-      );
+      const res: any = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
       toast.success("Account created successfully");
       get().connectSocket();
@@ -86,10 +81,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   login: async (data: LoginData) => {
     set({ isLoggingIn: true });
     try {
-      const res: AxiosResponse<User> = await axiosInstance.post(
-        "/auth/login",
-        data
-      );
+      const res: any = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Logged in successfully");
       get().connectSocket();
@@ -100,7 +92,8 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     } finally {
       set({ isLoggingIn: false });
     }
-  },  logout: async () => {
+  },
+  logout: async () => {
     try {
       console.log("Starting logout process...");
 
@@ -113,7 +106,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       // Clear all user session data thoroughly
       clearUserSession();
       TokenStorage.removeToken();
-      
+
       // Clear auth store state
       set({ authUser: null, onlineUsers: [], notifications: [] });
 
@@ -124,15 +117,15 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       toast.success("Logged out successfully");
     } catch (error: any) {
       console.error("Logout error:", error);
-      
+
       // Even if backend fails, clear everything aggressively
       clearUserSession();
       TokenStorage.removeToken();
       get().disconnectSocket();
-      
+
       // Clear auth store state
       set({ authUser: null, onlineUsers: [], notifications: [] });
-      
+
       // Set logout flag
       setLogoutFlag();
 
@@ -155,7 +148,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
         return null;
       }
 
-      const res: AxiosResponse<User> = await axiosInstance.get("/auth/check");
+      const res: any = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
       return res.data ?? null;
     } catch (error: any) {
@@ -174,10 +167,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   updateProfile: async (data: UpdateProfileData) => {
     set({ isUpdatingProfile: true });
     try {
-      const res: AxiosResponse<User> = await axiosInstance.put(
-        "/auth/update-profile",
-        data
-      );
+      const res: any = await axiosInstance.put("/auth/update-profile", data);
       set({ authUser: res.data });
       toast.success("Profile updated successfully");
     } catch (error: any) {
@@ -192,12 +182,11 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket: Socket = io(BasePath, {
+    const socket = io(BasePath, {
       auth: {
         userId: authUser._id,
       },
-      withCredentials: true,
-    });
+    } as any);
     socket.connect();
 
     set({ socket });
@@ -230,23 +219,27 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       if (messageData.senderId !== authUser._id) {
         // Get sender's name from users store or use fallback
         const chatStore = useChatStore.getState();
-        let senderUser = chatStore.users.find((user: any) => user._id === messageData.senderId);
+        let senderUser = chatStore.users.find(
+          (user: any) => user._id === messageData.senderId
+        );
         let senderName = senderUser?.name || messageData.senderName;
-        
+
         // If we don't have the sender's info, try to get it from the API
         if (!senderName && messageData.senderId) {
           try {
-            const response = await axiosInstance.get(`/users/${messageData.senderId}`);
-            senderUser = response.data;
+            const response = await axiosInstance.get(
+              `/users/${messageData.senderId}`
+            );
+            senderUser = response.data as User;
             senderName = senderUser?.name;
           } catch (error) {
             console.error("Failed to fetch sender info:", error);
           }
         }
-        
+
         // Final fallback
         senderName = senderName || "Someone";
-        
+
         // Note: We'll handle chat window checking in the notification panel component
         get().addNotification({
           type: "message",
@@ -281,17 +274,18 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   disconnectSocket: () => {
     const socket = get().socket;
-    if (socket && socket.connected) {      console.log("Disconnecting socket...");
-      
+    if (socket && socket.connected) {
+      console.log("Disconnecting socket...");
+
       // Emit logout event to notify server
       socket.emit("logout");
-      
+
       // Disconnect the socket
       socket.disconnect();
-      
+
       // Clear socket reference
       set({ socket: null });
-      
+
       console.log("Socket disconnected");
     }
   },

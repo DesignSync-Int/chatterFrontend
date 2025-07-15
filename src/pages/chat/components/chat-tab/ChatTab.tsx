@@ -111,53 +111,44 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
   }, [recipientMessages.length]);
 
   return (
-    <div className="max-h-96 overflow-y-auto" ref={chatContentRef}>
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div
-          className="flex-1 overflow-y-auto relative"
-          id="chat-content"
-          style={{ paddingBottom: "90px" }}
-        >
-          {recipientMessages.map((message, index) =>
-            renderMessageItem(message, index)
-          )}
-        </div>
+    <div className="flex flex-col h-full">
+      <div
+        className="flex-1 overflow-y-auto p-2 pb-20"
+        ref={chatContentRef}
+        id="chat-content"
+      >
+        {recipientMessages.map((message, index) =>
+          renderMessageItem(message, index)
+        )}
+      </div>
 
-        <div
-          className="border-t border-gray-300 p-2 bg-white"
-          id="chat-input"
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            width: "100%",
-          }}
-        >
-          {messageError && (
-            <div className="text-red-600 text-sm mb-1 px-2">{messageError}</div>
-          )}
-          <form onSubmit={handleMessageSend} className="flex gap-2">
-            <input
-              type="text"
-              placeholder={`Message ${recipient?.name || ""}`}
-              className={`flex-1 rounded-full border-[8px] px-[12px] py-[8px] ${
-                messageError
-                  ? "border-red-300 focus:border-red-500"
-                  : "border-[#cfcfcf] focus:border-blue-300"
-              }`}
-              value={currentMessage}
-              onChange={(e) => {
-                setCurrentMessage(e.target.value);
-                // Clear error when user starts typing
-                if (messageError) {
-                  setMessageError("");
-                }
-              }}
-              maxLength={1000}
-            />
-          </form>
-        </div>
+      <div
+        className="border-t border-gray-300 p-2 bg-white flex-shrink-0"
+        id="chat-input"
+      >
+        {messageError && (
+          <div className="text-red-600 text-sm mb-1 px-2">{messageError}</div>
+        )}
+        <form onSubmit={handleMessageSend} className="flex gap-2">
+          <input
+            type="text"
+            placeholder={`Message ${recipient?.name || ""}`}
+            className={`flex-1 rounded-full border-[8px] px-[12px] py-[8px] ${
+              messageError
+                ? "border-red-300 focus:border-red-500"
+                : "border-[#cfcfcf] focus:border-blue-300"
+            }`}
+            value={currentMessage}
+            onChange={(e) => {
+              setCurrentMessage(e.target.value);
+              // Clear error when user starts typing
+              if (messageError) {
+                setMessageError("");
+              }
+            }}
+            maxLength={1000}
+          />
+        </form>
       </div>
     </div>
   );

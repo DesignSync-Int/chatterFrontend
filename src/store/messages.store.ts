@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import toast from 'react-hot-toast';
 import { axiosInstance } from '../lib/axios';
 import { useAuthStore } from './auth.store';
-import type { AxiosResponse } from 'axios';
+
 import type { User } from '../types/auth';
 import type { Message, ChatStore } from '../types/messages';
 
@@ -32,7 +32,7 @@ export const useChatStore = create<ChatStoreFun>(set => ({
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
-      const res: AxiosResponse<User[]> = await axiosInstance.get('/messages/users');
+      const res: any = await axiosInstance.get('/messages/users');
       set({ users: res.data });
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Failed to fetch users');
@@ -44,7 +44,7 @@ export const useChatStore = create<ChatStoreFun>(set => ({
   getMessages: async (userId: string) => {
     set({ isMessagesLoading: true });
     try {
-      const res: AxiosResponse<Message[]> = await axiosInstance.get(`/messages/${userId}`);
+      const res: any = await axiosInstance.get(`/messages/${userId}`);
       set(state => ({
         messages: {
           ...state.messages,
@@ -60,7 +60,7 @@ export const useChatStore = create<ChatStoreFun>(set => ({
 
   sendMessage: async messageData => {
     try {
-      const res: AxiosResponse<Message> = await axiosInstance.post(
+      const res: any = await axiosInstance.post(
         `/messages/send/${messageData.recipientId}`,
         messageData
       );

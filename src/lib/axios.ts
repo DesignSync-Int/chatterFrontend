@@ -1,32 +1,31 @@
-import axios from 'axios';
-import type { AxiosInstance } from 'axios';
-import { BasePath } from '../config';
-import { TokenStorage } from '../utils/tokenStorage';
+import axios from "axios";
+import { BasePath } from "../config";
+import { TokenStorage } from "../utils/tokenStorage";
 
 const baseURL: string = `${BasePath}/api`;
 
-export const axiosInstance: AxiosInstance = axios.create({
+export const axiosInstance = axios.create({
   baseURL,
   withCredentials: true,
 });
 
 // Add request interceptor to include Authorization header
 axiosInstance.interceptors.request.use(
-  config => {
+  (config: any) => {
     const token = TokenStorage.getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => {
+  (error: any) => {
     return Promise.reject(error);
   }
 );
 
 // Add response interceptor to handle token from responses
 axiosInstance.interceptors.response.use(
-  response => {
+  (response: any) => {
     // Check if response contains a token (for login/signup)
     const token = response.data?.token;
     if (token) {
@@ -34,7 +33,7 @@ axiosInstance.interceptors.response.use(
     }
     return response;
   },
-  error => {
+  (error: any) => {
     // If we get 401, clear the token and redirect to login
     if (error.response?.status === 401) {
       TokenStorage.removeToken();
