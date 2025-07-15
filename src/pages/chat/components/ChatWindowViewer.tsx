@@ -19,17 +19,26 @@ const ChatWindow = ({ user, index, hidden }: ChatWindowProps) => {
   // Initialize draggable with initial position based on index
   // Position windows in bottom-right corner with queue spacing
   const initialPosition = React.useMemo(() => {
-    const CHAT_HEIGHT = 400; // Approximate height
+    const CHAT_WIDTH = 320; // w-80 = 320px
+    const CHAT_HEIGHT = 384; // h-96 = 384px
     const BOTTOM_MARGIN = 16; // Distance from bottom
     const RIGHT_MARGIN = 16; // Distance from right edge
     const QUEUE_SPACING = 340; // Space between windows (width + gap)
 
+    // Calculate x position, ensuring it doesn't go off-screen
+    const desiredX =
+      window.innerWidth - RIGHT_MARGIN - QUEUE_SPACING * (index + 1);
+    const minX = 0;
+    const maxX = window.innerWidth - CHAT_WIDTH;
+
+    // Calculate y position, ensuring it stays at bottom
+    const desiredY = window.innerHeight - CHAT_HEIGHT - BOTTOM_MARGIN;
+    const minY = 0;
+    const maxY = window.innerHeight - CHAT_HEIGHT;
+
     return {
-      x: Math.max(
-        0,
-        window.innerWidth - RIGHT_MARGIN - QUEUE_SPACING * (index + 1)
-      ),
-      y: Math.max(0, window.innerHeight - CHAT_HEIGHT - BOTTOM_MARGIN),
+      x: Math.max(minX, Math.min(desiredX, maxX)),
+      y: Math.max(minY, Math.min(desiredY, maxY)),
     };
   }, [index]);
 
@@ -52,7 +61,7 @@ const ChatWindow = ({ user, index, hidden }: ChatWindowProps) => {
   return (
     <div
       ref={elementRef}
-      className={`fixed w-80 bg-white shadow-lg rounded border z-50 m-2 ${isDragging ? "cursor-grabbing" : ""}`}
+      className={`fixed w-80 h-96 bg-white shadow-lg rounded border z-50 flex flex-col ${isDragging ? "cursor-grabbing" : ""}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -60,7 +69,7 @@ const ChatWindow = ({ user, index, hidden }: ChatWindowProps) => {
       }}
     >
       <div
-        className="flex justify-between items-center p-2 bg-gray-100 border-b cursor-grab hover:bg-gray-200 select-none"
+        className="flex justify-between items-center p-2 bg-gray-100 border-b cursor-grab hover:bg-gray-200 select-none flex-shrink-0"
         data-drag-handle
       >
         <span className="font-medium">Chat: {user.name}</span>
@@ -79,7 +88,9 @@ const ChatWindow = ({ user, index, hidden }: ChatWindowProps) => {
           </button>
         </div>
       </div>
-      <ChatTab key={user._id} recipient={user} />
+      <div className="flex-1 overflow-hidden relative">
+        <ChatTab key={user._id} recipient={user} />
+      </div>
     </div>
   );
 };
