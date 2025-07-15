@@ -11,16 +11,19 @@ Cypress.Commands.add('login', (name: string, password: string) => {
   cy.waitForPageLoad()
 })
 
-Cypress.Commands.add('signup', (name: string, password: string, profile: string = 'Test profile') => {
-  cy.visit('/')
-  cy.get('button').contains('Signup').click()
-  cy.get('input[placeholder*="Name"]').type(name)
-  cy.get('input[placeholder*="Password"]').type(password)
-  cy.get('input[placeholder*="Profile"]').type(profile)
-  cy.get('button').contains('Signup').click()
-  cy.url().should('include', '/home')
-  cy.waitForPageLoad()
-})
+Cypress.Commands.add(
+  "signup",
+  (name: string, password: string, profile: string = "") => {
+    cy.visit("/");
+    cy.get("button").contains("Signup").click();
+    cy.get('input[placeholder*="Name"]').type(name);
+    cy.get('input[placeholder*="Password"]').type(password);
+    cy.get('input[placeholder*="Profile"]').type(profile);
+    cy.get("button").contains("Signup").click();
+    cy.url().should("include", "/home");
+    cy.waitForPageLoad();
+  }
+);
 
 Cypress.Commands.add('logout', () => {
   cy.get('button').contains('Logout').click()

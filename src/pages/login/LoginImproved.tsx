@@ -44,12 +44,24 @@ const LoginPage: React.FC = () => {
     initialValues: { name: '', password: '', profile: '' },
     onSubmit: async (data) => {
       try {
-        const user = await signup(data);
+        // Only include profile if it's not empty
+        const signupData: any = {
+          name: data.name,
+          password: data.password,
+        };
+
+        if (data.profile && data.profile.trim()) {
+          signupData.profile = data.profile.trim();
+        }
+
+        const user = await signup(signupData);
         if (user) {
           setCurrentUser(user);
-          setCurrentPage('home');
-          navigate('/home');
-          toast.success('Account created successfully!', { title: 'Welcome to Chatter' });
+          setCurrentPage("home");
+          navigate("/home");
+          toast.success("Account created successfully!", {
+            title: "Welcome to Chatter",
+          });
         }
       } catch (error: any) {
         const message = error.response?.data?.message || 'Signup failed. Please try again.';
@@ -97,7 +109,9 @@ const LoginPage: React.FC = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Chatter</h1>
           <p className="text-gray-600">
-            {isSignupMode ? 'Create your account' : 'Welcome back! Please sign in.'}
+            {isSignupMode
+              ? "Create your account"
+              : "Welcome back! Please sign in."}
           </p>
         </div>
 
@@ -109,7 +123,9 @@ const LoginPage: React.FC = () => {
               name="name"
               type="text"
               label={isSignupMode ? "Full Name" : "Username"}
-              placeholder={isSignupMode ? "Enter your full name" : "Enter your username"}
+              placeholder={
+                isSignupMode ? "Enter your full name" : "Enter your username"
+              }
               value={currentForm.values.name}
               onChange={currentForm.handleChange}
               error={currentForm.errors.name}
@@ -123,7 +139,7 @@ const LoginPage: React.FC = () => {
                 name="profile"
                 type="text"
                 label="Profile (Optional)"
-                placeholder="Tell us about yourself"
+                placeholder="Leave blank for random avatar"
                 value={signupForm.values.profile}
                 onChange={signupForm.handleChange}
                 error={signupForm.errors.profile}
@@ -133,9 +149,13 @@ const LoginPage: React.FC = () => {
             {/* Password field */}
             <Input
               name="password"
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               label="Password"
-              placeholder={isSignupMode ? 'Create a strong password' : 'Enter your password'}
+              placeholder={
+                isSignupMode
+                  ? "Create a strong password"
+                  : "Enter your password"
+              }
               value={currentForm.values.password}
               onChange={currentForm.handleChange}
               error={currentForm.errors.password}
@@ -145,14 +165,18 @@ const LoginPage: React.FC = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="hover:text-gray-600 transition-colors"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               }
               helper={
                 isSignupMode
-                  ? 'Password must be at least 8 characters with uppercase, lowercase, and number'
+                  ? "Password must be at least 8 characters with uppercase, lowercase, and number"
                   : undefined
               }
               required
@@ -165,20 +189,22 @@ const LoginPage: React.FC = () => {
               loading={currentForm.isSubmitting}
               disabled={!currentForm.isValid}
             >
-              {isSignupMode ? 'Create Account' : 'Sign In'}
+              {isSignupMode ? "Create Account" : "Sign In"}
             </Button>
           </form>
 
           {/* Mode Toggle */}
           <div className="text-center pt-4 border-t border-gray-100">
             <p className="text-gray-600">
-              {isSignupMode ? 'Already have an account?' : "Don't have an account?"}{' '}
+              {isSignupMode
+                ? "Already have an account?"
+                : "Don't have an account?"}{" "}
               <button
                 type="button"
                 onClick={toggleMode}
                 className="text-blue-600 hover:text-blue-500 font-medium transition-colors"
               >
-                {isSignupMode ? 'Sign in' : 'Sign up'}
+                {isSignupMode ? "Sign in" : "Sign up"}
               </button>
             </p>
           </div>

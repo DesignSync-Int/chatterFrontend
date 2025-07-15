@@ -49,27 +49,41 @@ const Login = () => {
   };
 
   const handleSignup = () => {
-    setErrorMessage('');
+    setErrorMessage("");
     setIsSigningUp(true);
-    signup({
+
+    // Only include profile if it's not empty
+    const signupData: any = {
       name: signupName,
       password: signupPassword,
-      profile: signupProfile,
-    })
+    };
+
+    if (signupProfile && signupProfile.trim()) {
+      signupData.profile = signupProfile.trim();
+      console.log("Signup with profile:", signupData);
+    } else {
+      console.log(
+        "Signup without profile (will use random avatar):",
+        signupData
+      );
+    }
+
+    signup(signupData)
       .then((user: User | null) => {
         if (user) {
-          console.log('Logged in successfully');
-          setCurrentPage('home');
-          navigate('/home');
+          console.log("Signup successful, user:", user);
+          setCurrentPage("home");
+          navigate("/home");
           setCurrentUser(user);
         } else {
-          setErrorMessage('Invalid username or password');
+          setErrorMessage("Invalid username or password");
         }
         setIsSigningUp(false);
       })
-      .catch(error => {
-        setErrorMessage(error.response?.data?.message || 'Login failed');
-        setSignupError(error.response?.data?.message || 'Signup failed');
+      .catch((error) => {
+        console.error("Signup error:", error);
+        setErrorMessage(error.response?.data?.message || "Login failed");
+        setSignupError(error.response?.data?.message || "Signup failed");
         setIsSigningUp(false);
       });
   };
@@ -104,8 +118,12 @@ const Login = () => {
     <div className="flex flex-col h-full">
       <div className="text-center py-8 px-4 bg-gradient-to-b from-white to-gray-50 border-b border-gray-100">
         <div className="flex flex-col items-center gap-3">
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Chatter</h1>
-          <p className="text-gray-600 max-w-md">Connect back with your friends in a simple way.</p>
+          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
+            Chatter
+          </h1>
+          <p className="text-gray-600 max-w-md">
+            Connect back with your friends in a simple way.
+          </p>
         </div>
       </div>
 
@@ -114,8 +132,8 @@ const Login = () => {
           <button
             className={`px-4 py-2 rounded-t-md font-semibold ${
               !isSignupTab
-                ? 'bg-white border-b-2 border-blue-500 text-blue-600'
-                : 'bg-gray-100 text-gray-500'
+                ? "bg-white border-b-2 border-blue-500 text-blue-600"
+                : "bg-gray-100 text-gray-500"
             }`}
             onClick={() => setIsSignupTab(false)}
             type="button"
@@ -125,8 +143,8 @@ const Login = () => {
           <button
             className={`px-4 py-2 rounded-t-md font-semibold ${
               isSignupTab
-                ? 'bg-white border-b-2 border-blue-500 text-blue-600'
-                : 'bg-gray-100 text-gray-500'
+                ? "bg-white border-b-2 border-blue-500 text-blue-600"
+                : "bg-gray-100 text-gray-500"
             }`}
             onClick={() => setIsSignupTab(true)}
             type="button"
@@ -138,36 +156,40 @@ const Login = () => {
           <div className="flex flex-col gap-4">
             <form
               className="flex flex-col gap-3 w-full max-w-[800px] mx-auto"
-              onSubmit={e => {
+              onSubmit={(e) => {
                 e.preventDefault();
                 handleLogin();
               }}
             >
               {errorMessage && (
-                <div className="text-red-600 text-center font-medium">{errorMessage}</div>
+                <div className="text-red-600 text-center font-medium">
+                  {errorMessage}
+                </div>
               )}
               <input
                 type="text"
                 placeholder="Name"
                 className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 id="username"
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
               />
               <input
                 type="password"
                 placeholder="Password"
                 className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 id="password"
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <button
                 type="submit"
                 disabled={isLoggingIn}
                 className={`bg-blue-500 text-white rounded-md py-2 transition w-full ${
-                  isLoggingIn ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-600'
+                  isLoggingIn
+                    ? "opacity-60 cursor-not-allowed"
+                    : "hover:bg-blue-600"
                 }`}
               >
-                {isLoggingIn ? 'Logging in...' : 'Login'}
+                {isLoggingIn ? "Logging in..." : "Login"}
               </button>
             </form>
           </div>
@@ -175,13 +197,15 @@ const Login = () => {
           <div className="flex flex-col gap-4">
             <form
               className="flex flex-col gap-3 w-full max-w-[800px] mx-auto"
-              onSubmit={e => {
+              onSubmit={(e) => {
                 e.preventDefault();
                 handleSignup();
               }}
             >
               {signupError && (
-                <div className="text-red-600 text-center font-medium">{signupError}</div>
+                <div className="text-red-600 text-center font-medium">
+                  {signupError}
+                </div>
               )}
               <input
                 type="text"
@@ -189,7 +213,7 @@ const Login = () => {
                 className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 id="signup-name"
                 value={signupName}
-                onChange={e => setSignupName(e.target.value)}
+                onChange={(e) => setSignupName(e.target.value)}
               />
               <input
                 type="password"
@@ -197,24 +221,26 @@ const Login = () => {
                 className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 id="signup-password"
                 value={signupPassword}
-                onChange={e => setSignupPassword(e.target.value)}
+                onChange={(e) => setSignupPassword(e.target.value)}
               />
               <input
                 type="text"
-                placeholder="Profile (URL or description)"
+                placeholder="Profile (Optional - leave blank for random avatar)"
                 className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                 id="signup-profile"
                 value={signupProfile}
-                onChange={e => setSignupProfile(e.target.value)}
+                onChange={(e) => setSignupProfile(e.target.value)}
               />
               <button
                 type="submit"
                 disabled={isSigningUp}
                 className={`bg-blue-500 text-white rounded-md py-2 transition w-full ${
-                  isSigningUp ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-600'
+                  isSigningUp
+                    ? "opacity-60 cursor-not-allowed"
+                    : "hover:bg-blue-600"
                 }`}
               >
-                {isSigningUp ? 'Signing up...' : 'Signup'}
+                {isSigningUp ? "Signing up..." : "Signup"}
               </button>
             </form>
           </div>
