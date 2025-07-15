@@ -8,7 +8,7 @@ import { useForm } from '../../hooks/useForm';
 import { loginSchema, signupSchema, type LoginFormData, type SignupFormData } from '../../utils/validation';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
-import { toast } from '../../utils/toast';
+import { toast } from '../../utils/toast.tsx';
 
 const LoginPage: React.FC = () => {
   const { login, signup, checkUser } = useAuthStore();
