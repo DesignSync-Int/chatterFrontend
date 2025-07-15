@@ -6,6 +6,8 @@ import useChatStore from '../../../../store/messages.store.ts';
 import { getTimeDifferenceInSeconds, formatTimestamp } from '../../../../utils/time.ts';
 import { TimeConfig } from '../../../../config.ts';
 import type { User } from '../../../../types/auth.ts';
+import { validateField } from "../../../../utils/validation.ts";
+import { z } from "zod";
 
 interface ChatTabProps {
   recipient: User;
@@ -13,19 +15,45 @@ interface ChatTabProps {
 
 const ChatTab = ({ recipient }: ChatTabProps) => {
   const [currentMessage, setCurrentMessage] = useState('');
-  const currentUser = useUserStore(state => state.currentUser);
-  const { messages, getMessages, subscribeToMessages, unsubscribeFromMessages, sendMessage } =
-    useChatStore();
+  const [messageError, setMessageError] = useState("");
+  const currentUser = useUserStore((state) => state.currentUser);
+  const {
+    messages,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+    sendMessage,
+  } = useChatStore();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement>(null);
 
   const recipientMessages = messages[recipient._id] || [];
+
+  // Message validation schema
+  const messageSchema = z
+    .string()
+    .min(1, "Message cannot be empty")
+    .max(1000, "Message must be less than 1000 characters")
+    .refine(
+      (val) => val.trim().length > 0,
+      "Message cannot be just whitespace"
+    );
+
   const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    // Validate message
+    const validation = validateField(messageSchema, currentMessage);
+    if (!validation.isValid) {
+      setMessageError(validation.error || "Invalid message");
+      return;
+    }
+
     if (!recipient || !currentMessage.trim()) return;
 
-    setCurrentMessage('');
+    setCurrentMessage("");
+    setMessageError("");
 
     try {
       await sendMessage({
@@ -33,9 +61,10 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         senderId: `${currentUser?._id}`,
         recipientId: `${recipient._id}`,
       });
-      if (fileInputRef.current) fileInputRef.current.value = '';
+      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
+      setMessageError("Failed to send message. Please try again.");
     }
   };
 
@@ -87,23 +116,45 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         <div
           className="flex-1 overflow-y-auto relative"
           id="chat-content"
-          style={{ paddingBottom: '90px' }}
+          style={{ paddingBottom: "90px" }}
         >
-          {recipientMessages.map((message, index) => renderMessageItem(message, index))}
+          {recipientMessages.map((message, index) =>
+            renderMessageItem(message, index)
+          )}
         </div>
 
         <div
           className="border-t border-gray-300 p-2 bg-white"
           id="chat-input"
-          style={{ position: 'absolute', bottom: 0, left: 0, right: 0, width: '100%' }}
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+          }}
         >
+          {messageError && (
+            <div className="text-red-600 text-sm mb-1 px-2">{messageError}</div>
+          )}
           <form onSubmit={handleMessageSend} className="flex gap-2">
             <input
               type="text"
-              placeholder={`Message ${recipient?.name || ''}`}
-              className="flex-1 rounded-full border-[8px] border-[#cfcfcf] px-[12px] py-[8px]"
+              placeholder={`Message ${recipient?.name || ""}`}
+              className={`flex-1 rounded-full border-[8px] px-[12px] py-[8px] ${
+                messageError
+                  ? "border-red-300 focus:border-red-500"
+                  : "border-[#cfcfcf] focus:border-blue-300"
+              }`}
               value={currentMessage}
-              onChange={e => setCurrentMessage(e.target.value)}
+              onChange={(e) => {
+                setCurrentMessage(e.target.value);
+                // Clear error when user starts typing
+                if (messageError) {
+                  setMessageError("");
+                }
+              }}
+              maxLength={1000}
             />
           </form>
         </div>

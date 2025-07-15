@@ -28,12 +28,26 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   name: nameSchema,
   password: passwordSchema,
-  profile: z.string().optional(),
+  profile: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        !val || val.trim() === "" || z.string().url().safeParse(val).success,
+      "Profile must be a valid URL if provided"
+    ),
 });
 
 export const updateProfileSchema = z.object({
   name: nameSchema.optional(),
-  profile: z.string().optional(),
+  profile: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        !val || val.trim() === "" || z.string().url().safeParse(val).success,
+      "Profile must be a valid URL if provided"
+    ),
 });
 
 // Message schema
