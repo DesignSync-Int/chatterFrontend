@@ -14,6 +14,11 @@ import type {
 import type { Notification } from '../types/notifications';
 import { BasePath } from '../config';
 import { TokenStorage } from '../utils/tokenStorage';
+import {
+  clearUserSession,
+  isUserLoggedOut,
+  setLogoutFlag,
+} from "../utils/sessionCleanup";
 
 interface AuthStoreFun extends AuthStore {
   socket: Socket | null;
@@ -100,44 +105,69 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     try {
       console.log("🚪 Starting logout process...");
 
-      // Clear frontend state first
-      set({ authUser: null });
-      TokenStorage.removeToken();
+      // First disconnect socket to appear offline to other users
       get().disconnectSocket();
 
-      // Set flag to prevent auto-login check
-      if (typeof sessionStorage !== "undefined") {
-        sessionStorage.setItem("justLoggedOut", "true");
-      }
-
-      // Call backend logout to clear cookie
+      // Call backend logout to clear server-side session/cookie FIRST
       await axiosInstance.post("/auth/logout");
+
+      // Clear all user session data thoroughly
+      clearUserSession();
+      TokenStorage.removeToken();
+
+      // Clear auth store state
+      set({ authUser: null, onlineUsers: [], notifications: [] });
+
+      // Set logout flag to prevent auto-login
+      setLogoutFlag();
 
       console.log("✅ Logout successful");
       toast.success("Logged out successfully");
     } catch (error: any) {
       console.error("❌ Logout error:", error);
-      toast.error(error.response?.data?.message || "Logout failed");
 
-      // Clear frontend state even if backend fails
-      set({ authUser: null });
+      // Even if backend fails, clear everything aggressively
+      clearUserSession();
       TokenStorage.removeToken();
       get().disconnectSocket();
 
-      if (typeof sessionStorage !== "undefined") {
-        sessionStorage.setItem("justLoggedOut", "true");
-      }
+      // Clear auth store state
+      set({ authUser: null, onlineUsers: [], notifications: [] });
+
+      // Set logout flag
+      setLogoutFlag();
+
+      toast.error("Logout completed (with errors)");
     }
   },
 
   checkUser: async () => {
     try {
+      // Check if user just logged out
+      if (isUserLoggedOut()) {
+        console.log("🚪 Skipping user check - user just logged out");
+        return null;
+      }
+
+      // Check if we have a token
+      const token = TokenStorage.getToken();
+      if (!token) {
+        console.log("🚪 No token found - user not authenticated");
+        return null;
+      }
+
       const res: AxiosResponse<User> = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
       return res.data ?? null;
     } catch (error: any) {
       console.error("Error in checkUser:", error);
-      toast.error(error.response?.data?.message || "User check failed");
+
+      // Clear any stale tokens on 401 or other auth errors
+      if (error.response?.status === 401) {
+        TokenStorage.removeToken();
+        set({ authUser: null });
+      }
+
       return null;
     }
   },
@@ -233,7 +263,20 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   disconnectSocket: () => {
     const socket = get().socket;
-    if (socket && socket.connected) socket.disconnect();
+    if (socket && socket.connected) {
+      console.log("🔌 Disconnecting socket...");
+
+      // Emit logout event to notify server
+      socket.emit("logout");
+
+      // Disconnect the socket
+      socket.disconnect();
+
+      // Clear socket reference
+      set({ socket: null });
+
+      console.log("✅ Socket disconnected");
+    }
   },
 
   addNotification: (

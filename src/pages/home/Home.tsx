@@ -24,14 +24,14 @@ const Home = () => {
   // Sync currentUser with authUser on component mount and when authUser changes
   useEffect(() => {
     if (authUser && !currentUser) {
-      console.log('🔄 Home: Setting currentUser from authUser');
+      console.log('Home: Setting currentUser from authUser');
       setCurrentUser(authUser);
 
       // Initialize socket connection with notifications when user is authenticated
       const { connectSocket } = useAuthStore.getState();
       connectSocket();
     } else if (!authUser && !currentUser) {
-      console.log('🔍 Home: No user found, checking auth...');
+      console.log('Home: No user found, checking auth...');
       checkAuth();
     }
   }, [authUser, currentUser, setCurrentUser, checkAuth]);
@@ -55,13 +55,28 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
+      console.log("Starting logout from Home component");
+
+      // Call logout from auth store
       await logout();
+
+      // Clear all user states
       resetCurrentUser();
-      console.log('Logged out successfully');
-      setCurrentPage('login');
-      navigate('/');
+
+      // Clear page state
+      setCurrentPage("login");
+
+      // Force navigation to login
+      navigate("/", { replace: true });
+
+      console.log("Logout completed from Home component");
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
+
+      // Even if logout fails, clear state and navigate
+      resetCurrentUser();
+      setCurrentPage("login");
+      navigate("/", { replace: true });
     }
   };
 

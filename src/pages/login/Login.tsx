@@ -5,6 +5,7 @@ import useUserStore from '../../store/user.store.ts';
 import type { User } from '../../types/auth';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isUserLoggedOut, clearLogoutFlag } from "../../utils/sessionCleanup";
 // import ProfileTab from '../chat/components/profile-tab/ProfileTab.tsx';
 
 const Login = () => {
@@ -75,12 +76,10 @@ const Login = () => {
 
   useEffect(() => {
     // Check if user just logged out
-    const justLoggedOut = sessionStorage.getItem('justLoggedOut');
-
-    if (justLoggedOut) {
+    if (isUserLoggedOut()) {
       // Clear the flag and don't auto-check
-      sessionStorage.removeItem('justLoggedOut');
-      console.log('🚪 Skipping auto-auth check - user just logged out');
+      clearLogoutFlag();
+      console.log("🚪 Skipping auto-auth check - user just logged out");
       return;
     }
 

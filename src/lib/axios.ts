@@ -35,9 +35,16 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   error => {
-    // If we get 401, clear the token
+    // If we get 401, clear the token and redirect to login
     if (error.response?.status === 401) {
       TokenStorage.removeToken();
+
+      // Clear any user data from stores
+      if (typeof window !== "undefined" && window.location.pathname !== "/") {
+        // Only redirect if not already on login page
+        sessionStorage?.setItem("justLoggedOut", "true");
+        window.location.href = "/";
+      }
     }
     return Promise.reject(error);
   }
