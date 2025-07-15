@@ -17,11 +17,12 @@ const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
 
   return (
     <div
-      className="flex gap-2.5 items-center justify-center cursor-pointer"
+      className={`flex flex-col items-center gap-2 ${onClick ? "cursor-pointer" : ""}`}
+      data-cy="user-card"
       {...(onClick ? { onClick } : {})}
     >
       <img
-        className="w-10 h-auto rounded-full"
+        className="w-10 h-10 rounded-full"
         src={avatarUrl}
         alt={`${user.name}'s profile picture`}
         onError={(e) => {
@@ -37,7 +38,7 @@ const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
           };
         }}
       />
-      <div className="font-semibold">{user.name}</div>
+      <div className="font-semibold text-center">{user.name}</div>
     </div>
   );
 };
