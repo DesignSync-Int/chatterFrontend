@@ -51,7 +51,7 @@ const UserList = ({ onUserClick }: { onUserClick: (user: User) => void }) => {
               <UserCard user={user} onClick={() => messageUser(user)} />
               {isUserOnline(user._id) && (
                 <span className="ml-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                  🟢 Live
+                  <span className="text-green-500">●</span> Live
                 </span>
               )}
               <div className="ml-auto">

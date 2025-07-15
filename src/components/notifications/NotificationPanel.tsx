@@ -1,12 +1,19 @@
 import React from 'react';
 import { useAuthStore } from '../../store/auth.store';
 import { useChatWindowsStore } from '../../store/chatWindows.store';
+import useChatStore from '../../store/messages.store';
 import { Bell, X } from 'lucide-react';
 
 const NotificationPanel: React.FC = () => {
   const { notifications, markNotificationAsRead, clearAllNotifications } = useAuthStore();
   const { openChats, openChat } = useChatWindowsStore();
+  const { users, getUsers } = useChatStore();
   const [isOpen, setIsOpen] = React.useState(false);
+
+  // Load users when component mounts
+  React.useEffect(() => {
+    getUsers();
+  }, [getUsers]);
 
   // Filter out notifications for users who have open chat windows
   const filteredNotifications = notifications.filter(notification => {
@@ -31,11 +38,20 @@ const NotificationPanel: React.FC = () => {
       (notification.type === 'message' || notification.type === 'user_online') &&
       notification.fromUser
     ) {
-      openChat({
+      // Try to find the user in the users store for more complete data
+      const fullUser = users.find(user => user._id === notification.fromUser._id);
+      
+      console.log('Notification fromUser:', notification.fromUser);
+      console.log('Found fullUser:', fullUser);
+      
+      const userToOpen = fullUser || {
         _id: notification.fromUser._id,
         name: notification.fromUser.name,
         profile: notification.fromUser.profile,
-      });
+      };
+
+      console.log('Opening chat with user:', userToOpen);
+      openChat(userToOpen);
       setIsOpen(false); // Close the notification panel
     }
   };
@@ -92,9 +108,9 @@ const NotificationPanel: React.FC = () => {
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
-                      {notification.type === 'message' && '💬'}
-                      {notification.type === 'user_online' && '🟢'}
-                      {notification.type === 'user_offline' && '🔴'}
+                      {notification.type === 'message' && <span className="text-blue-500">●</span>}
+                      {notification.type === 'user_online' && <span className="text-green-500">●</span>}
+                      {notification.type === 'user_offline' && <span className="text-red-500">●</span>}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-800">{notification.title}</p>

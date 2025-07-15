@@ -79,14 +79,14 @@ const Login = () => {
     if (isUserLoggedOut()) {
       // Clear the flag and don't auto-check
       clearLogoutFlag();
-      console.log("🚪 Skipping auto-auth check - user just logged out");
+      console.log("Skipping auto-auth check - user just logged out");
       return;
     }
 
     checkUser()
       .then((user: User | null) => {
         if (user) {
-          console.log('✅ Found existing session, redirecting to home');
+          console.log('Found existing session, redirecting to home');
           setCurrentUser(user);
           navigate('/home');
           setCurrentPage('home');

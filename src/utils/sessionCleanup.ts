@@ -4,7 +4,7 @@
  */
 
 export const clearUserSession = () => {
-  console.log('🧹 Clearing complete user session...');
+  console.log('Clearing complete user session...');
   
   // Clear localStorage
   try {
@@ -35,7 +35,7 @@ export const clearUserSession = () => {
     console.warn('Error clearing memory storage:', error);
   }
   
-  console.log('✅ User session cleared completely');
+  console.log('User session cleared completely');
 };
 
 export const isUserLoggedOut = (): boolean => {

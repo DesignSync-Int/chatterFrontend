@@ -18,7 +18,8 @@ import {
   clearUserSession,
   isUserLoggedOut,
   setLogoutFlag,
-} from "../utils/sessionCleanup";
+} from '../utils/sessionCleanup';
+import useChatStore from './messages.store';
 
 interface AuthStoreFun extends AuthStore {
   socket: Socket | null;
@@ -99,11 +100,9 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     } finally {
       set({ isLoggingIn: false });
     }
-  },
-
-  logout: async () => {
+  },  logout: async () => {
     try {
-      console.log("🚪 Starting logout process...");
+      console.log("Starting logout process...");
 
       // First disconnect socket to appear offline to other users
       get().disconnectSocket();
@@ -114,26 +113,26 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       // Clear all user session data thoroughly
       clearUserSession();
       TokenStorage.removeToken();
-
+      
       // Clear auth store state
       set({ authUser: null, onlineUsers: [], notifications: [] });
 
       // Set logout flag to prevent auto-login
       setLogoutFlag();
 
-      console.log("✅ Logout successful");
+      console.log("Logout successful");
       toast.success("Logged out successfully");
     } catch (error: any) {
-      console.error("❌ Logout error:", error);
-
+      console.error("Logout error:", error);
+      
       // Even if backend fails, clear everything aggressively
       clearUserSession();
       TokenStorage.removeToken();
       get().disconnectSocket();
-
+      
       // Clear auth store state
       set({ authUser: null, onlineUsers: [], notifications: [] });
-
+      
       // Set logout flag
       setLogoutFlag();
 
@@ -145,14 +144,14 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     try {
       // Check if user just logged out
       if (isUserLoggedOut()) {
-        console.log("🚪 Skipping user check - user just logged out");
+        console.log("Skipping user check - user just logged out");
         return null;
       }
 
       // Check if we have a token
       const token = TokenStorage.getToken();
       if (!token) {
-        console.log("🚪 No token found - user not authenticated");
+        console.log("No token found - user not authenticated");
         return null;
       }
 
@@ -227,17 +226,36 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     });
 
     // Listen for new messages
-    socket.on("newMessage", (messageData: any) => {
+    socket.on("newMessage", async (messageData: any) => {
       if (messageData.senderId !== authUser._id) {
+        // Get sender's name from users store or use fallback
+        const chatStore = useChatStore.getState();
+        let senderUser = chatStore.users.find((user: any) => user._id === messageData.senderId);
+        let senderName = senderUser?.name || messageData.senderName;
+        
+        // If we don't have the sender's info, try to get it from the API
+        if (!senderName && messageData.senderId) {
+          try {
+            const response = await axiosInstance.get(`/users/${messageData.senderId}`);
+            senderUser = response.data;
+            senderName = senderUser?.name;
+          } catch (error) {
+            console.error("Failed to fetch sender info:", error);
+          }
+        }
+        
+        // Final fallback
+        senderName = senderName || "Someone";
+        
         // Note: We'll handle chat window checking in the notification panel component
         get().addNotification({
           type: "message",
           title: "New Message",
-          message: `${messageData.senderName || "Someone"}: ${messageData.content || messageData.message || "New message"}`,
+          message: `${senderName}: ${messageData.content || messageData.message || "New message"}`,
           fromUser: {
             _id: messageData.senderId,
-            name: messageData.senderName || "Unknown",
-            profile: messageData.senderProfile,
+            name: senderName,
+            profile: messageData.senderProfile || senderUser?.profile,
           },
         });
       }
@@ -258,24 +276,23 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       }
     });
 
-    console.log("🔌 Socket connected with notifications enabled");
+    console.log("Socket connected with notifications enabled");
   },
 
   disconnectSocket: () => {
     const socket = get().socket;
-    if (socket && socket.connected) {
-      console.log("🔌 Disconnecting socket...");
-
+    if (socket && socket.connected) {      console.log("Disconnecting socket...");
+      
       // Emit logout event to notify server
       socket.emit("logout");
-
+      
       // Disconnect the socket
       socket.disconnect();
-
+      
       // Clear socket reference
       set({ socket: null });
-
-      console.log("✅ Socket disconnected");
+      
+      console.log("Socket disconnected");
     }
   },
 
@@ -297,10 +314,10 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     toast(notification.message, {
       icon:
         notification.type === "message"
-          ? "💬"
+          ? "MSG"
           : notification.type === "user_online"
-            ? "🟢"
-            : "🔴",
+            ? "●"
+            : "●",
       duration: 4000,
     });
   },
