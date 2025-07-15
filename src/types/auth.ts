@@ -2,6 +2,7 @@ export type User = {
   _id: string;
   name: string;
   profile?: string;
+  friends?: string[];
   createdAt?: string;
   updatedAt?: string;
   __v?: number;

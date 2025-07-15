@@ -1,9 +1,10 @@
-import UserCard from "../../components/user-card/UserCard.tsx";
+import EnhancedUserCard from "../../components/user-card/EnhancedUserCard.tsx";
+import { useFriendRequestStore } from "../../store/friendRequest.store.ts";
 import useUserStore from "../../store/user.store.ts";
 import { useChatStore } from "../../store/messages.store.ts";
 import { useAuthStore } from "../../store/auth.store.ts";
 import { useEffect, useCallback, useMemo, useState, useRef } from "react";
-import { Search, Settings } from "lucide-react";
+import { Search } from "lucide-react";
 import type { User } from "../../types/auth.ts";
 
 interface VirtualizedUserListProps {
@@ -12,8 +13,11 @@ interface VirtualizedUserListProps {
 
 const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
   const currentUser = useUserStore((state) => state.currentUser);
-  const setCurrentRecipient = useUserStore((state) => state.setCurrentRecipient);
+  const setCurrentRecipient = useUserStore(
+    (state) => state.setCurrentRecipient
+  );
   const { getUsers, users, setSelectedUser } = useChatStore();
+  const { friends, receivedRequests, sentRequests, getFriends, getReceivedRequests, getSentRequests } = useFriendRequestStore();
   const onlineUsers = useAuthStore((state) => state.onlineUsers);
 
   // Virtualization states
@@ -21,15 +25,12 @@ const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
   const [scrollTop, setScrollTop] = useState(0);
   const [containerHeight, setContainerHeight] = useState(600);
   const [itemsPerRow, setItemsPerRow] = useState(5);
-  const [showSettings, setShowSettings] = useState(false);
-  
-  // Performance settings (optimized defaults)
-  const [settings, setSettings] = useState({
-    itemHeight: 140, // Height of each user card row
-    overscan: 5, // Number of extra items to render outside viewport
-    maxUsers: 5000, // Maximum users to process at once (increased default)
-    enableVirtualization: true, // Always enabled now
-  });
+
+  // Fixed virtualization settings
+  const itemHeight = 140; // Height of each user card row
+  const overscan = 5; // Number of extra items to render outside viewport
+  const maxUsers = 5000; // Maximum users to process at once
+  const enableVirtualization = true; // Always enabled
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,59 +55,138 @@ const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
     [onlineUsers]
   );
 
-  // Filter and limit users
+  // Filter and limit users with priority sorting
   const filteredUsers = useMemo(() => {
-    const allUsers = users?.filter((user) => user._id !== currentUser?._id) || [];
-    
+    const allUsers =
+      users?.filter((user) => user._id !== currentUser?._id) || [];
+
     const filtered = searchTerm.trim()
       ? allUsers.filter((user) =>
           user.name.toLowerCase().includes(searchTerm.toLowerCase())
         )
       : allUsers;
 
+    // Create sets for quick lookup
+    const friendIds = new Set(friends.map((friend: any) => friend._id));
+    const pendingReceivedIds = new Set(receivedRequests.map((req: any) => req.sender._id));
+    const pendingSentIds = new Set(sentRequests.map((req: any) => req.receiver._id));
+
+    // Sort users by priority: Friends > Pending Requests > Others
+    const sortedUsers = filtered.sort((a, b) => {
+      // Priority scoring: 3 = friends, 2 = pending requests, 1 = others
+      const getPriority = (user: any) => {
+        if (friendIds.has(user._id)) return 3;
+        if (pendingReceivedIds.has(user._id) || pendingSentIds.has(user._id)) return 2;
+        return 1;
+      };
+
+      const priorityA = getPriority(a);
+      const priorityB = getPriority(b);
+
+      // Sort by priority first, then by name within same priority
+      if (priorityA !== priorityB) {
+        return priorityB - priorityA; // Higher priority first
+      }
+      return a.name.localeCompare(b.name); // Alphabetical within same priority
+    });
+
     // Limit users to prevent memory issues
-    return filtered.slice(0, settings.maxUsers);
-  }, [users, currentUser?._id, searchTerm, settings.maxUsers]);
+    return sortedUsers.slice(0, maxUsers);
+  }, [users, currentUser?._id, searchTerm, maxUsers, friends, receivedRequests, sentRequests]);
 
   // Calculate virtualization parameters
   const totalRows = Math.ceil(filteredUsers.length / itemsPerRow);
-  const startRow = settings.enableVirtualization 
-    ? Math.floor(scrollTop / settings.itemHeight)
+  const startRow = enableVirtualization
+    ? Math.floor(scrollTop / itemHeight)
     : 0;
-  const endRow = settings.enableVirtualization
-    ? Math.min(startRow + Math.ceil(containerHeight / settings.itemHeight) + settings.overscan, totalRows)
+  const endRow = enableVirtualization
+    ? Math.min(
+        startRow + Math.ceil(containerHeight / itemHeight) + overscan,
+        totalRows
+      )
     : totalRows;
 
   // Get visible users
   const visibleUsers = useMemo(() => {
-    if (!settings.enableVirtualization) {
+    if (!enableVirtualization) {
       return filteredUsers;
     }
 
     const startIndex = startRow * itemsPerRow;
     const endIndex = endRow * itemsPerRow;
-    return filteredUsers.slice(startIndex, endIndex);
-  }, [filteredUsers, startRow, endRow, itemsPerRow, settings.enableVirtualization]);
+    const visible = filteredUsers.slice(startIndex, endIndex);
+
+    // Debug logging
+    console.log("Virtualization Debug:", {
+      scrollTop,
+      startRow,
+      endRow,
+      startIndex,
+      endIndex,
+      totalUsers: filteredUsers.length,
+      visibleCount: visible.length,
+      itemsPerRow,
+      containerHeight,
+      itemHeight: itemHeight,
+    });
+
+    return visible;
+  }, [
+    filteredUsers,
+    startRow,
+    endRow,
+    itemsPerRow,
+    enableVirtualization,
+    scrollTop,
+    containerHeight,
+    itemHeight,
+  ]);
 
   // Calculate container dimensions and responsive grid
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        setContainerHeight(rect.height || 600);
-        
+        const newHeight = rect.height || 600;
+        setContainerHeight(newHeight);
+
         // Calculate items per row based on container width
         const containerWidth = rect.width || 800;
         const itemWidth = 200; // Approximate width of each user card
         const gap = 16; // Gap between items
-        const newItemsPerRow = Math.max(1, Math.floor((containerWidth + gap) / (itemWidth + gap)));
+        const newItemsPerRow = Math.max(
+          1,
+          Math.floor((containerWidth + gap) / (itemWidth + gap))
+        );
         setItemsPerRow(newItemsPerRow);
+
+        console.log("Container dimensions updated:", {
+          height: newHeight,
+          width: containerWidth,
+          itemsPerRow: newItemsPerRow,
+        });
       }
     };
 
+    // Initial measurement
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+
+    // Update on window resize
+    window.addEventListener("resize", updateDimensions);
+
+    // Use ResizeObserver for more accurate container size tracking
+    let resizeObserver: ResizeObserver | null = null;
+    if (containerRef.current && "ResizeObserver" in window) {
+      resizeObserver = new ResizeObserver(updateDimensions);
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", updateDimensions);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+    };
   }, []);
 
   // Handle scroll for virtualization
@@ -118,22 +198,30 @@ const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
     getUsers();
   }, [getUsers]);
 
-  const totalHeight = settings.enableVirtualization ? totalRows * settings.itemHeight : 'auto';
-  const offsetY = settings.enableVirtualization ? startRow * settings.itemHeight : 0;
+  // Load friend request data for sorting
+  useEffect(() => {
+    getFriends();
+    getReceivedRequests();
+    getSentRequests();
+  }, [getFriends, getReceivedRequests, getSentRequests]);
+
+  const totalHeight = enableVirtualization ? totalRows * itemHeight : "auto";
+  const offsetY = enableVirtualization ? startRow * itemHeight : 0;
 
   return (
     <div className="w-full h-full flex flex-col p-4">
-      {/* Header with search and settings */}
+      {/* Header with search */}
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h2 className="text-lg font-semibold">
-          Users 
+          Users
           {filteredUsers.length > 0 && (
             <span className="text-sm text-gray-500 font-normal">
-              ({filteredUsers.length}{filteredUsers.length >= settings.maxUsers ? '+' : ''})
+              ({filteredUsers.length}
+              {filteredUsers.length >= maxUsers ? "+" : ""})
             </span>
           )}
         </h2>
-        
+
         <div className="flex items-center gap-3">
           {/* Search input */}
           <div className="relative">
@@ -146,84 +234,31 @@ const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-
-          {/* Settings button */}
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-            title="Display Settings"
-          >
-            <Settings className="h-4 w-4" />
-          </button>
         </div>
       </div>
 
-      {/* Settings panel */}
-      {showSettings && (
-        <div className="mb-4 p-4 bg-gray-50 rounded-lg border flex-shrink-0">
-          <h3 className="text-sm font-semibold mb-3">Display Settings</h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Max Users to Load</label>
-              <input
-                type="number"
-                value={settings.maxUsers}
-                onChange={(e) => setSettings(prev => ({ ...prev, maxUsers: Number(e.target.value) }))}
-                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                min="100"
-                max="10000"
-                step="100"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Item Height</label>
-              <input
-                type="number"
-                value={settings.itemHeight}
-                onChange={(e) => setSettings(prev => ({ ...prev, itemHeight: Number(e.target.value) }))}
-                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                min="100"
-                max="300"
-                step="10"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-gray-600 mb-1">Overscan</label>
-              <input
-                type="number"
-                value={settings.overscan}
-                onChange={(e) => setSettings(prev => ({ ...prev, overscan: Number(e.target.value) }))}
-                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
-                min="0"
-                max="20"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Virtualized users container */}
-      <div 
+      <div
         ref={containerRef}
         className="flex-1 overflow-auto"
         onScroll={handleScroll}
       >
-        <div 
-          style={{ 
+        <div
+          style={{
             height: totalHeight,
-            position: 'relative'
+            position: "relative",
           }}
         >
           <div
             style={{
               transform: `translateY(${offsetY}px)`,
-              position: settings.enableVirtualization ? 'absolute' : 'static',
+              position: enableVirtualization ? "absolute" : "static",
               top: 0,
               left: 0,
               right: 0,
             }}
           >
-            <div 
+            <div
               className="grid gap-4"
               style={{
                 gridTemplateColumns: `repeat(${itemsPerRow}, minmax(0, 1fr))`,
@@ -232,14 +267,16 @@ const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
               {visibleUsers.map((user) => (
                 <div
                   key={user._id}
-                  className="relative bg-white rounded-lg p-4 shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200 cursor-pointer"
-                  onClick={() => messageUser(user)}
-                  style={{ height: settings.itemHeight - 16 }} // Account for gap
+                  className="relative"
+                  style={{ height: itemHeight - 16 }} // Account for gap
                 >
-                  <UserCard user={user} />
+                  <EnhancedUserCard 
+                    user={user} 
+                    onChatClick={() => messageUser(user)}
+                  />
                   {isUserOnline(user._id) && (
-                    <div className="mt-2 px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium text-center">
-                      <span className="text-green-500">●</span> Online
+                    <div className="absolute top-2 right-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
                     </div>
                   )}
                 </div>
@@ -254,9 +291,9 @@ const VirtualizedUserList = ({ onUserClick }: VirtualizedUserListProps) => {
         <span>
           Showing {visibleUsers.length} of {filteredUsers.length} users
         </span>
-        {filteredUsers.length >= settings.maxUsers && (
+        {filteredUsers.length >= maxUsers && (
           <span className="text-amber-600">
-            ⚠️ Showing only {settings.maxUsers} users. Use search to find specific users.
+            ⚠️ Showing only {maxUsers} users. Use search to find specific users.
           </span>
         )}
       </div>

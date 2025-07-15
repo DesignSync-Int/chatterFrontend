@@ -1,17 +1,21 @@
-import useUserStore from '../../store/user.store.ts';
-import UserCard from '../../components/user-card/UserCard.tsx';
-import VirtualizedUserList from "./VirtualizedUserList.tsx";
+import useUserStore from "../../store/user.store.ts";
 import PerformanceTestPanel from "../../components/developer/PerformanceTestPanel.tsx";
 import { useAuthStore } from "../../store/auth.store.ts";
 import usePageStore from "../../store/page.store.ts";
 import FloatingChatManager from "../chat/components/FloatingChatManager.tsx";
 import { useChatWindowsStore } from "../../store/chatWindows.store";
-import NotificationPanel from "../../components/notifications/NotificationPanel.tsx";
+import HomeHeader from "./components/HomeHeader.tsx";
+import UserProfile from "./components/UserProfile.tsx";
+import TabNavigation from "./components/TabNavigation.tsx";
+import ContentArea from "./components/ContentArea.tsx";
 import type { User } from "../../types/auth.ts";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const Home = () => {
+  const [activeTab, setActiveTab] = useState<
+    "users" | "received" | "sent" | "friends"
+  >("users");
   const currentUser = useUserStore((state) => state.currentUser);
   const authUser = useAuthStore((state) => state.authUser);
   const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth);
@@ -22,13 +26,11 @@ const Home = () => {
   const openChat = useChatWindowsStore((state) => state.openChat);
   const navigate = useNavigate();
 
-  // Sync currentUser with authUser on component mount and when authUser changes
   useEffect(() => {
     if (authUser && !currentUser) {
       console.log("Home: Setting currentUser from authUser");
       setCurrentUser(authUser);
 
-      // Initialize socket connection with notifications when user is authenticated
       const { connectSocket } = useAuthStore.getState();
       connectSocket();
     } else if (!authUser && !currentUser) {
@@ -39,7 +41,6 @@ const Home = () => {
 
   const displayUser = currentUser || authUser;
 
-  // Show loading only when actively checking auth and no user data exists
   if (isCheckingAuth && !authUser && !currentUser) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -48,7 +49,6 @@ const Home = () => {
     );
   }
 
-  // If no user after auth check, redirect to login
   if (!isCheckingAuth && !displayUser) {
     navigate("/");
     return null;
@@ -58,23 +58,18 @@ const Home = () => {
     try {
       console.log("Starting logout from Home component");
 
-      // Call logout from auth store
       await logout();
 
-      // Clear all user states
       resetCurrentUser();
 
-      // Clear page state
       setCurrentPage("login");
 
-      // Force navigation to login
       navigate("/", { replace: true });
 
       console.log("Logout completed from Home component");
     } catch (error) {
       console.error("Error during logout:", error);
 
-      // Even if logout fails, clear state and navigate
       resetCurrentUser();
       setCurrentPage("login");
       navigate("/", { replace: true });
@@ -83,45 +78,23 @@ const Home = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="text-center py-8 px-4 bg-gradient-to-b from-white to-gray-50 border-b border-gray-100">
-        <div className="flex flex-col items-center gap-3 relative">
-          {/* Notification panel in top right */}
-          <div className="absolute top-0 right-0">
-            <NotificationPanel />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
-            Chatter
-          </h1>
-          <p className="text-gray-600 max-w-md">
-            Connect back with your friends in a simple way.
-          </p>
-        </div>
-      </header>
-      <main className="p-6 flex-grow flex flex-col gap-6">
-        <section className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3 mb-2">
-            {displayUser && <UserCard user={displayUser} />}
-            <div className="text-sm text-gray-500">Currently logged in</div>
-            <div className="flex-grow text-right flex gap-2 items-center justify-end">
-              <button
-                className="text-sm text-blue-500 hover:underline"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </section>
-        <section className="flex-1 flex flex-col">
-          <div className="flex-1">
-            <VirtualizedUserList onUserClick={(user: User) => openChat(user)} />
-          </div>
-        </section>
-      </main>
-      <FloatingChatManager />
+      <HomeHeader />
 
-      {/* Developer tools - only in development */}
-      {process.env.NODE_ENV === "development" && <PerformanceTestPanel />}
+      <main className="p-6 flex-grow flex flex-col gap-6">
+        {displayUser && (
+          <UserProfile user={displayUser} onLogout={handleLogout} />
+        )}
+
+        <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
+
+        <ContentArea
+          activeTab={activeTab}
+          onUserClick={(user: User) => openChat(user)}
+        />
+      </main>
+
+      <FloatingChatManager />
+      <PerformanceTestPanel />
     </div>
   );
 };

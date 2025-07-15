@@ -1,7 +1,7 @@
 import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes';
-import { Suspense } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
@@ -11,10 +11,10 @@ function App() {
         <Toaster
           position="top-right"
           toastOptions={{
-            duration: 4000,
+            duration: 4001,
             style: {
-              background: '#363636',
-              color: '#fff',
+              background: "#363636",
+              color: "#fff",
             },
           }}
         />

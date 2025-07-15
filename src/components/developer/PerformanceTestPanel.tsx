@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useChatStore } from '../../store/messages.store';
 import { generateMockUsers, PERFORMANCE_TEST_SCENARIOS, canHandleUserCount, getMemoryUsage } from '../../utils/performance';
-import { Settings, Users, Zap, AlertTriangle, Info } from 'lucide-react';
+import { Zap, Users, AlertTriangle, Info } from "lucide-react";
 
 const PerformanceTestPanel = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +55,7 @@ const PerformanceTestPanel = () => {
         className="fixed bottom-4 left-4 bg-gray-800 text-white p-3 rounded-full shadow-lg hover:bg-gray-700 transition-colors z-50"
         title="Performance Testing Tools"
       >
-        <Settings className="h-5 w-5" />
+        <Zap className="h-5 w-5" />
       </button>
     );
   }

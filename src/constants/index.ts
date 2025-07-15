@@ -6,7 +6,7 @@ export const APP_CONFIG = {
 } as const;
 
 export const UI_CONSTANTS = {
-  TOAST_DURATION: 4000,
+  TOAST_DURATION: 4001,
   CHAT_WINDOW_WIDTH: 340,
   SIDE_PADDING: 32,
   MAX_CHAT_WINDOWS: 3,

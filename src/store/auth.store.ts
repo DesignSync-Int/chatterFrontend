@@ -269,6 +269,25 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       }
     });
 
+    // Listen for friend request events
+    socket.on("friendRequestReceived", (requestData: any) => {
+      // Handle in friend request store via window reference
+      if ((window as any).friendRequestStoreHandlers) {
+        (window as any).friendRequestStoreHandlers.handleNewFriendRequest(
+          requestData
+        );
+      }
+    });
+
+    socket.on("friendRequestAccepted", (requestData: any) => {
+      // Handle in friend request store via window reference
+      if ((window as any).friendRequestStoreHandlers) {
+        (window as any).friendRequestStoreHandlers.handleRequestAccepted(
+          requestData
+        );
+      }
+    });
+
     console.log("Socket connected with notifications enabled");
   },
 
