@@ -130,6 +130,7 @@ const LoginPage: React.FC = () => {
               onChange={currentForm.handleChange}
               error={currentForm.errors.name}
               startIcon={<User className="h-4 w-4" />}
+              data-testid="name-input"
               required
             />
 
@@ -143,6 +144,7 @@ const LoginPage: React.FC = () => {
                 value={signupForm.values.profile}
                 onChange={signupForm.handleChange}
                 error={signupForm.errors.profile}
+                data-testid="profile-input"
               />
             )}
 
@@ -160,6 +162,7 @@ const LoginPage: React.FC = () => {
               onChange={currentForm.handleChange}
               error={currentForm.errors.password}
               startIcon={<Lock className="h-4 w-4" />}
+              data-testid="password-input"
               endIcon={
                 <button
                   type="button"
@@ -187,7 +190,6 @@ const LoginPage: React.FC = () => {
               type="submit"
               className="w-full"
               loading={currentForm.isSubmitting}
-              disabled={!currentForm.isValid}
             >
               {isSignupMode ? "Create Account" : "Sign In"}
             </Button>

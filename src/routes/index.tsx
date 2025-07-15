@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 
 const Home = lazy(() => import('../pages/home/Home'));
-const Login = lazy(() => import('../pages/login/Login'));
+const Login = lazy(() => import("../pages/login/LoginImproved"));
 
 const AppRoutes = () => (
   <Routes>
