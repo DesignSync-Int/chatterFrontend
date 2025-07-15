@@ -1,37 +1,38 @@
 import useUserStore from '../../store/user.store.ts';
 import UserCard from '../../components/user-card/UserCard.tsx';
-import UserList from './UserList.tsx';
-import { useAuthStore } from '../../store/auth.store.ts';
-import usePageStore from '../../store/page.store.ts';
-import FloatingChatManager from '../chat/components/FloatingChatManager.tsx';
-import { useChatWindowsStore } from '../../store/chatWindows.store';
-import NotificationPanel from '../../components/notifications/NotificationPanel.tsx';
-import type { User } from '../../types/auth.ts';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import VirtualizedUserList from "./VirtualizedUserList.tsx";
+import PerformanceTestPanel from "../../components/developer/PerformanceTestPanel.tsx";
+import { useAuthStore } from "../../store/auth.store.ts";
+import usePageStore from "../../store/page.store.ts";
+import FloatingChatManager from "../chat/components/FloatingChatManager.tsx";
+import { useChatWindowsStore } from "../../store/chatWindows.store";
+import NotificationPanel from "../../components/notifications/NotificationPanel.tsx";
+import type { User } from "../../types/auth.ts";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const Home = () => {
-  const currentUser = useUserStore(state => state.currentUser);
-  const authUser = useAuthStore(state => state.authUser);
-  const isCheckingAuth = useAuthStore(state => state.isCheckingAuth);
-  const setCurrentUser = useUserStore(state => state.setCurrentUser);
-  const setCurrentPage = usePageStore(state => state.setCurrentPage);
-  const resetCurrentUser = useUserStore(state => state.resetCurrentUser);
+  const currentUser = useUserStore((state) => state.currentUser);
+  const authUser = useAuthStore((state) => state.authUser);
+  const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth);
+  const setCurrentUser = useUserStore((state) => state.setCurrentUser);
+  const setCurrentPage = usePageStore((state) => state.setCurrentPage);
+  const resetCurrentUser = useUserStore((state) => state.resetCurrentUser);
   const { logout, checkAuth } = useAuthStore();
-  const openChat = useChatWindowsStore(state => state.openChat);
+  const openChat = useChatWindowsStore((state) => state.openChat);
   const navigate = useNavigate();
 
   // Sync currentUser with authUser on component mount and when authUser changes
   useEffect(() => {
     if (authUser && !currentUser) {
-      console.log('Home: Setting currentUser from authUser');
+      console.log("Home: Setting currentUser from authUser");
       setCurrentUser(authUser);
 
       // Initialize socket connection with notifications when user is authenticated
       const { connectSocket } = useAuthStore.getState();
       connectSocket();
     } else if (!authUser && !currentUser) {
-      console.log('Home: No user found, checking auth...');
+      console.log("Home: No user found, checking auth...");
       checkAuth();
     }
   }, [authUser, currentUser, setCurrentUser, checkAuth]);
@@ -49,7 +50,7 @@ const Home = () => {
 
   // If no user after auth check, redirect to login
   if (!isCheckingAuth && !displayUser) {
-    navigate('/');
+    navigate("/");
     return null;
   }
 
@@ -88,8 +89,12 @@ const Home = () => {
           <div className="absolute top-0 right-0">
             <NotificationPanel />
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Chatter</h1>
-          <p className="text-gray-600 max-w-md">Connect back with your friends in a simple way.</p>
+          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">
+            Chatter
+          </h1>
+          <p className="text-gray-600 max-w-md">
+            Connect back with your friends in a simple way.
+          </p>
         </div>
       </header>
       <main className="p-6 flex-grow flex flex-col gap-6">
@@ -98,17 +103,25 @@ const Home = () => {
             {displayUser && <UserCard user={displayUser} />}
             <div className="text-sm text-gray-500">Currently logged in</div>
             <div className="flex-grow text-right flex gap-2 items-center justify-end">
-              <button className="text-sm text-blue-500 hover:underline" onClick={handleLogout}>
+              <button
+                className="text-sm text-blue-500 hover:underline"
+                onClick={handleLogout}
+              >
                 Logout
               </button>
             </div>
           </div>
         </section>
-        <section className="flex flex-col gap-4">
-          <UserList onUserClick={(user: User) => openChat(user)} />
+        <section className="flex-1 flex flex-col">
+          <div className="flex-1">
+            <VirtualizedUserList onUserClick={(user: User) => openChat(user)} />
+          </div>
         </section>
       </main>
       <FloatingChatManager />
+
+      {/* Developer tools - only in development */}
+      {process.env.NODE_ENV === "development" && <PerformanceTestPanel />}
     </div>
   );
 };

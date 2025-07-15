@@ -6,9 +6,10 @@ import { useAuthStore } from './auth.store';
 import type { User } from '../types/auth';
 import type { Message, ChatStore } from '../types/messages';
 
-interface ChatStoreFun extends Omit<ChatStore, 'messages'> {
+interface ChatStoreFun extends Omit<ChatStore, "messages"> {
   messages: Record<string, Message[]>;
   getUsers: () => Promise<void>;
+  setUsers: (users: User[]) => void; // For testing purposes
   getMessages: (userId: string) => Promise<void>;
   sendMessage: (messageData: {
     content: string;
@@ -22,7 +23,7 @@ interface ChatStoreFun extends Omit<ChatStore, 'messages'> {
 
 const messageListeners: { [recipientId: string]: (msg: Message) => void } = {};
 
-export const useChatStore = create<ChatStoreFun>(set => ({
+export const useChatStore = create<ChatStoreFun>((set) => ({
   messages: {},
   users: [],
   selectedUser: null,
@@ -32,47 +33,54 @@ export const useChatStore = create<ChatStoreFun>(set => ({
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
-      const res: any = await axiosInstance.get('/messages/users');
+      const res: any = await axiosInstance.get("/messages/users");
       set({ users: res.data });
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to fetch users');
+      toast.error(error.response?.data?.message || "Failed to fetch users");
     } finally {
       set({ isUsersLoading: false });
     }
+  },
+
+  setUsers: (users: User[]) => {
+    set({ users });
   },
 
   getMessages: async (userId: string) => {
     set({ isMessagesLoading: true });
     try {
       const res: any = await axiosInstance.get(`/messages/${userId}`);
-      set(state => ({
+      set((state) => ({
         messages: {
           ...state.messages,
           [userId]: res.data || [],
         },
       }));
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to fetch messages');
+      toast.error(error.response?.data?.message || "Failed to fetch messages");
     } finally {
       set({ isMessagesLoading: false });
     }
   },
 
-  sendMessage: async messageData => {
+  sendMessage: async (messageData) => {
     try {
       const res: any = await axiosInstance.post(
         `/messages/send/${messageData.recipientId}`,
         messageData
       );
 
-      set(state => ({
+      set((state) => ({
         messages: {
           ...state.messages,
-          [messageData.recipientId]: [...(state.messages[messageData.recipientId] || []), res.data],
+          [messageData.recipientId]: [
+            ...(state.messages[messageData.recipientId] || []),
+            res.data,
+          ],
         },
       }));
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to send message');
+      toast.error(error.response?.data?.message || "Failed to send message");
     }
   },
 
@@ -82,17 +90,18 @@ export const useChatStore = create<ChatStoreFun>(set => ({
 
     const socket = useAuthStore.getState().socket;
     if (!socket) {
-      toast.error('Socket connection is not available');
+      toast.error("Socket connection is not available");
       return;
     }
 
     const handler = (newMessage: Message) => {
       const isRelevant =
-        newMessage.senderId === recipientId || newMessage.recipientId === recipientId;
+        newMessage.senderId === recipientId ||
+        newMessage.recipientId === recipientId;
 
       if (!isRelevant) return;
 
-      set(state => ({
+      set((state) => ({
         messages: {
           ...state.messages,
           [recipientId]: [...(state.messages[recipientId] || []), newMessage],
@@ -100,7 +109,7 @@ export const useChatStore = create<ChatStoreFun>(set => ({
       }));
     };
 
-    socket.on('newMessage', handler);
+    socket.on("newMessage", handler);
     messageListeners[recipientId] = handler;
   },
 
@@ -108,7 +117,7 @@ export const useChatStore = create<ChatStoreFun>(set => ({
     const socket = useAuthStore.getState().socket;
     const handler = messageListeners[recipientId];
     if (socket && handler) {
-      socket.off('newMessage', handler);
+      socket.off("newMessage", handler);
       delete messageListeners[recipientId];
     }
   },
