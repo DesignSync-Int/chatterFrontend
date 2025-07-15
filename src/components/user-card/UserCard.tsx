@@ -1,19 +1,28 @@
-import type { User } from '../../types/auth';
-import {
-  getAvatarUrl,
-  getDefaultAvatar,
-  generateSimpleAvatar,
-} from "../../utils/avatar";
+import type { User } from "../../types/auth";
 
 const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
-  const avatarUrl = getAvatarUrl(user);
+  // Generate a color based on the user's name
+  const getAvatarColor = (name: string) => {
+    const colors = [
+      "bg-blue-500",
+      "bg-green-500",
+      "bg-purple-500",
+      "bg-red-500",
+      "bg-yellow-500",
+      "bg-indigo-500",
+      "bg-pink-500",
+      "bg-teal-500",
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+  };
 
-  // Debug logging (remove in production)
-  console.log(`UserCard for ${user.name}:`, {
-    hasProfile: !!user.profile,
-    profileUrl: user.profile,
-    generatedAvatar: avatarUrl,
-  });
+  const getInitials = (name: string) => {
+    return name.charAt(0).toUpperCase();
+  };
 
   return (
     <div
@@ -21,23 +30,25 @@ const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
       data-cy="user-card"
       {...(onClick ? { onClick } : {})}
     >
-      <img
-        className="w-10 h-10 rounded-full"
-        src={avatarUrl}
-        alt={`${user.name}'s profile picture`}
-        onError={(e) => {
-          console.log(
-            `Avatar failed to load for ${user.name}, trying simple avatar`
-          );
-          // First try simple avatar, then default
-          const simpleAvatar = generateSimpleAvatar(user.name);
-          e.currentTarget.src = simpleAvatar;
-          e.currentTarget.onerror = () => {
-            console.log(`Simple avatar also failed, using default`);
-            e.currentTarget.src = getDefaultAvatar();
-          };
-        }}
-      />
+      {user.profile ? (
+        <img
+          className="w-10 h-10 rounded-full object-cover"
+          src={user.profile}
+          alt={`${user.name}'s profile picture`}
+          onError={(e) => {
+            // Hide the image and show letter avatar on error
+            e.currentTarget.style.display = "none";
+            const letterAvatar = e.currentTarget
+              .nextElementSibling as HTMLElement;
+            if (letterAvatar) letterAvatar.style.display = "flex";
+          }}
+        />
+      ) : null}
+      <div
+        className={`w-10 h-10 rounded-full ${getAvatarColor(user.name)} flex items-center justify-center text-white font-bold text-sm ${user.profile ? "hidden" : ""}`}
+      >
+        {getInitials(user.name)}
+      </div>
       <div className="font-semibold text-center">{user.name}</div>
     </div>
   );
