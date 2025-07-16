@@ -80,6 +80,7 @@ const Login = () => {
     const signupData: any = {
       name: signupName,
       password: signupPassword,
+      fullName: signupFullName, // Required field
     };
 
     if (signupProfile && signupProfile.trim()) {
@@ -87,9 +88,6 @@ const Login = () => {
     }
 
     // Add optional fields if provided
-    if (signupFullName && signupFullName.trim()) {
-      signupData.fullName = signupFullName.trim();
-    }
     if (signupEmail && signupEmail.trim()) {
       signupData.email = signupEmail.trim();
     }
@@ -293,7 +291,7 @@ const Login = () => {
               <div className="space-y-1">
                 <input
                   type="text"
-                  placeholder="Name"
+                  placeholder="Username"
                   className={`border rounded-md p-2 focus:outline-none focus:ring-2 w-full ${
                     signupErrors.name
                       ? "border-red-500 focus:ring-red-500"
@@ -312,6 +310,31 @@ const Login = () => {
                 {signupErrors.name && (
                   <div className="text-red-600 text-sm">
                     {signupErrors.name}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  className={`border rounded-md p-2 focus:outline-none focus:ring-2 w-full ${
+                    signupErrors.fullName
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  id="signup-fullname"
+                  value={signupFullName}
+                  onChange={(e) => {
+                    setSignupFullName(e.target.value);
+                    // Clear error when user starts typing
+                    if (signupErrors.fullName) {
+                      setSignupErrors({ ...signupErrors, fullName: "" });
+                    }
+                  }}
+                />
+                {signupErrors.fullName && (
+                  <div className="text-red-600 text-sm">
+                    {signupErrors.fullName}
                   </div>
                 )}
               </div>
@@ -373,16 +396,6 @@ const Login = () => {
                 </p>
 
                 <div className="space-y-3">
-                  <div className="space-y-1">
-                    <input
-                      type="text"
-                      placeholder="Full Name (Optional)"
-                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-                      value={signupFullName}
-                      onChange={(e) => setSignupFullName(e.target.value)}
-                    />
-                  </div>
-
                   <div className="space-y-1">
                     <input
                       type="email"

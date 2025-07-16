@@ -76,44 +76,47 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 app.post('/api/auth/signup', (req, res) => {
-  const { name, email, password, profile } = req.body;
+  const { name, email, password, profile, fullName } = req.body;
   
-  if (name && email && password) {
+  if (name && email && password && fullName) {
     // Check if user exists
-    const existingUser = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    
+    const existingUser = users.find(
+      (u) => u.email.toLowerCase() === email.toLowerCase()
+    );
+
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'User already exists'
+        message: "User already exists",
       });
     }
-    
+
     const newUser = {
       _id: (users.length + 1).toString(),
       name,
       email,
-      profile: profile || ''
+      fullName,
+      profile: profile || "",
     };
-    
+
     users.push(newUser);
     currentUser = newUser;
-    
+
     // Add to online users
     if (!onlineUsers.includes(newUser._id)) {
       onlineUsers.push(newUser._id);
     }
-    
+
     res.json({
       success: true,
       user: newUser,
-      token: 'mock-jwt-token',
-      message: 'Signup successful'
+      token: "mock-jwt-token",
+      message: "Signup successful",
     });
   } else {
     res.status(400).json({
       success: false,
-      message: 'Name, email, and password are required'
+      message: "Name, email, password, and full name are required",
     });
   }
 });

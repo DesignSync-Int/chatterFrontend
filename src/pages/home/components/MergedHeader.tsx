@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import UserCard from "../../../components/user-card/UserCard";
 import NotificationPanel from "../../../components/notifications/NotificationPanel";
 import ProfileModal from "./ProfileModal";
-import CensorshipSettings from "../../../components/ui/CensorshipSettings";
-import { LogOut, User2, Shield } from "lucide-react";
+import { LogOut, User2 } from "lucide-react";
 import type { User } from "../../../types/auth";
 
 interface MergedHeaderProps {
@@ -14,8 +13,6 @@ interface MergedHeaderProps {
 // TODO: maybe extract this into a separate hook later?
 const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const [isCensorshipSettingsOpen, setIsCensorshipSettingsOpen] =
-    useState(false);
 
   const openProfileModal = () => {
     setIsProfileModalOpen(true);
@@ -23,14 +20,6 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
 
   const closeProfileModal = () => {
     setIsProfileModalOpen(false);
-  };
-
-  const openCensorshipSettings = () => {
-    setIsCensorshipSettingsOpen(true);
-  };
-
-  const closeCensorshipSettings = () => {
-    setIsCensorshipSettingsOpen(false);
   };
 
   return (
@@ -79,15 +68,6 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
                   <span className="text-sm font-medium">Profile</span>
                 </button>
 
-                {/* censorship settings button */}
-                <button
-                  onClick={openCensorshipSettings}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white hover:bg-green-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
-                >
-                  <Shield className="w-4 h-4" />
-                  <span className="text-sm font-medium">Safety</span>
-                </button>
-
                 {/* logout - should we add a confirmation dialog? for now direct logout is fine */}
                 <button
                   onClick={onLogout}
@@ -106,11 +86,6 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
         user={user}
         isOpen={isProfileModalOpen}
         onClose={closeProfileModal}
-      />
-
-      <CensorshipSettings
-        isOpen={isCensorshipSettingsOpen}
-        onClose={closeCensorshipSettings}
       />
     </header>
   );

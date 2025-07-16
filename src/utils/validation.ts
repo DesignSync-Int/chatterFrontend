@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { validateName } from "./messageCensorship";
 
 // validation schemas for forms - using zod for type safety
 export const emailSchema = z
@@ -16,9 +17,20 @@ export const passwordSchema = z
 
 export const nameSchema = z
   .string()
-  .min(2, 'Name must be at least 2 characters')
-  .max(50, 'Name must be less than 50 characters')
-  .regex(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces');
+  .min(2, "Name must be at least 2 characters")
+  .max(50, "Name must be less than 50 characters")
+  .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces")
+  .refine(
+    (val) => {
+      const validation = validateName(val);
+      return validation.isValid;
+    },
+    {
+      message:
+        "Name contains inappropriate language. Please choose a different name that follows our community guidelines.",
+      path: [],
+    }
+  );
 
 // schemas for auth forms - keeping these simple to match backend expectations
 export const loginSchema = z.object({
@@ -29,6 +41,7 @@ export const loginSchema = z.object({
 export const signupSchema = z.object({
   name: nameSchema,
   password: passwordSchema,
+  fullName: nameSchema,
   profile: z
     .string()
     .optional()

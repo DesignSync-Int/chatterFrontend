@@ -49,14 +49,14 @@ export const useUserListPerformance = (
       };
 
       // Log performance metrics
-      console.log('User List Performance Metrics:', {
+      console.log('🚀 User List Performance Metrics:', {
         'Render Time': `${metricsRef.current.renderTime}ms`,
         'DOM Nodes': metricsRef.current.domNodes,
         'Memory Usage': metricsRef.current.memoryUsage,
         'Efficiency': `${visibleUsers}/${totalUsers} users rendered (${((visibleUsers/totalUsers)*100).toFixed(1)}%)`,
-        'Performance': renderTime < 16 ? 'Excellent (<16ms)' : 
-                      renderTime < 33 ? 'Good (<33ms)' : 
-                      'Needs optimization (>33ms)'
+        'Performance': renderTime < 16 ? '✅ Excellent (<16ms)' : 
+                      renderTime < 33 ? '⚠️ Good (<33ms)' : 
+                      '❌ Needs optimization (>33ms)'
       });
     };
 

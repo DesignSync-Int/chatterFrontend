@@ -20,6 +20,7 @@ import {
 } from "../utils/sessionCleanup";
 import useChatStore from "./messages.store";
 
+// extend the base AuthStore with additional functions
 interface AuthStoreFun extends AuthStore {
   socket: any;
   notifications: Notification[];
@@ -39,6 +40,7 @@ interface AuthStoreFun extends AuthStore {
   clearAllNotifications: () => void;
 }
 
+// main auth store using zustand
 export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   authUser: null,
   isSigningUp: false,
@@ -47,7 +49,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   isCheckingAuth: true,
   onlineUsers: [],
   socket: null,
-  notifications: [],
+  notifications: [], // array to hold user notifications
 
   checkAuth: async () => {
     try {
@@ -99,15 +101,20 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     try {
       console.log("Starting logout process...");
 
+      // First disconnect socket to appear offline to other users
       get().disconnectSocket();
 
+      // Call backend logout to clear server-side session/cookie FIRST
       await axiosInstance.post("/auth/logout");
 
+      // Clear all user session data thoroughly
       clearUserSession();
       TokenStorage.removeToken();
 
+      // Clear auth store state
       set({ authUser: null, onlineUsers: [], notifications: [] });
 
+      // Set logout flag to prevent auto-login
       setLogoutFlag();
 
       console.log("Logout successful");
@@ -115,12 +122,15 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     } catch (error: any) {
       console.error("Logout error:", error);
 
+      // Even if backend fails, clear everything aggressively
       clearUserSession();
       TokenStorage.removeToken();
       get().disconnectSocket();
 
+      // Clear auth store state
       set({ authUser: null, onlineUsers: [], notifications: [] });
 
+      // Set logout flag
       setLogoutFlag();
 
       toast.error("Logout completed (with errors)");
@@ -129,11 +139,13 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   checkUser: async () => {
     try {
+      // Check if user just logged out
       if (isUserLoggedOut()) {
         console.log("Skipping user check - user just logged out");
         return null;
       }
 
+      // Check if we have a token
       const token = TokenStorage.getToken();
       if (!token) {
         console.log("No token found - user not authenticated");
@@ -146,6 +158,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     } catch (error: any) {
       console.error("Error in checkUser:", error);
 
+      // Clear any stale tokens on 401 or other auth errors
       if (error.response?.status === 401) {
         TokenStorage.removeToken();
         set({ authUser: null });
@@ -198,10 +211,12 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
     set({ socket });
 
+    // Listen for online users
     socket.on("getOnlineUsers", (userIds: string[]) => {
       const previousOnlineUsers = get().onlineUsers;
       set({ onlineUsers: userIds });
 
+      // Check for newly online users
       const newlyOnlineUsers = userIds.filter(
         (id) => !previousOnlineUsers.includes(id) && id !== authUser._id
       );
@@ -219,14 +234,17 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       });
     });
 
+    // Listen for new messages
     socket.on("newMessage", async (messageData: any) => {
       if (messageData.senderId !== authUser._id) {
+        // Get sender's name from users store or use fallback
         const chatStore = useChatStore.getState();
         let senderUser = chatStore.users.find(
           (user: any) => user._id === messageData.senderId
         );
         let senderName = senderUser?.name || messageData.senderName;
 
+        // If we don't have the sender's info, try to get it from the API
         if (!senderName && messageData.senderId) {
           try {
             const response = await axiosInstance.get(
@@ -239,8 +257,10 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
           }
         }
 
+        // Final fallback
         senderName = senderName || "Someone";
 
+        // Note: We'll handle chat window checking in the notification panel component
         get().addNotification({
           type: "message",
           title: "New Message",
@@ -254,6 +274,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       }
     });
 
+    // Listen for user offline
     socket.on("userDisconnected", (userData: any) => {
       if (userData.userId !== authUser._id) {
         get().addNotification({
@@ -268,7 +289,9 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       }
     });
 
+    // Listen for friend request events
     socket.on("friendRequestReceived", (requestData: any) => {
+      // Handle in friend request store via window reference
       if ((window as any).friendRequestStoreHandlers) {
         (window as any).friendRequestStoreHandlers.handleNewFriendRequest(
           requestData
@@ -293,10 +316,13 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     if (socket && socket.connected) {
       console.log("Disconnecting socket...");
 
+      // Emit logout event to notify server
       socket.emit("logout");
 
+      // Disconnect the socket
       socket.disconnect();
 
+      // Clear socket reference
       set({ socket: null });
 
       console.log("Socket disconnected");
@@ -314,9 +340,10 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     };
 
     set((state) => ({
-      notifications: [notification, ...state.notifications.slice(0, 49)],
+      notifications: [notification, ...state.notifications.slice(0, 49)], // Keep max 50 notifications
     }));
 
+    // Show toast notification
     toast(notification.message, {
       icon:
         notification.type === "message"

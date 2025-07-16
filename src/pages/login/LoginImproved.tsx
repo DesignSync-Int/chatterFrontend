@@ -41,13 +41,14 @@ const LoginPage: React.FC = () => {
   // Signup form
   const signupForm = useForm<SignupFormData>({
     schema: signupSchema,
-    initialValues: { name: '', password: '', profile: '' },
+    initialValues: { name: "", password: "", fullName: "", profile: "" },
     onSubmit: async (data) => {
       try {
         // Only include profile if it's not empty
         const signupData: any = {
           name: data.name,
           password: data.password,
+          fullName: data.fullName,
         };
 
         if (data.profile && data.profile.trim()) {
@@ -64,8 +65,9 @@ const LoginPage: React.FC = () => {
           });
         }
       } catch (error: any) {
-        const message = error.response?.data?.message || 'Signup failed. Please try again.';
-        toast.error(message, { title: 'Signup failed' });
+        const message =
+          error.response?.data?.message || "Signup failed. Please try again.";
+        toast.error(message, { title: "Signup failed" });
       }
     },
   });
@@ -74,10 +76,10 @@ const LoginPage: React.FC = () => {
 
   // Check for existing session
   useEffect(() => {
-    const justLoggedOut = sessionStorage.getItem('justLoggedOut');
-    
+    const justLoggedOut = sessionStorage.getItem("justLoggedOut");
+
     if (justLoggedOut) {
-      sessionStorage.removeItem('justLoggedOut');
+      sessionStorage.removeItem("justLoggedOut");
       return;
     }
 
@@ -85,13 +87,13 @@ const LoginPage: React.FC = () => {
       .then((user) => {
         if (user) {
           setCurrentUser(user);
-          navigate('/home');
-          setCurrentPage('home');
+          navigate("/home");
+          setCurrentPage("home");
           useAuthStore.getState().connectSocket();
         }
       })
       .catch((error) => {
-        console.error('Auth check failed:', error);
+        console.error("Auth check failed:", error);
       });
   }, [checkUser, setCurrentUser, navigate, setCurrentPage]);
 
@@ -122,9 +124,9 @@ const LoginPage: React.FC = () => {
             <Input
               name="name"
               type="text"
-              label={isSignupMode ? "Full Name" : "Username"}
+              label={isSignupMode ? "Username" : "Username"}
               placeholder={
-                isSignupMode ? "Enter your full name" : "Enter your username"
+                isSignupMode ? "Enter your username" : "Enter your username"
               }
               value={currentForm.values.name}
               onChange={currentForm.handleChange}
@@ -132,6 +134,21 @@ const LoginPage: React.FC = () => {
               startIcon={<User className="h-4 w-4" />}
               required
             />
+
+            {/* Full Name field (signup only) */}
+            {isSignupMode && (
+              <Input
+                name="fullName"
+                type="text"
+                label="Full Name"
+                placeholder="Enter your full name"
+                value={signupForm.values.fullName}
+                onChange={signupForm.handleChange}
+                error={signupForm.errors.fullName}
+                startIcon={<User className="h-4 w-4" />}
+                required
+              />
+            )}
 
             {/* Profile field (signup only) */}
             {isSignupMode && (

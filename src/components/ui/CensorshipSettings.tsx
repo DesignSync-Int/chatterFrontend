@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Save } from "lucide-react";
+import { Shield, Settings, Save } from 'lucide-react';
 import { messageCensor } from '../../utils/messageCensorship';
 
 interface CensorshipSettingsProps {
