@@ -21,10 +21,10 @@ When displaying thousands of users in the UI, the browser can become unresponsiv
 - Includes search functionality to reduce visible items
 
 **Performance Benefits:**
-- ✅ Reduces initial render time
-- ✅ Lower memory usage
-- ✅ Faster scrolling
-- ✅ Search helps find specific users quickly
+- Reduces initial render time
+- Lower memory usage
+- Faster scrolling
+- Search helps find specific users quickly
 
 **Best for:** 100-1000 users
 
@@ -37,10 +37,10 @@ When displaying thousands of users in the UI, the browser can become unresponsiv
 - Configurable performance settings
 
 **Performance Benefits:**
-- ✅ Constant performance regardless of total user count
-- ✅ Minimal DOM elements (only visible items)
-- ✅ Efficient memory usage
-- ✅ Smooth scrolling even with 10,000+ users
+- Constant performance regardless of total user count
+- Minimal DOM elements (only visible items)
+- Efficient memory usage
+- Smooth scrolling even with 10,000+ users
 
 **Best for:** 1000+ users
 

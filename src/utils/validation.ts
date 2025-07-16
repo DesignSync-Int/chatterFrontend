@@ -38,19 +38,31 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'), // simplified for login
 });
 
-export const signupSchema = z.object({
-  name: nameSchema,
-  password: passwordSchema,
-  fullName: nameSchema,
-  profile: z
-    .string()
-    .optional()
-    .refine(
-      (val) =>
-        !val || val.trim() === "" || z.string().url().safeParse(val).success,
-      "Profile must be a valid URL if provided"
-    ),
-});
+export const signupSchema = z
+  .object({
+    name: nameSchema,
+    password: passwordSchema,
+    verifyPassword: z.string().min(1, "Please verify your password"),
+    fullName: nameSchema,
+    profile: z
+      .string()
+      .optional()
+      .refine(
+        (val) =>
+          !val || val.trim() === "" || z.string().url().safeParse(val).success,
+        "Profile must be a valid URL if provided"
+      ),
+  })
+  .refine(
+    (data) =>
+      data.verifyPassword.length > 0
+        ? data.password === data.verifyPassword
+        : true,
+    {
+      message: "Passwords do not match",
+      path: ["verifyPassword"],
+    }
+  );
 
 export const updateProfileSchema = z.object({
   name: nameSchema.optional(),

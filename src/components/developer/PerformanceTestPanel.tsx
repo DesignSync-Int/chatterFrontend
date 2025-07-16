@@ -83,40 +83,50 @@ const PerformanceTestPanel = () => {
             Load Test Users
           </h4>
           <div className="grid grid-cols-2 gap-2 text-xs">
-            {Object.entries(PERFORMANCE_TEST_SCENARIOS).map(([key, scenario]) => {
-              const { canHandle, recommendation } = canHandleUserCount(scenario.users);
-              
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleLoadTestUsers(scenario.users)}
-                  disabled={isLoading}
-                  className={`p-2 rounded border text-left transition-colors ${
-                    canHandle
-                      ? 'border-green-300 bg-green-50 hover:bg-green-100 text-green-700'
-                      : 'border-red-300 bg-red-50 hover:bg-red-100 text-red-700'
-                  } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  title={recommendation}
-                >
-                  <div className="font-medium">{scenario.users} users</div>
-                  <div className="text-xs opacity-75">{key.toLowerCase()}</div>
-                  {!canHandle && <AlertTriangle className="h-3 w-3 inline ml-1" />}
-                </button>
-              );
-            })}
+            {Object.entries(PERFORMANCE_TEST_SCENARIOS).map(
+              ([key, scenario]) => {
+                const { canHandle, recommendation } = canHandleUserCount(
+                  scenario.users
+                );
+
+                return (
+                  <button
+                    key={key}
+                    onClick={() => handleLoadTestUsers(scenario.users)}
+                    disabled={isLoading}
+                    className={`p-2 rounded border text-left transition-colors ${
+                      canHandle
+                        ? "border-green-300 bg-green-50 hover:bg-green-100 text-green-700"
+                        : "border-red-300 bg-red-50 hover:bg-red-100 text-red-700"
+                    } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    title={recommendation}
+                  >
+                    <div className="font-medium">{scenario.users} users</div>
+                    <div className="text-xs opacity-75">
+                      {key.toLowerCase()}
+                    </div>
+                    {!canHandle && (
+                      <AlertTriangle className="h-3 w-3 inline ml-1" />
+                    )}
+                  </button>
+                );
+              }
+            )}
           </div>
         </div>
 
         {/* Custom Count */}
         <div>
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Custom Count</h4>
+          <h4 className="text-sm font-medium text-gray-700 mb-2">
+            Custom Count
+          </h4>
           <div className="flex gap-2">
             <input
               type="number"
               placeholder="User count"
               className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm"
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   const value = parseInt((e.target as HTMLInputElement).value);
                   if (value > 0) {
                     handleLoadTestUsers(value);
@@ -158,7 +168,7 @@ const PerformanceTestPanel = () => {
 
         {/* Performance tips */}
         <div className="bg-blue-50 rounded p-3 text-xs">
-          <div className="font-medium text-blue-700 mb-1">💡 Testing Tips</div>
+          <div className="font-medium text-blue-700 mb-1">Testing Tips</div>
           <ul className="text-blue-600 space-y-1">
             <li>• Virtualized list handles any user count smoothly</li>
             <li>• Use search to test filtering performance</li>
