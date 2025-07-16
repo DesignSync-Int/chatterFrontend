@@ -162,7 +162,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         )}
         {censorshipWarning && (
           <div className="text-yellow-600 text-sm mb-1 px-2 bg-yellow-50 rounded p-1">
-            {censorshipWarning}
+            ⚠️ {censorshipWarning}
           </div>
         )}
         <form onSubmit={handleMessageSend} className="flex gap-2">

@@ -10,6 +10,7 @@ interface MergedHeaderProps {
   onLogout: () => void;
 }
 
+// TODO: maybe extract this into a separate hook later?
 const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 

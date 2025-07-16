@@ -260,6 +260,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
         // Final fallback
         senderName = senderName || "Someone";
 
+        // Note: We'll handle chat window checking in the notification panel component
         get().addNotification({
           type: "message",
           title: "New Message",
