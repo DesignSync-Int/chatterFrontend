@@ -1,11 +1,12 @@
 import { z } from 'zod';
 
-// Common validation schemas
+// validation schemas for forms - using zod for type safety
 export const emailSchema = z
   .string()
   .email('Please enter a valid email address')
   .min(1, 'Email is required');
 
+// password requirements - maybe too strict but better safe than sorry
 export const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')
@@ -19,10 +20,10 @@ export const nameSchema = z
   .max(50, 'Name must be less than 50 characters')
   .regex(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces');
 
-// Auth schemas (matching existing API)
+// schemas for auth forms - keeping these simple to match backend expectations
 export const loginSchema = z.object({
   name: nameSchema,
-  password: z.string().min(1, 'Password is required'),
+  password: z.string().min(1, 'Password is required'), // simplified for login
 });
 
 export const signupSchema = z.object({

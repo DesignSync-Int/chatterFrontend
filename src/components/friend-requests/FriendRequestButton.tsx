@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserPlus, MessageCircle } from 'lucide-react';
 import { useFriendRequestStore } from '../../store/friendRequest.store';
+import AddFriendDialog from "./AddFriendDialog";
 import type { FriendshipStatus } from '../../types/friendRequest';
 import type { User } from '../../types/auth';
 
@@ -9,67 +10,65 @@ interface FriendRequestButtonProps {
   onChatClick?: () => void;
 }
 
+// this component handles all the different friend request states
+// TODO: might want to refactor this later if it gets too complex
 const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatClick }) => {
   const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus | null>(null);
-  const [message, setMessage] = useState('');
-  const [showMessageInput, setShowMessageInput] = useState(false);
-  
+  const [showAddFriendDialog, setShowAddFriendDialog] = useState(false);
+
   const {
-    sendFriendRequest,
     acceptFriendRequest,
     declineFriendRequest,
     checkFriendshipStatus,
     isLoading,
   } = useFriendRequestStore();
 
+  // load the current friendship status when component mounts or user changes
   useEffect(() => {
-    const loadFriendshipStatus = async () => {
+    async function loadStatus() {
       const status = await checkFriendshipStatus(user._id);
       setFriendshipStatus(status);
-    };
+    }
     
-    loadFriendshipStatus();
+    loadStatus();
   }, [user._id, checkFriendshipStatus]);
 
-  const handleSendRequest = async () => {
+  // close dialog and refresh status - this pattern is repeated so maybe extract it?
+  const handleDialogClose = async () => {
+    setShowAddFriendDialog(false);
+    const updatedStatus = await checkFriendshipStatus(user._id);
+    setFriendshipStatus(updatedStatus);
+  };
+
+  // accept friend request handler
+  const handleAcceptRequest = async () => {
+    if (!friendshipStatus?.requestId) return;
+    
     try {
-      await sendFriendRequest(user._id, message);
-      setMessage('');
-      setShowMessageInput(false);
-      // Refresh status
+      await acceptFriendRequest(friendshipStatus.requestId);
+      // refresh the status after accepting
+      const newStatus = await checkFriendshipStatus(user._id);
+      setFriendshipStatus(newStatus);
+    } catch (error) {
+      // should probably show user-friendly error message here
+      console.error("Failed to accept friend request:", error);
+    }
+  };
+
+  // decline request handler
+  const handleDeclineRequest = async () => {
+    if (!friendshipStatus?.requestId) return;
+    
+    try {
+      await declineFriendRequest(friendshipStatus.requestId);
       const status = await checkFriendshipStatus(user._id);
       setFriendshipStatus(status);
     } catch (error) {
-      console.error('Failed to send friend request:', error);
+      console.error("Failed to decline friend request:", error);
     }
   };
 
-  const handleAcceptRequest = async () => {
-    if (friendshipStatus?.requestId) {
-      try {
-        await acceptFriendRequest(friendshipStatus.requestId);
-        // Refresh status
-        const status = await checkFriendshipStatus(user._id);
-        setFriendshipStatus(status);
-      } catch (error) {
-        console.error('Failed to accept friend request:', error);
-      }
-    }
-  };
-
-  const handleDeclineRequest = async () => {
-    if (friendshipStatus?.requestId) {
-      try {
-        await declineFriendRequest(friendshipStatus.requestId);
-        // Refresh status
-        const status = await checkFriendshipStatus(user._id);
-        setFriendshipStatus(status);
-      } catch (error) {
-        console.error('Failed to decline friend request:', error);
-      }
-    }
-  };
-
+  // show loading skeleton while checking status
   if (!friendshipStatus) {
     return (
       <div className="animate-pulse">
@@ -78,8 +77,8 @@ const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatC
     );
   }
 
-  // If they are friends, show chat button
-  if (friendshipStatus.status === 'friends') {
+  // they're already friends - show chat option
+  if (friendshipStatus.status === "friends") {
     return (
       <button
         onClick={onChatClick}
@@ -91,15 +90,17 @@ const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatC
     );
   }
 
-  // If there's a pending request
-  if (friendshipStatus.status === 'pending') {
-    if (friendshipStatus.requestType === 'sent') {
+  // handle pending requests
+  if (friendshipStatus.status === "pending") {
+    // we sent the request to them
+    if (friendshipStatus.requestType === "sent") {
       return (
         <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg text-sm font-medium">
           Request Sent
         </span>
       );
     } else {
+      // they sent request to us - show accept/decline buttons
       // Received request
       return (
         <div className="flex space-x-2">
@@ -124,46 +125,21 @@ const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatC
 
   // No relationship - show add friend button
   return (
-    <div className="space-y-2">
-      {!showMessageInput ? (
-        <button
-          onClick={() => setShowMessageInput(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-        >
-          <UserPlus className="h-4 w-4" />
-          <span>Add Friend</span>
-        </button>
-      ) : (
-        <div className="space-y-2">
-          <input
-            type="text"
-            placeholder="Add a message (optional)"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-            maxLength={100}
-          />
-          <div className="flex space-x-2">
-            <button
-              onClick={handleSendRequest}
-              disabled={isLoading}
-              className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 text-sm"
-            >
-              {isLoading ? 'Sending...' : 'Send Request'}
-            </button>
-            <button
-              onClick={() => {
-                setShowMessageInput(false);
-                setMessage('');
-              }}
-              className="px-3 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 text-sm"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+    <>
+      <button
+        onClick={() => setShowAddFriendDialog(true)}
+        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+      >
+        <UserPlus className="h-4 w-4" />
+        <span>Add Friend</span>
+      </button>
+
+      <AddFriendDialog
+        user={user}
+        isOpen={showAddFriendDialog}
+        onClose={handleDialogClose}
+      />
+    </>
   );
 };
 

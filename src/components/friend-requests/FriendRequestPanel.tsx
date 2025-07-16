@@ -181,35 +181,35 @@ const FriendRequestPanel: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Friend Requests</h1>
-      
+
       {/* Tabs */}
       <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
         <button
-          onClick={() => setActiveTab('received')}
+          onClick={() => setActiveTab("received")}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'received'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+            activeTab === "received"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
           }`}
         >
           Received ({receivedRequests.length})
         </button>
         <button
-          onClick={() => setActiveTab('sent')}
+          onClick={() => setActiveTab("sent")}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'sent'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+            activeTab === "sent"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
           }`}
         >
           Sent ({sentRequests.length})
         </button>
         <button
-          onClick={() => setActiveTab('friends')}
+          onClick={() => setActiveTab("friends")}
           className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-            activeTab === 'friends'
-              ? 'bg-white text-blue-600 shadow-sm'
-              : 'text-gray-600 hover:text-gray-900'
+            activeTab === "friends"
+              ? "bg-white text-blue-600 shadow-sm"
+              : "text-gray-600 hover:text-gray-900"
           }`}
         >
           Friends ({friends.length})
@@ -220,13 +220,16 @@ const FriendRequestPanel: React.FC = () => {
       {isLoading ? (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600 flex items-center justify-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400"></div>
+            Loading friend requests...
+          </p>
         </div>
       ) : (
         <>
-          {activeTab === 'received' && renderReceivedRequests()}
-          {activeTab === 'sent' && renderSentRequests()}
-          {activeTab === 'friends' && renderFriends()}
+          {activeTab === "received" && renderReceivedRequests()}
+          {activeTab === "sent" && renderSentRequests()}
+          {activeTab === "friends" && renderFriends()}
         </>
       )}
     </div>

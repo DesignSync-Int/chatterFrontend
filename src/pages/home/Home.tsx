@@ -4,8 +4,7 @@ import { useAuthStore } from "../../store/auth.store.ts";
 import usePageStore from "../../store/page.store.ts";
 import FloatingChatManager from "../chat/components/FloatingChatManager.tsx";
 import { useChatWindowsStore } from "../../store/chatWindows.store";
-import HomeHeader from "./components/HomeHeader.tsx";
-import UserProfile from "./components/UserProfile.tsx";
+import MergedHeader from "./components/MergedHeader.tsx";
 import TabNavigation from "./components/TabNavigation.tsx";
 import ContentArea from "./components/ContentArea.tsx";
 import type { User } from "../../types/auth.ts";
@@ -44,7 +43,10 @@ const Home = () => {
   if (isCheckingAuth && !authUser && !currentUser) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-gray-500">Loading...</div>
+        <div className="flex items-center gap-3 text-gray-500">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+          <span>Loading your account...</span>
+        </div>
       </div>
     );
   }
@@ -78,13 +80,11 @@ const Home = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <HomeHeader />
+      {displayUser && (
+        <MergedHeader user={displayUser} onLogout={handleLogout} />
+      )}
 
       <main className="p-6 flex-grow flex flex-col gap-6">
-        {displayUser && (
-          <UserProfile user={displayUser} onLogout={handleLogout} />
-        )}
-
         <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
         <ContentArea

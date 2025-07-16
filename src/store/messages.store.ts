@@ -8,8 +8,12 @@ import type { Message, ChatStore } from '../types/messages';
 
 interface ChatStoreFun extends Omit<ChatStore, "messages"> {
   messages: Record<string, Message[]>;
-  getUsers: () => Promise<void>;
+  totalUsers: number;
+
+  getUsers: (search?: string) => Promise<void>;
+  searchUsers: (searchTerm: string) => Promise<void>; // for search functionality
   setUsers: (users: User[]) => void; // For testing purposes
+  resetUsers: () => void; // reset state
   getMessages: (userId: string) => Promise<void>;
   sendMessage: (messageData: {
     content: string;
@@ -23,23 +27,49 @@ interface ChatStoreFun extends Omit<ChatStore, "messages"> {
 
 const messageListeners: { [recipientId: string]: (msg: Message) => void } = {};
 
-export const useChatStore = create<ChatStoreFun>((set) => ({
+export const useChatStore = create<ChatStoreFun>((set, get) => ({
   messages: {},
   users: [],
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
+  totalUsers: 0,
 
-  getUsers: async () => {
+  getUsers: async (search = "") => {
     set({ isUsersLoading: true });
+
     try {
-      const res: any = await axiosInstance.get("/messages/users");
-      set({ users: res.data });
+      const params = new URLSearchParams();
+
+      if (search.trim()) {
+        params.append("search", search.trim());
+      }
+
+      const queryString = params.toString();
+      const url = queryString ? `/messages/users?${queryString}` : '/messages/users';
+      const res: any = await axiosInstance.get(url);
+      const { users, totalUsers } = res.data;
+
+      set({
+        users,
+        totalUsers,
+      });
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to fetch users");
     } finally {
       set({ isUsersLoading: false });
     }
+  },
+
+  searchUsers: async (searchTerm: string) => {
+    await get().getUsers(searchTerm);
+  },
+
+  resetUsers: () => {
+    set({
+      users: [],
+      totalUsers: 0,
+    });
   },
 
   setUsers: (users: User[]) => {

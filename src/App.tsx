@@ -6,7 +6,16 @@ import { Toaster } from "react-hot-toast";
 function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-screen">
+            <div className="flex items-center gap-3 text-gray-600">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <span className="text-lg">Loading application...</span>
+            </div>
+          </div>
+        }
+      >
         <AppRoutes />
         <Toaster
           position="top-right"

@@ -26,28 +26,30 @@ const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
 
   return (
     <div
-      className={`flex flex-col items-center gap-2 ${onClick ? "cursor-pointer" : ""}`}
+      className={`flex items-center gap-2 ${onClick ? "cursor-pointer" : ""}`}
       data-cy="user-card"
       {...(onClick ? { onClick } : {})}
     >
-      {user.profile ? (
-        <img
-          className="w-10 h-10 rounded-full object-cover"
-          src={user.profile}
-          alt={`${user.name}'s profile picture`}
-          onError={(e) => {
-            // Hide the image and show letter avatar on error
-            e.currentTarget.style.display = "none";
-            const letterAvatar = e.currentTarget
-              .nextElementSibling as HTMLElement;
-            if (letterAvatar) letterAvatar.style.display = "flex";
-          }}
-        />
-      ) : null}
-      <div
-        className={`w-10 h-10 rounded-full ${getAvatarColor(user.name)} flex items-center justify-center text-white font-bold text-sm ${user.profile ? "hidden" : ""}`}
-      >
-        {getInitials(user.name)}
+      <div className="relative">
+        {user.profile ? (
+          <img
+            className="w-10 h-10 rounded-full object-cover"
+            src={user.profile}
+            alt={`${user.name}'s profile picture`}
+            onError={(e) => {
+              // Hide the image and show letter avatar on error
+              e.currentTarget.style.display = "none";
+              const letterAvatar = e.currentTarget
+                .nextElementSibling as HTMLElement;
+              if (letterAvatar) letterAvatar.style.display = "flex";
+            }}
+          />
+        ) : null}
+        <div
+          className={`w-10 h-10 rounded-full ${getAvatarColor(user.name)} flex items-center justify-center text-white font-bold text-sm ${user.profile ? "hidden" : ""}`}
+        >
+          {getInitials(user.name)}
+        </div>
       </div>
       <div className="font-semibold text-center">{user.name}</div>
     </div>

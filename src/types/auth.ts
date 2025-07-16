@@ -1,6 +1,10 @@
 export type User = {
   _id: string;
   name: string;
+  fullName?: string;
+  email?: string;
+  gender?: "male" | "female" | "other";
+  dateOfBirth?: string;
   profile?: string;
   friends?: string[];
   createdAt?: string;
@@ -34,9 +38,20 @@ export interface SignupData {
   name: string;
   password: string;
   profile?: string;
+  fullName?: string;
+  email?: string;
+  gender?: "male" | "female" | "other";
+  dateOfBirth?: string;
 }
 
 export interface UpdateProfileData {
   name?: string;
   profile?: string;
+}
+
+export interface UpdateUserInfoData {
+  fullName?: string;
+  email?: string;
+  gender?: "male" | "female" | "other";
+  dateOfBirth?: string;
 }

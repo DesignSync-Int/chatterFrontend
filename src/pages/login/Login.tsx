@@ -11,7 +11,6 @@ import {
   loginSchema,
   signupSchema,
 } from "../../utils/validation";
-// import ProfileTab from '../chat/components/profile-tab/ProfileTab.tsx';
 
 const Login = () => {
   const { login, isLoggingIn, checkUser, signup } = useAuthStore();
@@ -20,28 +19,32 @@ const Login = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
+  // tab state - controls whether we show login or signup form
   const [isSignupTab, setIsSignupTab] = useState(false);
 
+  // login form states
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  // Login validation states
   const [loginErrors, setLoginErrors] = useState<Record<string, string>>({});
 
-  // Signup states
+  // signup form states - includes the new optional fields
   const [signupName, setSignupName] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupProfile, setSignupProfile] = useState("");
+  const [signupFullName, setSignupFullName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupGender, setSignupGender] = useState("");
+  const [signupDateOfBirth, setSignupDateOfBirth] = useState("");
   const [signupError, setSignupError] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
-
-  // Signup validation states
   const [signupErrors, setSignupErrors] = useState<Record<string, string>>({});
+  
+  // login form handler
   const handleLogin = () => {
     setErrorMessage("");
     setLoginErrors({});
 
-    // Validate login form
+    // run validation first
     const validation = validateForm(loginSchema, { name: username, password });
     if (!validation.isValid) {
       setLoginErrors(validation.errors);
@@ -81,6 +84,20 @@ const Login = () => {
 
     if (signupProfile && signupProfile.trim()) {
       signupData.profile = signupProfile.trim();
+    }
+
+    // Add optional fields if provided
+    if (signupFullName && signupFullName.trim()) {
+      signupData.fullName = signupFullName.trim();
+    }
+    if (signupEmail && signupEmail.trim()) {
+      signupData.email = signupEmail.trim();
+    }
+    if (signupGender) {
+      signupData.gender = signupGender;
+    }
+    if (signupDateOfBirth) {
+      signupData.dateOfBirth = signupDateOfBirth;
     }
 
     // Validate signup form
@@ -348,6 +365,59 @@ const Login = () => {
                   </div>
                 )}
               </div>
+
+              {/* Optional fields section */}
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm text-gray-600 mb-3">
+                  Optional Information (can be added later)
+                </p>
+
+                <div className="space-y-3">
+                  <div className="space-y-1">
+                    <input
+                      type="text"
+                      placeholder="Full Name (Optional)"
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      value={signupFullName}
+                      onChange={(e) => setSignupFullName(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <input
+                      type="email"
+                      placeholder="Email Address (Optional)"
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <select
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      value={signupGender}
+                      onChange={(e) => setSignupGender(e.target.value)}
+                    >
+                      <option value="">Select Gender (Optional)</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <input
+                      type="date"
+                      placeholder="Date of Birth (Optional)"
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      value={signupDateOfBirth}
+                      onChange={(e) => setSignupDateOfBirth(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={isSigningUp}

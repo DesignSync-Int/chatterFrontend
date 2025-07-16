@@ -7,6 +7,7 @@ import { getTimeDifferenceInSeconds, formatTimestamp } from '../../../../utils/t
 import { TimeConfig } from '../../../../config.ts';
 import type { User } from '../../../../types/auth.ts';
 import { validateField } from "../../../../utils/validation.ts";
+import { censorText } from "../../../../utils/messageCensorship.ts";
 import { z } from "zod";
 
 interface ChatTabProps {
@@ -14,8 +15,9 @@ interface ChatTabProps {
 }
 
 const ChatTab = ({ recipient }: ChatTabProps) => {
-  const [currentMessage, setCurrentMessage] = useState('');
+  const [currentMessage, setCurrentMessage] = useState("");
   const [messageError, setMessageError] = useState("");
+  const [censorshipWarning, setCensorshipWarning] = useState("");
   const currentUser = useUserStore((state) => state.currentUser);
   const {
     messages,
@@ -52,12 +54,31 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
 
     if (!recipient || !currentMessage.trim()) return;
 
+    // Apply censorship
+    const censorshipResult = censorText(currentMessage.trim());
+
+    // Check if message should be blocked
+    if (censorshipResult.shouldBlock) {
+      setMessageError("Message blocked due to inappropriate content");
+      setCensorshipWarning(censorshipResult.warningMessage || "");
+      return;
+    }
+
+    // Show warning if content was modified
+    if (censorshipResult.warningMessage) {
+      setCensorshipWarning(censorshipResult.warningMessage);
+      setTimeout(() => setCensorshipWarning(""), 3000);
+    }
+
+    // Use censored text for sending
+    const messageToSend = censorshipResult.censoredText;
+
     setCurrentMessage("");
     setMessageError("");
 
     try {
       await sendMessage({
-        content: currentMessage.trim(),
+        content: messageToSend,
         senderId: `${currentUser?._id}`,
         recipientId: `${recipient._id}`,
       });
@@ -71,11 +92,15 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
   const renderMessageItem = (message: Message, index: number) => {
     const timeDifference = getTimeDifferenceInSeconds(
       message.updatedAt || message.createdAt,
-      recipientMessages[index - 1]?.updatedAt || recipientMessages[index - 1]?.createdAt
+      recipientMessages[index - 1]?.updatedAt ||
+        recipientMessages[index - 1]?.createdAt
     );
 
     return (
-      <div key={message.updatedAt || message.createdAt} data-testid={`message-item-${index}`}>
+      <div
+        key={message.updatedAt || message.createdAt}
+        data-testid={`message-item-${index}`}
+      >
         {timeDifference >= TimeConfig.majoreTime && (
           <div className="flex justify-center text-xs text-gray-500 my-[6px]">
             {formatTimestamp(message.updatedAt || message.createdAt)}
@@ -84,7 +109,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         <MessageItem
           message={message}
           isNotRecent={timeDifference > TimeConfig.minorTime}
-          type={message.senderId === currentUser?._id ? 'sent' : 'received'}
+          type={message.senderId === currentUser?._id ? "sent" : "received"}
         />
       </div>
     );
@@ -96,7 +121,13 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
     return () => {
       unsubscribeFromMessages(recipient._id);
     };
-  }, [recipient._id, getMessages, subscribeToMessages, unsubscribeFromMessages, recipient]);
+  }, [
+    recipient._id,
+    getMessages,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+    recipient,
+  ]);
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -129,6 +160,11 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         {messageError && (
           <div className="text-red-600 text-sm mb-1 px-2">{messageError}</div>
         )}
+        {censorshipWarning && (
+          <div className="text-yellow-600 text-sm mb-1 px-2 bg-yellow-50 rounded p-1">
+            {censorshipWarning}
+          </div>
+        )}
         <form onSubmit={handleMessageSend} className="flex gap-2">
           <input
             type="text"
@@ -141,9 +177,12 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
             value={currentMessage}
             onChange={(e) => {
               setCurrentMessage(e.target.value);
-              // Clear error when user starts typing
+              // Clear errors and warnings when user starts typing
               if (messageError) {
                 setMessageError("");
+              }
+              if (censorshipWarning) {
+                setCensorshipWarning("");
               }
             }}
             maxLength={1000}
