@@ -10,7 +10,7 @@ cypress/
 │   ├── auth.cy.ts           # Authentication flow tests
 │   ├── home.cy.ts           # Home page and user list tests
 │   ├── notifications.cy.ts  # Notification system tests
-│   ├── chat-functionality.cy.ts           # Chat functionality tests
+│   ├── chat.cy.ts           # Chat functionality tests
 │   └── integration.cy.ts    # Complete user flow tests
 ├── fixtures/
 │   ├── users.json           # Mock user data
@@ -21,7 +21,7 @@ cypress/
 └── cypress.config.ts        # Cypress configuration
 ```
 
-## Test Categories
+## 🧪 Test Categories
 
 ### 1. Authentication Tests (`auth.cy.ts`)
 - **Login Flow**: Valid/invalid credentials, form validation
@@ -45,7 +45,7 @@ cypress/
 - **Real-time**: Socket connection, filtering for open chats
 - **Persistence**: State across refreshes and sessions
 
-### 4. Chat Tests (`chat-functionality.cy.ts`)
+### 4. Chat Tests (`chat.cy.ts`)
 - **Window Management**: Open, close, minimize, multiple windows
 - **Message Input**: Send button states, Enter key, validation
 - **Message Display**: History, timestamps, sent/received styling
@@ -61,7 +61,7 @@ cypress/
 - **Performance**: Multiple notifications, rapid messaging
 - **Accessibility**: Keyboard navigation, visual feedback
 
-## Running Tests
+## 🚀 Running Tests
 
 ### Prerequisites
 1. **Backend Running**: Ensure the backend API is running at `https://chatterbackend-08lw.onrender.com`
@@ -98,7 +98,7 @@ npx cypress open
 npx cypress run
 ```
 
-## Configuration
+## ⚙️ Configuration
 
 ### Environment Variables
 Set in `cypress.config.ts` under `env`:
@@ -124,7 +124,7 @@ Before running tests, ensure these test users exist in your backend:
 - **Test User 1**: `testuser1@example.com` / `testpass123`
 - **Test User 2**: `testuser2@example.com` / `testpass123`
 
-## Custom Commands
+## 🔧 Custom Commands
 
 ### Authentication Commands
 ```typescript
@@ -140,7 +140,7 @@ cy.clearNotifications()       // Clear all notifications
 cy.openChatWith(userName)     // Open chat with specific user
 ```
 
-## Test Data Attributes
+## 📊 Test Data Attributes
 
 Add these `data-testid` attributes to your components for reliable test targeting:
 
@@ -192,43 +192,43 @@ DEBUG=cypress:* npx cypress run
 - Screenshots are taken on failures
 - Files saved to `cypress/videos/` and `cypress/screenshots/`
 
-## Test Coverage
+## 📈 Test Coverage
 
 ### Authentication: 95%
-- Login (valid/invalid credentials)
-- Signup (new user/existing email)
-- Logout and session cleanup
-- Protected route access
-- Session persistence
+- ✅ Login (valid/invalid credentials)
+- ✅ Signup (new user/existing email)
+- ✅ Logout and session cleanup
+- ✅ Protected route access
+- ✅ Session persistence
 
 ### Home Page: 90%
-- Layout and navigation
-- User list loading and display
-- Online status indicators
-- Responsive design
-- Advanced error scenarios
+- ✅ Layout and navigation
+- ✅ User list loading and display
+- ✅ Online status indicators
+- ✅ Responsive design
+- ⚠️ Advanced error scenarios
 
 ### Notifications: 95%
-- Bell and badge functionality
-- Panel interactions
-- Notification creation/clearing
-- Chat integration
-- Complex real-time scenarios
+- ✅ Bell and badge functionality
+- ✅ Panel interactions
+- ✅ Notification creation/clearing
+- ✅ Chat integration
+- ⚠️ Complex real-time scenarios
 
 ### Chat: 85%
-- Window management
-- Message sending/receiving
-- Basic real-time features
-- Advanced socket error handling
-- Complex multi-user scenarios
+- ✅ Window management
+- ✅ Message sending/receiving
+- ✅ Basic real-time features
+- ⚠️ Advanced socket error handling
+- ⚠️ Complex multi-user scenarios
 
 ### Integration: 90%
-- Complete user workflows
-- State persistence
-- Error recovery
-- Performance edge cases
+- ✅ Complete user workflows
+- ✅ State persistence
+- ✅ Error recovery
+- ⚠️ Performance edge cases
 
-## Continuous Integration
+## 🔄 Continuous Integration
 
 ### GitHub Actions Example
 ```yaml
@@ -247,7 +247,7 @@ jobs:
           browser: chrome
 ```
 
-## Best Practices
+## 🎯 Best Practices
 
 1. **Isolation**: Each test is independent with proper cleanup
 2. **Real Data**: Tests use actual API calls (with test data)
@@ -256,7 +256,7 @@ jobs:
 5. **Coverage**: Tests cover happy paths and error scenarios
 6. **Performance**: Tests include load and stress scenarios
 
-## Resources
+## 📚 Resources
 
 - [Cypress Documentation](https://docs.cypress.io)
 - [Best Practices](https://docs.cypress.io/guides/references/best-practices)
