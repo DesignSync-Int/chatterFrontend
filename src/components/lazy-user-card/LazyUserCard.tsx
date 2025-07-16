@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, Component, ReactNode } from "react";
+import { useState, useRef, useEffect, Component } from "react";
+import type { ReactNode } from "react";
 import EnhancedUserCard from "../user-card/EnhancedUserCard";
 import type { User } from "../../types/auth";
 
