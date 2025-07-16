@@ -10,8 +10,6 @@ interface FriendRequestButtonProps {
   onChatClick?: () => void;
 }
 
-// this component handles all the different friend request states
-// TODO: might want to refactor this later if it gets too complex
 const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatClick }) => {
   const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus | null>(null);
   const [showAddFriendDialog, setShowAddFriendDialog] = useState(false);

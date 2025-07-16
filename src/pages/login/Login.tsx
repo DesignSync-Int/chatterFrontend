@@ -30,6 +30,7 @@ const Login = () => {
   // signup form states - includes the new optional fields
   const [signupName, setSignupName] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+  const [signupVerifyPassword, setSignupVerifyPassword] = useState("");
   const [signupProfile, setSignupProfile] = useState("");
   const [signupFullName, setSignupFullName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
@@ -38,7 +39,7 @@ const Login = () => {
   const [signupError, setSignupError] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [signupErrors, setSignupErrors] = useState<Record<string, string>>({});
-  
+
   // login form handler
   const handleLogin = () => {
     setErrorMessage("");
@@ -80,6 +81,7 @@ const Login = () => {
     const signupData: any = {
       name: signupName,
       password: signupPassword,
+      verifyPassword: signupVerifyPassword,
       fullName: signupFullName, // Required field
     };
 
@@ -106,16 +108,38 @@ const Login = () => {
       return;
     }
 
+    // Prepare clean data for backend (without verifyPassword)
+    const backendSignupData: any = {
+      name: signupName,
+      password: signupPassword,
+      fullName: signupFullName,
+    };
+
     if (signupProfile && signupProfile.trim()) {
-      console.log("Signup with profile:", signupData);
+      backendSignupData.profile = signupProfile.trim();
+    }
+
+    // Add optional fields if provided
+    if (signupEmail && signupEmail.trim()) {
+      backendSignupData.email = signupEmail.trim();
+    }
+    if (signupGender) {
+      backendSignupData.gender = signupGender;
+    }
+    if (signupDateOfBirth) {
+      backendSignupData.dateOfBirth = signupDateOfBirth;
+    }
+
+    if (signupProfile && signupProfile.trim()) {
+      console.log("Signup with profile:", backendSignupData);
     } else {
       console.log(
         "Signup without profile (will use random avatar):",
-        signupData
+        backendSignupData
       );
     }
 
-    signup(signupData)
+    signup(backendSignupData)
       .then((user: User | null) => {
         if (user) {
           console.log("Signup successful, user:", user);
@@ -360,6 +384,31 @@ const Login = () => {
                 {signupErrors.password && (
                   <div className="text-red-600 text-sm">
                     {signupErrors.password}
+                  </div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <input
+                  type="password"
+                  placeholder="Verify Password"
+                  className={`border rounded-md p-2 focus:outline-none focus:ring-2 w-full ${
+                    signupErrors.verifyPassword
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  id="signup-verify-password"
+                  value={signupVerifyPassword}
+                  onChange={(e) => {
+                    setSignupVerifyPassword(e.target.value);
+                    // Clear error when user starts typing
+                    if (signupErrors.verifyPassword) {
+                      setSignupErrors({ ...signupErrors, verifyPassword: "" });
+                    }
+                  }}
+                />
+                {signupErrors.verifyPassword && (
+                  <div className="text-red-600 text-sm">
+                    {signupErrors.verifyPassword}
                   </div>
                 )}
               </div>
