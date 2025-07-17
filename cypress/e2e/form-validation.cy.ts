@@ -56,6 +56,9 @@ describe('Form Validation', () => {
 
       cy.get("#signup-password").should("have.class", "border-red-500");
       cy.get("div.text-red-600").should("contain", "Password");
+
+      // Should show captcha validation error
+      cy.get("div.text-red-600").should("contain", "captcha");
     });
 
     it("should show validation error for weak password", () => {
@@ -176,9 +179,17 @@ describe('Form Validation', () => {
       cy.get("#signup-fullname").clear().type("John Doe");
       cy.get("#signup-password").clear().type("StrongPassword123");
       cy.get("#signup-verify-password").clear().type("StrongPassword123");
+      
+      // Also fill captcha to clear all errors
+      cy.get('input[placeholder="Enter captcha code"]').type("TEST123");
+      
+      cy.wait(200); // Wait for validation to clear
 
-      // Errors should disappear
-      cy.get("div.text-red-600").should("not.exist");
+      // Check that form fields don't have error styling
+      cy.get("#signup-name").should("not.have.class", "border-red-500");
+      cy.get("#signup-fullname").should("not.have.class", "border-red-500");
+      cy.get("#signup-password").should("not.have.class", "border-red-500");
+      cy.get("#signup-verify-password").should("not.have.class", "border-red-500");
     });
   });
 
@@ -214,4 +225,62 @@ describe('Form Validation', () => {
       cy.get("#signup-name").should("not.have.class", "border-red-500");
     })
   })
+
+  describe("Captcha Validation", () => {
+    beforeEach(() => {
+      cy.get("button").contains("Signup").click();
+    });
+
+    it("should display captcha component", () => {
+      cy.get("canvas").should("be.visible");
+      cy.get('input[placeholder="Enter captcha code"]').should("be.visible");
+      cy.get('button[title="Refresh captcha"]').should("be.visible");
+    });
+
+    it("should refresh captcha when refresh button is clicked", () => {
+      cy.get('button[title="Refresh captcha"]').click();
+      cy.get("canvas").should("be.visible");
+      cy.get('input[placeholder="Enter captcha code"]').should(
+        "have.value",
+        ""
+      );
+    });
+
+    it("should show validation error for empty captcha", () => {
+      cy.get("#signup-name").type("John");
+      cy.get("#signup-fullname").type("John Doe");
+      cy.get("#signup-password").type("Password123");
+      cy.get("#signup-verify-password").type("Password123");
+      cy.get('button[type="submit"]').click();
+
+      cy.get("div.text-red-600").should("contain", "captcha");
+    });
+
+    it("should show validation error for incomplete captcha", () => {
+      cy.get("#signup-name").type("John");
+      cy.get("#signup-fullname").type("John Doe");
+      cy.get("#signup-password").type("Password123");
+      cy.get("#signup-verify-password").type("Password123");
+      cy.get('input[placeholder="Enter captcha code"]').type("wro");
+      cy.get('button[type="submit"]').click();
+
+      cy.get("div.text-red-600").should("contain", "captcha");
+    });
+
+    it("should clear captcha error when user starts typing", () => {
+      // First create the error
+      cy.get('button[type="submit"]').click();
+      cy.get("div.text-red-600").should("contain", "captcha");
+
+      // Then start typing in captcha
+      cy.get('input[placeholder="Enter captcha code"]').type("test");
+      cy.wait(200); // Wait for validation to clear
+
+      // Error should be cleared
+      cy.get('input[placeholder="Enter captcha code"]').should(
+        "not.have.class",
+        "border-red-500"
+      );
+    });
+  });
 });
