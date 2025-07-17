@@ -2,6 +2,7 @@ import { BrowserRouter } from 'react-router-dom';
 import AppRoutes from './routes';
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
+import FloatingBuyButton from './components/ui/FloatingBuyButton';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         }
       >
         <AppRoutes />
+        <FloatingBuyButton />
         <Toaster
           position="top-right"
           toastOptions={{

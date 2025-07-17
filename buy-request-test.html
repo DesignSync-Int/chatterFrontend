@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Request Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Buy Request Test</h1>
+    <form id="buyRequestForm">
+        <label>
+            Name:
+            <input type="text" id="name" required>
+        </label>
+        <br><br>
+        <label>
+            Contact Number:
+            <input type="tel" id="contactNumber" required>
+        </label>
+        <br><br>
+        <label>
+            Email:
+            <input type="email" id="email" required>
+        </label>
+        <br><br>
+        <label>
+            Best Time to Call:
+            <select id="bestTimeToCall" required>
+                <option value="">Select...</option>
+                <option value="morning">Morning</option>
+                <option value="afternoon">Afternoon</option>
+                <option value="evening">Evening</option>
+                <option value="anytime">Anytime</option>
+            </select>
+        </label>
+        <br><br>
+        <label>
+            Description:
+            <textarea id="description" required placeholder="Describe what you need: buy this application for your product or hire me for your project..."></textarea>
+        </label>
+        <br><br>
+        <button type="submit">Submit Request</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('buyRequestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                contactNumber: document.getElementById('contactNumber').value,
+                email: document.getElementById('email').value,
+                bestTimeToCall: document.getElementById('bestTimeToCall').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const response = await axios.post('http://localhost:4000/api/buy-request', formData);
+                document.getElementById('result').innerHTML = `
+                    <h3 style="color: green;">Success!</h3>
+                    <p>Request ID: ${response.data.requestId}</p>
+                    <p>Status: ${response.data.status}</p>
+                `;
+            } catch (error) {
+                document.getElementById('result').innerHTML = `
+                    <h3 style="color: red;">Error!</h3>
+                    <p>${error.response?.data?.message || error.message}</p>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

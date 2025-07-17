@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 describe("Authentication", () => {
   beforeEach(() => {
     cy.visit("/");
@@ -273,10 +275,10 @@ describe("Authentication", () => {
       // For testing, we'll simulate the captcha being completed
       // Since captcha validation is client-side, we need to make sure it's verified
       cy.get('input[placeholder="Enter captcha code"]').type("TEST123");
-      
+
       // Wait a moment for the captcha validation to process
       cy.wait(500);
-      
+
       // Note: In a real test environment, the captcha would need to be properly mocked
       // For now, we'll skip the network request test since it requires backend
       // cy.get('button[type="submit"]').click();
@@ -294,11 +296,11 @@ describe("Authentication", () => {
       cy.get("#signup-fullname").type("New User");
       cy.get("#signup-password").type("Password123");
       cy.get("#signup-verify-password").type("Password123");
-      
+
       // Add captcha completion for this test too
       cy.get('input[placeholder="Enter captcha code"]').type("TEST123");
       cy.wait(500);
-      
+
       // Skip network request test for now
       // cy.get('button[type="submit"]').click();
       // cy.wait("@signupRequest");
@@ -311,15 +313,18 @@ describe("Authentication", () => {
       cy.get("#signup-fullname").type("Existing User");
       cy.get("#signup-password").type("Password123");
       cy.get("#signup-verify-password").type("Password123");
-      
+
       // Test captcha completion
       cy.get('input[placeholder="Enter captcha code"]').type("TEST1");
-      
+
       // Form should be ready for submission (no validation errors)
       cy.get("#signup-name").should("not.have.class", "border-red-500");
       cy.get("#signup-fullname").should("not.have.class", "border-red-500");
       cy.get("#signup-password").should("not.have.class", "border-red-500");
-      cy.get("#signup-verify-password").should("not.have.class", "border-red-500");
+      cy.get("#signup-verify-password").should(
+        "not.have.class",
+        "border-red-500"
+      );
     });
 
     it("should clear validation errors when user starts typing", () => {
@@ -330,17 +335,20 @@ describe("Authentication", () => {
       cy.get("#signup-fullname").type("Valid User");
       cy.get("#signup-password").type("Password123");
       cy.get("#signup-verify-password").type("Password123");
-      
+
       // Also fill in captcha to clear all errors
       cy.get('input[placeholder="Enter captcha code"]').type("TEST123");
-      
+
       cy.wait(200); // Wait for validation to clear
-      
+
       // Check that form fields don't have error styling
       cy.get("#signup-name").should("not.have.class", "border-red-500");
       cy.get("#signup-fullname").should("not.have.class", "border-red-500");
       cy.get("#signup-password").should("not.have.class", "border-red-500");
-      cy.get("#signup-verify-password").should("not.have.class", "border-red-500");
+      cy.get("#signup-verify-password").should(
+        "not.have.class",
+        "border-red-500"
+      );
     });
   });
 
