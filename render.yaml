@@ -4,6 +4,9 @@ services:
     env: static
     buildCommand: npm run build
     staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BASE_URL
+        value: https://chatterbackend-08lw.onrender.com  # Updated to match your actual backend URL
     routes:
       - type: rewrite
         source: /*
