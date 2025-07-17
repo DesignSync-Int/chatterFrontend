@@ -44,6 +44,7 @@ export const signupSchema = z
     password: passwordSchema,
     verifyPassword: z.string().min(1, "Please verify your password"),
     fullName: nameSchema,
+    email: emailSchema, // Email is now required
     profile: z
       .string()
       .optional()
