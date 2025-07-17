@@ -58,6 +58,26 @@ const Login = () => {
     setErrorMessage("");
     setLoginErrors({});
 
+    // Check client-side rate limiting
+    const now = Date.now();
+    const loginAttempts = JSON.parse(
+      localStorage.getItem("loginAttempts") || "[]"
+    );
+    const recentAttempts = loginAttempts.filter(
+      (timestamp: number) => now - timestamp < 15 * 60 * 1000
+    );
+
+    if (recentAttempts.length >= 5) {
+      const oldestAttempt = Math.min(...recentAttempts);
+      const timeToWait = Math.ceil(
+        (oldestAttempt + 15 * 60 * 1000 - now) / 1000 / 60
+      );
+      setErrorMessage(
+        `Too many login attempts. Please wait ${timeToWait} minutes before trying again.`
+      );
+      return;
+    }
+
     // run validation first
     const validation = validateForm(loginSchema, { name: username, password });
     if (!validation.isValid) {
@@ -72,6 +92,8 @@ const Login = () => {
       .then((user: User | null) => {
         if (user) {
           console.log("Logged in successfully");
+          // Clear login attempts on successful login
+          localStorage.removeItem("loginAttempts");
           setCurrentPage("home");
           navigate("/home");
           setCurrentUser(user);
@@ -80,7 +102,18 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        setErrorMessage(error.response?.data?.message || "Login failed");
+        // Record failed login attempt
+        const updatedAttempts = [...recentAttempts, now];
+        localStorage.setItem("loginAttempts", JSON.stringify(updatedAttempts));
+
+        if (error.response?.status === 429) {
+          setErrorMessage(
+            error.response?.data?.message ||
+              "Too many login attempts. Please try again later."
+          );
+        } else {
+          setErrorMessage(error.response?.data?.message || "Login failed");
+        }
       });
   };
 
