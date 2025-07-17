@@ -1,8 +1,8 @@
 export type User = {
   _id: string;
   name: string;
-  fullName: string;
-  email: string; // Email is now required for all users
+  fullName?: string;
+  email?: string;
   gender?: "male" | "female" | "other";
   dateOfBirth?: string;
   profile?: string;
@@ -37,9 +37,9 @@ export interface LoginData {
 export interface SignupData {
   name: string;
   password: string;
-  fullName: string;
-  email: string; // Email is now required
   profile?: string;
+  fullName?: string;
+  email?: string;
   gender?: "male" | "female" | "other";
   dateOfBirth?: string;
 }

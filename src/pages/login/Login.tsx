@@ -80,14 +80,7 @@ const Login = () => {
         }
       })
       .catch((error) => {
-        const errorMessage = error.response?.data?.message || "Login failed";
-        if (error.response?.data?.requiresEmailVerification) {
-          setErrorMessage(
-            `${errorMessage} Please check your email for the verification link.`
-          );
-        } else {
-          setErrorMessage(errorMessage);
-        }
+        setErrorMessage(error.response?.data?.message || "Login failed");
       });
   };
 
@@ -103,7 +96,6 @@ const Login = () => {
       password: signupPassword,
       verifyPassword: signupVerifyPassword,
       fullName: signupFullName, // Required field
-      email: signupEmail, // Email is now required
       captcha: captchaValue, // Add captcha to validation
     };
 
@@ -112,6 +104,9 @@ const Login = () => {
     }
 
     // Add optional fields if provided
+    if (signupEmail && signupEmail.trim()) {
+      signupData.email = signupEmail.trim();
+    }
     if (signupGender) {
       signupData.gender = signupGender;
     }
@@ -139,7 +134,6 @@ const Login = () => {
       name: signupName,
       password: signupPassword,
       fullName: signupFullName,
-      email: signupEmail, // Email is now required
       captchaCompleted: isCaptchaVerified, // Add captcha completion status
     };
 
@@ -148,6 +142,9 @@ const Login = () => {
     }
 
     // Add optional fields if provided
+    if (signupEmail && signupEmail.trim()) {
+      backendSignupData.email = signupEmail.trim();
+    }
     if (signupGender) {
       backendSignupData.gender = signupGender;
     }
@@ -168,20 +165,17 @@ const Login = () => {
       .then((user: User | null) => {
         if (user) {
           console.log("Signup successful, user:", user);
-          // Don't redirect to home - user needs to verify email first
-          setSignupError(""); // Clear any previous errors
-          setErrorMessage(
-            "Account created successfully! Please check your email and verify your account before logging in."
-          );
-          setIsSignupTab(false); // Switch to login tab
+          setCurrentPage("home");
+          navigate("/home");
+          setCurrentUser(user);
         } else {
-          setErrorMessage("Signup failed. Please try again.");
+          setErrorMessage("Invalid username or password");
         }
         setIsSigningUp(false);
       })
       .catch((error) => {
         console.error("Signup error:", error);
-        setErrorMessage(error.response?.data?.message || "Signup failed");
+        setErrorMessage(error.response?.data?.message || "Login failed");
         setSignupError(error.response?.data?.message || "Signup failed");
         setIsSigningUp(false);
         // Reset captcha on error
@@ -471,34 +465,6 @@ const Login = () => {
                 )}
               </div>
 
-              {/* Email field - now required */}
-              <div className="space-y-1">
-                <input
-                  type="email"
-                  placeholder="Email Address *"
-                  className={`border rounded-md p-2 focus:outline-none focus:ring-2 w-full ${
-                    signupErrors.email
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-blue-500"
-                  }`}
-                  id="signup-email"
-                  value={signupEmail}
-                  onChange={(e) => {
-                    setSignupEmail(e.target.value);
-                    // Clear error when user starts typing
-                    if (signupErrors.email) {
-                      setSignupErrors({ ...signupErrors, email: "" });
-                    }
-                  }}
-                  required
-                />
-                {signupErrors.email && (
-                  <div className="text-red-600 text-sm">
-                    {signupErrors.email}
-                  </div>
-                )}
-              </div>
-
               {/* Captcha Section */}
               <div className="border-t pt-4 mt-4">
                 <p className="text-sm text-gray-600 mb-3">
@@ -531,6 +497,16 @@ const Login = () => {
                 </p>
 
                 <div className="space-y-3">
+                  <div className="space-y-1">
+                    <input
+                      type="email"
+                      placeholder="Email Address (Optional)"
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      value={signupEmail}
+                      onChange={(e) => setSignupEmail(e.target.value)}
+                    />
+                  </div>
+
                   <div className="space-y-1">
                     <select
                       className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
