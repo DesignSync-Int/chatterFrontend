@@ -52,6 +52,7 @@ export const signupSchema = z
           !val || val.trim() === "" || z.string().url().safeParse(val).success,
         "Profile must be a valid URL if provided"
       ),
+    captcha: z.string().min(1, "Please complete the captcha"),
   })
   .refine(
     (data) =>

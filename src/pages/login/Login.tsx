@@ -11,6 +11,7 @@ import {
   loginSchema,
   signupSchema,
 } from "../../utils/validation";
+import Captcha from "../../components/ui/Captcha";
 
 const Login = () => {
   const { login, isLoggingIn, checkUser, signup } = useAuthStore();
@@ -39,6 +40,18 @@ const Login = () => {
   const [signupError, setSignupError] = useState("");
   const [isSigningUp, setIsSigningUp] = useState(false);
   const [signupErrors, setSignupErrors] = useState<Record<string, string>>({});
+
+  // captcha state
+  const [captchaValue, setCaptchaValue] = useState("");
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
+  const [captchaKey, setCaptchaKey] = useState(0); // To force captcha refresh
+
+  // Reset captcha function
+  const resetCaptcha = () => {
+    setCaptchaValue("");
+    setIsCaptchaVerified(false);
+    setCaptchaKey((prev) => prev + 1); // Force re-render of captcha component
+  };
 
   // login form handler
   const handleLogin = () => {
@@ -83,6 +96,7 @@ const Login = () => {
       password: signupPassword,
       verifyPassword: signupVerifyPassword,
       fullName: signupFullName, // Required field
+      captcha: captchaValue, // Add captcha to validation
     };
 
     if (signupProfile && signupProfile.trim()) {
@@ -100,10 +114,17 @@ const Login = () => {
       signupData.dateOfBirth = signupDateOfBirth;
     }
 
-    // Validate signup form
+    // Validate signup form (including captcha)
     const validation = validateForm(signupSchema, signupData);
     if (!validation.isValid) {
       setSignupErrors(validation.errors);
+      setIsSigningUp(false);
+      return;
+    }
+
+    // Check if captcha is verified
+    if (!isCaptchaVerified) {
+      setSignupErrors({ captcha: "Please complete the captcha verification" });
       setIsSigningUp(false);
       return;
     }
@@ -113,6 +134,7 @@ const Login = () => {
       name: signupName,
       password: signupPassword,
       fullName: signupFullName,
+      captchaCompleted: isCaptchaVerified, // Add captcha completion status
     };
 
     if (signupProfile && signupProfile.trim()) {
@@ -156,6 +178,8 @@ const Login = () => {
         setErrorMessage(error.response?.data?.message || "Login failed");
         setSignupError(error.response?.data?.message || "Signup failed");
         setIsSigningUp(false);
+        // Reset captcha on error
+        resetCaptcha();
       });
   };
 
@@ -217,7 +241,10 @@ const Login = () => {
                 ? "bg-white border-b-2 border-blue-500 text-blue-600"
                 : "bg-gray-100 text-gray-500"
             }`}
-            onClick={() => setIsSignupTab(true)}
+            onClick={() => {
+              setIsSignupTab(true);
+              resetCaptcha(); // Reset captcha when switching to signup
+            }}
             type="button"
           >
             Signup
@@ -436,6 +463,31 @@ const Login = () => {
                     {signupErrors.profile}
                   </div>
                 )}
+              </div>
+
+              {/* Captcha Section */}
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm text-gray-600 mb-3">
+                  Security Verification
+                </p>
+                <Captcha
+                  key={captchaKey}
+                  onVerify={(isValid) => {
+                    setIsCaptchaVerified(isValid);
+                    // Clear captcha error when user interacts with captcha
+                    if (signupErrors.captcha) {
+                      setSignupErrors({ ...signupErrors, captcha: "" });
+                    }
+                  }}
+                  onCaptchaChange={(value) => {
+                    setCaptchaValue(value);
+                    // Clear captcha error when user starts typing
+                    if (signupErrors.captcha) {
+                      setSignupErrors({ ...signupErrors, captcha: "" });
+                    }
+                  }}
+                  error={signupErrors.captcha}
+                />
               </div>
 
               {/* Optional fields section */}
