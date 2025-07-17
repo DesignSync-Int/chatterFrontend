@@ -23,114 +23,6 @@ const FloatingBuyButton: React.FC = () => {
   });
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [rateLimitInfo, setRateLimitInfo] = useState({
-    attempts: 0,
-    lastAttempt: 0,
-    isBlocked: false,
-    blockUntil: 0,
-  });
-
-  // Rate limiting configuration
-  const RATE_LIMIT_CONFIG = {
-    maxAttempts: 3,
-    timeWindow: 15 * 60 * 1000, // 15 minutes
-    blockDuration: 30 * 60 * 1000, // 30 minutes
-    cooldownBetweenAttempts: 5 * 1000, // 5 seconds between attempts
-  };
-
-  // Check rate limiting
-  const checkRateLimit = (): boolean => {
-    const now = Date.now();
-    const rateLimitKey = "buyRequest_rateLimit";
-    const storedData = localStorage.getItem(rateLimitKey);
-
-    let currentRateLimit = rateLimitInfo;
-    if (storedData) {
-      try {
-        currentRateLimit = JSON.parse(storedData);
-      } catch (e) {
-        console.error("Error parsing rate limit data:", e);
-      }
-    }
-
-    // Check if currently blocked
-    if (currentRateLimit.isBlocked && now < currentRateLimit.blockUntil) {
-      const remainingTime = Math.ceil(
-        (currentRateLimit.blockUntil - now) / 1000 / 60
-      );
-      setErrors({
-        submit: `Too many attempts. Please wait ${remainingTime} minutes before trying again.`,
-      });
-      return false;
-    }
-
-    // Reset block if expired
-    if (currentRateLimit.isBlocked && now >= currentRateLimit.blockUntil) {
-      currentRateLimit = {
-        attempts: 0,
-        lastAttempt: 0,
-        isBlocked: false,
-        blockUntil: 0,
-      };
-    }
-
-    // Check if within time window
-    if (now - currentRateLimit.lastAttempt < RATE_LIMIT_CONFIG.timeWindow) {
-      // Check if exceeded max attempts
-      if (currentRateLimit.attempts >= RATE_LIMIT_CONFIG.maxAttempts) {
-        currentRateLimit.isBlocked = true;
-        currentRateLimit.blockUntil = now + RATE_LIMIT_CONFIG.blockDuration;
-
-        localStorage.setItem(rateLimitKey, JSON.stringify(currentRateLimit));
-        setRateLimitInfo(currentRateLimit);
-
-        const remainingTime = Math.ceil(
-          RATE_LIMIT_CONFIG.blockDuration / 1000 / 60
-        );
-        setErrors({
-          submit: `Too many attempts. Please wait ${remainingTime} minutes before trying again.`,
-        });
-        return false;
-      }
-
-      // Check cooldown between attempts
-      if (
-        now - currentRateLimit.lastAttempt <
-        RATE_LIMIT_CONFIG.cooldownBetweenAttempts
-      ) {
-        const remainingCooldown = Math.ceil(
-          (RATE_LIMIT_CONFIG.cooldownBetweenAttempts -
-            (now - currentRateLimit.lastAttempt)) /
-            1000
-        );
-        setErrors({
-          submit: `Please wait ${remainingCooldown} seconds before trying again.`,
-        });
-        return false;
-      }
-    } else {
-      // Reset attempts if outside time window
-      currentRateLimit.attempts = 0;
-    }
-
-    return true;
-  };
-
-  // Update rate limit after attempt
-  const updateRateLimit = () => {
-    const now = Date.now();
-    const rateLimitKey = "buyRequest_rateLimit";
-
-    const newRateLimit = {
-      attempts: rateLimitInfo.attempts + 1,
-      lastAttempt: now,
-      isBlocked: false,
-      blockUntil: 0,
-    };
-
-    localStorage.setItem(rateLimitKey, JSON.stringify(newRateLimit));
-    setRateLimitInfo(newRateLimit);
-  };
 
   // Check for buy query parameter
   useEffect(() => {
@@ -191,11 +83,6 @@ const FloatingBuyButton: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check rate limiting before form validation
-    if (!checkRateLimit()) {
-      return;
-    }
-
     if (!validateForm()) {
       return;
     }
@@ -221,10 +108,6 @@ const FloatingBuyButton: React.FC = () => {
       }, 2000);
     } catch (error: any) {
       console.error("Error submitting buy request:", error);
-
-      // Update rate limit on failed attempts
-      updateRateLimit();
-
       setErrors({
         submit:
           error.response?.data?.message ||
