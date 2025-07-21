@@ -128,7 +128,6 @@ describe('Buy Request Feature', () => {
   });
 
   it('should successfully submit valid form', () => {
-    // Mock the API endpoint
     cy.intercept('POST', '/api/buy-request', {
       statusCode: 201,
       body: {
@@ -170,7 +169,6 @@ describe('Buy Request Feature', () => {
   });
 
   it('should handle API errors gracefully', () => {
-    // Mock API error
     cy.intercept('POST', '/api/buy-request', {
       statusCode: 400,
       body: {
@@ -203,7 +201,6 @@ describe('Buy Request Feature', () => {
   });
 
   it('should prevent duplicate submissions', () => {
-    // Mock successful submission
     cy.intercept('POST', '/api/buy-request', {
       statusCode: 201,
       body: {
