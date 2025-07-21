@@ -13,8 +13,8 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
           onClick={() => onTabChange("users")}
           className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
             activeTab === "users"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-white text-[#FB406C] shadow-sm"
+              : "text-gray-600 hover:text-[#FB406C]"
           }`}
         >
           All Users
@@ -23,8 +23,8 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
           onClick={() => onTabChange("received")}
           className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
             activeTab === "received"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-white text-[#FB406C] shadow-sm"
+              : "text-gray-600 hover:text-[#FB406C]"
           }`}
         >
           Received
@@ -33,8 +33,8 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
           onClick={() => onTabChange("sent")}
           className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
             activeTab === "sent"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-white text-[#FB406C] shadow-sm"
+              : "text-gray-600 hover:text-[#FB406C]"
           }`}
         >
           Sent
@@ -43,8 +43,8 @@ const TabNavigation: React.FC<TabNavigationProps> = ({ activeTab, onTabChange })
           onClick={() => onTabChange("friends")}
           className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-colors ${
             activeTab === "friends"
-              ? "bg-white text-blue-600 shadow-sm"
-              : "text-gray-600 hover:text-gray-900"
+              ? "bg-white text-[#FB406C] shadow-sm"
+              : "text-gray-600 hover:text-[#FB406C]"
           }`}
         >
           Friends

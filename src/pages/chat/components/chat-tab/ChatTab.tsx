@@ -172,7 +172,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
             className={`flex-1 rounded-full border-[8px] px-[12px] py-[8px] ${
               messageError
                 ? "border-red-300 focus:border-red-500"
-                : "border-[#cfcfcf] focus:border-blue-300"
+                : "border-[#cfcfcf] focus:border-[#FB406C]"
             }`}
             value={currentMessage}
             onChange={(e) => {

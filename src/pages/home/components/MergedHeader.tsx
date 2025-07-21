@@ -22,7 +22,7 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
   };
 
   return (
-    <header className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 border-b border-blue-100">
+    <header className="bg-gradient-to-br from-pink-50 via-rose-50 to-white border-b border-pink-100">
       <div className="px-6 py-8">
         {/* App title and notifications row */}
         <div className="flex items-start justify-between mb-8">
@@ -61,7 +61,7 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
                 {/* profile button - using dedicated handler function */}
                 <button
                   onClick={openProfileModal}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="flex items-center gap-2 px-4 py-2 bg-[#FB406C] text-white hover:bg-[#fb406cd9] rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <User2 className="w-4 h-4" />
                   <span className="text-sm font-medium">Profile</span>
@@ -70,7 +70,7 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
                 {/* logout - should we add a confirmation dialog? for now direct logout is fine */}
                 <button
                   onClick={onLogout}
-                  className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg border border-gray-200 hover:border-red-200 transition-all duration-200 shadow-sm hover:shadow-md"
+                  className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 hover:text-[#FB406C] hover:bg-pink-50 rounded-lg border border-gray-200 hover:border-pink-200 transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="text-sm font-medium">Logout</span>

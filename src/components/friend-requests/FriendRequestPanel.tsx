@@ -60,14 +60,19 @@ const FriendRequestPanel: React.FC = () => {
         </div>
       ) : (
         receivedRequests.map((request: FriendRequest) => (
-          <div key={request._id} className="bg-white rounded-lg p-4 shadow-sm border">
+          <div
+            key={request._id}
+            className="bg-white rounded-lg p-4 shadow-sm border"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
                   {request.sender.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">{request.sender.name}</h3>
+                  <h3 className="font-medium text-gray-900">
+                    {request.sender.name}
+                  </h3>
                   {request.message && (
                     <p className="text-sm text-gray-600">{request.message}</p>
                   )}
@@ -80,7 +85,7 @@ const FriendRequestPanel: React.FC = () => {
                 <button
                   onClick={() => handleAccept(request._id)}
                   disabled={isLoading}
-                  className="p-2 bg-green-500 text-white rounded-full hover:bg-green-600 disabled:opacity-50"
+                  className="p-2 bg-[#FB406C] text-white rounded-full hover:bg-[#fb406cd9] disabled:opacity-50"
                 >
                   <Check className="h-4 w-4" />
                 </button>
@@ -108,14 +113,19 @@ const FriendRequestPanel: React.FC = () => {
         </div>
       ) : (
         sentRequests.map((request: FriendRequest) => (
-          <div key={request._id} className="bg-white rounded-lg p-4 shadow-sm border">
+          <div
+            key={request._id}
+            className="bg-white rounded-lg p-4 shadow-sm border"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold">
                   {request.receiver.name.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">{request.receiver.name}</h3>
+                  <h3 className="font-medium text-gray-900">
+                    {request.receiver.name}
+                  </h3>
                   {request.message && (
                     <p className="text-sm text-gray-600">{request.message}</p>
                   )}
@@ -127,14 +137,15 @@ const FriendRequestPanel: React.FC = () => {
               <div className="flex items-center">
                 <span
                   className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    request.status === 'pending'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : request.status === 'accepted'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                    request.status === "pending"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : request.status === "accepted"
+                        ? "bg-pink-100 text-[#FB406C]"
+                        : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                  {request.status.charAt(0).toUpperCase() +
+                    request.status.slice(1)}
                 </span>
               </div>
             </div>

@@ -36,7 +36,7 @@ const ReceivedRequestsTab: React.FC = () => {
     return (
       <div className="flex items-center justify-center py-8">
         <div className="flex items-center gap-3 text-gray-500">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#FB406C]"></div>
           <span>Loading received requests...</span>
         </div>
       </div>
@@ -65,18 +65,20 @@ const ReceivedRequestsTab: React.FC = () => {
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 bg-[#FB406C] rounded-full flex items-center justify-center text-white font-semibold">
                 {request.sender.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <p className="font-medium text-gray-900">{request.sender.name}</p>
+                <p className="font-medium text-gray-900">
+                  {request.sender.name}
+                </p>
                 <p className="text-sm text-gray-500">Friend Request</p>
               </div>
             </div>
             <div className="flex space-x-2">
               <button
                 onClick={() => handleAccept(request._id)}
-                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-[#FB406C] hover:bg-[#fb406cd9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB406C]"
               >
                 <Check className="w-4 h-4 mr-1" />
                 Accept

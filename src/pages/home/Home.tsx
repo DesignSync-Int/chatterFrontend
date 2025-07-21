@@ -1,5 +1,4 @@
 import useUserStore from "../../store/user.store.ts";
-import PerformanceTestPanel from "../../components/developer/PerformanceTestPanel.tsx";
 import { useAuthStore } from "../../store/auth.store.ts";
 import usePageStore from "../../store/page.store.ts";
 import FloatingChatManager from "../chat/components/FloatingChatManager.tsx";
@@ -7,6 +6,7 @@ import { useChatWindowsStore } from "../../store/chatWindows.store";
 import MergedHeader from "./components/MergedHeader.tsx";
 import TabNavigation from "./components/TabNavigation.tsx";
 import ContentArea from "./components/ContentArea.tsx";
+import EmailVerificationReminder from "../../components/auth/EmailVerificationReminder.tsx";
 import type { User } from "../../types/auth.ts";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -15,6 +15,7 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState<
     "users" | "received" | "sent" | "friends"
   >("users");
+  const [showEmailReminder, setShowEmailReminder] = useState(false);
   const currentUser = useUserStore((state) => state.currentUser);
   const authUser = useAuthStore((state) => state.authUser);
   const isCheckingAuth = useAuthStore((state) => state.isCheckingAuth);
@@ -38,13 +39,20 @@ const Home = () => {
     }
   }, [authUser, currentUser, setCurrentUser, checkAuth]);
 
+  useEffect(() => {
+    const displayUser = currentUser || authUser;
+    if (displayUser && displayUser.email && !displayUser.isEmailVerified) {
+      setShowEmailReminder(true);
+    }
+  }, [currentUser, authUser]);
+
   const displayUser = currentUser || authUser;
 
   if (isCheckingAuth && !authUser && !currentUser) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="flex items-center gap-3 text-gray-500">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#FB406C]"></div>
           <span>Loading your account...</span>
         </div>
       </div>
@@ -85,6 +93,17 @@ const Home = () => {
       )}
 
       <main className="p-6 flex-grow flex flex-col gap-6">
+        {/* Email Verification Reminder */}
+        {showEmailReminder &&
+          displayUser &&
+          displayUser.email &&
+          !displayUser.isEmailVerified && (
+            <EmailVerificationReminder
+              email={displayUser.email}
+              onClose={() => setShowEmailReminder(false)}
+            />
+          )}
+
         <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />
 
         <ContentArea
@@ -94,7 +113,6 @@ const Home = () => {
       </main>
 
       <FloatingChatManager />
-      <PerformanceTestPanel />
     </div>
   );
 };
