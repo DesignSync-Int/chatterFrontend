@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, X, Phone, Mail, Clock, User } from 'lucide-react';
-import { axiosInstance } from '../../lib/axios';
+import React, { useState } from "react";
+import { ShoppingCart, X, Phone, Mail, Clock, User } from "lucide-react";
+import { axiosInstance } from "../../lib/axios";
 
 interface BuyFormData {
   name: string;
@@ -11,7 +11,6 @@ interface BuyFormData {
 }
 
 const FloatingBuyButton: React.FC = () => {
-  const [showButton, setShowButton] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<BuyFormData>({
@@ -24,28 +23,7 @@ const FloatingBuyButton: React.FC = () => {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Check for buy query parameter
-  useEffect(() => {
-    const checkBuyQuery = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const buyParam = urlParams.get("buy");
-      setShowButton(buyParam === "true");
-    };
-
-    // Check on initial load
-    checkBuyQuery();
-
-    // Listen for URL changes
-    const handlePopState = () => {
-      checkBuyQuery();
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
+  // Button is always shown - no query parameter check needed
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -138,8 +116,6 @@ const FloatingBuyButton: React.FC = () => {
     setSubmitSuccess(false);
     setErrors({});
   };
-
-  if (!showButton) return null;
 
   return (
     <>
