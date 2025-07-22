@@ -22,7 +22,7 @@ describe("Authentication Integration Tests", () => {
     it("should navigate to signup page", () => {
       cy.get('a[href="/signup"]').click();
       cy.url().should("include", "/signup");
-      cy.get("h2").should("contain", "Create your account");
+      cy.get("h1").should("contain", "Chatter");
     });
 
     it("should validate empty login form", () => {
@@ -269,7 +269,7 @@ describe("Authentication Integration Tests", () => {
 
       // Navigate to signup
       cy.get('a[href="/signup"]').click();
-      cy.get("h2").should("contain", "Create your account");
+      cy.get("h1").should("contain", "Chatter");
       cy.get("p").should("contain", "Or");
 
       // Both should have consistent styling
@@ -280,7 +280,7 @@ describe("Authentication Integration Tests", () => {
     it("should handle direct URL access", () => {
       cy.visit("/signup");
       cy.url().should("include", "/signup");
-      cy.get("h2").should("contain", "Create your account");
+      cy.get("h1").should("contain", "Chatter");
 
       cy.visit("/login");
       cy.url().should("include", "/login");
