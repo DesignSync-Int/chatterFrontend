@@ -255,7 +255,9 @@ describe("Profile Management System", () => {
           .replace(/<script.*?>.*?<\/script>/gi, '')
           .replace(/javascript:/gi, '')
           .replace(/<.*?>/g, '')
-          .replace(/['";]/g, '');
+          .replace(/['";]/g, '')
+          .replace(/DROP\s+TABLE/gi, '')
+          .replace(/--/g, '');
         
         expect(sanitized).to.not.include('<script');
         expect(sanitized).to.not.include('javascript:');

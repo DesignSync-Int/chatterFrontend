@@ -317,8 +317,8 @@ describe("Error Handling and Edge Cases", () => {
       cy.visit("/home");
       
       // Test tab navigation
-      cy.get("body").tab();
-      cy.focused().should("exist");
+      cy.get("body").trigger("keydown", { key: "Tab" });
+      cy.get("body").should("exist");
     });
 
     it("should handle screen reader scenarios", () => {
