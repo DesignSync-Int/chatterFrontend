@@ -11,7 +11,7 @@ interface BuyFormData {
 }
 
 const FloatingBuyButton: React.FC = () => {
-  const [showButton, setShowButton] = useState(false);
+  const [showButton, setShowButton] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<BuyFormData>({
