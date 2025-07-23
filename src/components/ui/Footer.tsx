@@ -1,4 +1,5 @@
 import React from 'react';
+import packageJson from '../../../package.json';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -12,7 +13,7 @@ const Footer: React.FC = () => {
           </div>
           <div className="flex flex-col md:flex-row items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
             <div className="hidden md:block w-1 h-1 bg-gray-400 rounded-full"></div>
-            <span>Version 1.0.0</span>
+            <span>Version {packageJson.version}</span>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 {
   "name": "chatter",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.2.0",
   "type": "module",
   "author": "Sachin",
   "license": "MIT",
@@ -14,7 +14,11 @@
     "test": "npm run test:e2e",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
     "typecheck": "tsc --noEmit -p tsconfig.app.json -p tsconfig.node.json",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "version:patch": "npm version patch --no-git-tag-version",
+    "version:minor": "npm version minor --no-git-tag-version",
+    "version:major": "npm version major --no-git-tag-version",
+    "update-version": "node scripts/update-version.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.10",
