@@ -2,20 +2,34 @@ services:
   - type: web
     name: chatterfrontend
     env: static
-    buildCommand: npm run build
+    buildCommand: npm ci && npm run build
     staticPublishPath: ./dist
     routes:
       - type: rewrite
-        source: /*
-        destination: /index.html
+        source: "/reset-password"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/reset-password/*"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/login"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/signup"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/forgot-password"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/verify-email"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/home"
+        destination: "/index.html"
+      - type: rewrite
+        source: "/*"
+        destination: "/index.html"
     headers:
-      - key: X-Frame-Options
-        value: DENY
-      - key: X-Content-Type-Options
-        value: nosniff
-    buildFilter:
-      paths:
-        - src/**
-        - public/**
-        - package.json
-        - vite.config.ts
+      - key: Cache-Control
+        value: no-cache
+    pullRequestPreviewsEnabled: false

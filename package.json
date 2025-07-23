@@ -1,13 +1,13 @@
 {
   "name": "chatter",
   "private": true,
-  "version": "1.2.2",
+  "version": "1.2.3",
   "type": "module",
   "author": "Sachin",
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && cp public/_redirects dist/_redirects",
     "preview": "vite preview",
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
