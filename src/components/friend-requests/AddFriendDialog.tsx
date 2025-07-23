@@ -35,12 +35,15 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({
       setSuccess(`Friend request sent to ${user.name}!`);
       setMessage("");
 
+      // Close modal after brief success message display
       setTimeout(() => {
         setSuccess("");
         onClose();
-      }, 2000);
-    } catch (err: any) {
-      setError(err.message || "Failed to send friend request");
+      }, 800); // Reduced from 2000ms to 800ms
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to send friend request";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
