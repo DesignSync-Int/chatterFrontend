@@ -85,12 +85,21 @@ const FloatingBuyButton: React.FC = () => {
         setShowForm(false);
         setSubmitSuccess(false);
       }, 2000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error submitting buy request:", error);
       setErrors({
         submit:
-          error.response?.data?.message ||
-          "Failed to submit request. Please try again.",
+          error instanceof Error &&
+          "response" in error &&
+          error.response &&
+          typeof error.response === "object" &&
+          "data" in error.response &&
+          error.response.data &&
+          typeof error.response.data === "object" &&
+          "message" in error.response.data &&
+          typeof error.response.data.message === "string"
+            ? error.response.data.message
+            : "Failed to submit request. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
