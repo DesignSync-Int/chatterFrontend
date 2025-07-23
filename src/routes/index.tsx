@@ -11,12 +11,12 @@ const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 
 const AppRoutes = () => (
   <Routes>
-    <Route path="/" element={<Login />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
-    <Route path="/verify-email" element={<EmailVerification />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/" element={<MainLayout><Login /></MainLayout>} />
+    <Route path="/login" element={<MainLayout><Login /></MainLayout>} />
+    <Route path="/signup" element={<MainLayout><Signup /></MainLayout>} />
+    <Route path="/verify-email" element={<MainLayout><EmailVerification /></MainLayout>} />
+    <Route path="/forgot-password" element={<MainLayout><ForgotPassword /></MainLayout>} />
+    <Route path="/reset-password" element={<MainLayout><ResetPassword /></MainLayout>} />
     <Route
       path="/home"
       element={
