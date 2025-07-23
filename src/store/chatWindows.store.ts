@@ -1,5 +1,6 @@
-import { create } from 'zustand';
-import type { User } from '../types/auth.ts';
+import { create } from "zustand";
+
+import type { User } from "../types/auth.ts";
 
 interface ChatWindow {
   user: User;
@@ -13,16 +14,18 @@ interface ChatWindowStore {
   toggleMinimize: (id: string) => void;
 }
 
-export const useChatWindowsStore = create<ChatWindowStore>(set => ({
+export const useChatWindowsStore = create<ChatWindowStore>((set) => ({
   openChats: [],
-  openChat: user =>
-    set(state => {
-      const existing = state.openChats.find(chat => chat.user._id === user._id);
+  openChat: (user) =>
+    set((state) => {
+      const existing = state.openChats.find(
+        (chat) => chat.user._id === user._id,
+      );
 
       if (existing) {
         return {
           openChats: [
-            ...state.openChats.filter(chat => chat.user._id !== user._id),
+            ...state.openChats.filter((chat) => chat.user._id !== user._id),
             { ...existing, minimized: false },
           ],
         };
@@ -33,15 +36,15 @@ export const useChatWindowsStore = create<ChatWindowStore>(set => ({
       };
     }),
 
-  closeChat: id =>
-    set(state => ({
-      openChats: state.openChats.filter(chat => chat.user._id !== id),
+  closeChat: (id) =>
+    set((state) => ({
+      openChats: state.openChats.filter((chat) => chat.user._id !== id),
     })),
 
-  toggleMinimize: id =>
-    set(state => ({
-      openChats: state.openChats.map(chat =>
-        chat.user._id === id ? { ...chat, minimized: !chat.minimized } : chat
+  toggleMinimize: (id) =>
+    set((state) => ({
+      openChats: state.openChats.map((chat) =>
+        chat.user._id === id ? { ...chat, minimized: !chat.minimized } : chat,
       ),
     })),
 }));

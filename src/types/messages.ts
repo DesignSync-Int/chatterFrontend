@@ -9,11 +9,11 @@ export interface Message {
   updatedAt?: string;
 }
 export type MessageType = "received" | "sent";
-export type MessageProps = {
+export interface MessageProps {
   message: { content: string; senderId: string; recipientId: string };
   type?: MessageType;
   isNotRecent?: boolean;
-};
+}
 
 export interface ChatStore {
   messages: Record<string, Message[]>;

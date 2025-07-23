@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import { ShoppingCart, X, Phone, Mail, Clock, User } from "lucide-react";
+import React, { useState } from "react";
+
 import { axiosInstance } from "../../lib/axios";
 
 interface BuyFormData {

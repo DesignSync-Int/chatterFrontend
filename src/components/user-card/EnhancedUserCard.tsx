@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+
 import type { User } from "../../types/auth";
 import FriendRequestButton from "../friend-requests/FriendRequestButton";
 
@@ -8,10 +9,10 @@ interface EnhancedUserCardProps {
   showFriendRequestButton?: boolean;
 }
 
-const EnhancedUserCard: React.FC<EnhancedUserCardProps> = ({ 
-  user, 
-  onChatClick, 
-  showFriendRequestButton = true 
+const EnhancedUserCard: React.FC<EnhancedUserCardProps> = ({
+  user,
+  onChatClick,
+  showFriendRequestButton = true,
 }) => {
   // Generate a color based on the user's name
   const getAvatarColor = (name: string) => {

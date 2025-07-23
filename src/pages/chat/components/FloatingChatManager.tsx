@@ -1,20 +1,25 @@
-import ChatWindow from './ChatWindowViewer';
-import { useChatWindowsStore } from '../../../store/chatWindows.store';
-import { useEffect, useState } from 'react';
-import './FloatingChatDropdown.css';
+import { useEffect, useState } from "react";
+
+import { useChatWindowsStore } from "../../../store/chatWindows.store";
+
+import ChatWindow from "./ChatWindowViewer";
+import "./FloatingChatDropdown.css";
 
 const CHAT_WIDTH = 340;
 const SIDE_PADDING = 32;
 
 export const FloatingChatManager = () => {
   const { openChats, openChat } = useChatWindowsStore();
-  const visibleChats = openChats.filter(chat => !chat.minimized);
-  const minimizedChats = openChats.filter(chat => chat.minimized);
+  const visibleChats = openChats.filter((chat) => !chat.minimized);
+  const minimizedChats = openChats.filter((chat) => chat.minimized);
 
   const [maxWindows, setMaxWindows] = useState(3);
   const [showDropdown, setShowDropdown] = useState(false);
   const chatsToShow = visibleChats.slice(-maxWindows);
-  const overflowedChats = visibleChats.slice(0, visibleChats.length - chatsToShow.length);
+  const overflowedChats = visibleChats.slice(
+    0,
+    visibleChats.length - chatsToShow.length,
+  );
   const hiddenChats = [...minimizedChats, ...overflowedChats];
   const hiddenChatsCount = hiddenChats.length;
 
@@ -26,14 +31,19 @@ export const FloatingChatManager = () => {
     };
 
     calculateMax();
-    window.addEventListener('resize', calculateMax);
-    return () => window.removeEventListener('resize', calculateMax);
+    window.addEventListener("resize", calculateMax);
+    return () => window.removeEventListener("resize", calculateMax);
   }, []);
 
   return (
     <>
       {chatsToShow.map((chat, index) => (
-        <ChatWindow key={chat.user._id} user={chat.user} index={index} hidden={chat.minimized} />
+        <ChatWindow
+          key={chat.user._id}
+          user={chat.user}
+          index={index}
+          hidden={chat.minimized}
+        />
       ))}
       {hiddenChatsCount > 0 && (
         <div
@@ -44,7 +54,7 @@ export const FloatingChatManager = () => {
           +{hiddenChatsCount}
           {showDropdown && (
             <div className="chat-dropdown">
-              {hiddenChats.map(chat => (
+              {hiddenChats.map((chat) => (
                 <div
                   key={chat.user._id}
                   className="chat-dropdown-item"

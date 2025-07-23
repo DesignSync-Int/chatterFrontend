@@ -1,5 +1,6 @@
-import React from 'react';
-import packageJson from '../../../package.json';
+import React from "react";
+
+import packageJson from "../../../package.json";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();

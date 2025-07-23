@@ -1,14 +1,19 @@
-import { useState, useEffect, useRef } from 'react';
-import useUserStore from '../../../../store/user.store.ts';
-import MessageItem from './MessageItem.tsx';
-import type { Message } from '../../../../types/messages.ts';
-import useChatStore from '../../../../store/messages.store.ts';
-import { getTimeDifferenceInSeconds, formatTimestamp } from '../../../../utils/time.ts';
-import { TimeConfig } from '../../../../config.ts';
-import type { User } from '../../../../types/auth.ts';
-import { validateField } from "../../../../utils/validation.ts";
-import { censorText } from "../../../../utils/messageCensorship.ts";
+import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
+
+import { TimeConfig } from "../../../../config.ts";
+import useChatStore from "../../../../store/messages.store.ts";
+import useUserStore from "../../../../store/user.store.ts";
+import type { User } from "../../../../types/auth.ts";
+import type { Message } from "../../../../types/messages.ts";
+import { censorText } from "../../../../utils/messageCensorship.ts";
+import {
+  getTimeDifferenceInSeconds,
+  formatTimestamp,
+} from "../../../../utils/time.ts";
+import { validateField } from "../../../../utils/validation.ts";
+
+import MessageItem from "./MessageItem.tsx";
 
 interface ChatTabProps {
   recipient: User;
@@ -39,7 +44,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
     .max(1000, "Message must be less than 1000 characters")
     .refine(
       (val) => val.trim().length > 0,
-      "Message cannot be just whitespace"
+      "Message cannot be just whitespace",
     );
 
   const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -93,7 +98,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
     const timeDifference = getTimeDifferenceInSeconds(
       message.updatedAt || message.createdAt,
       recipientMessages[index - 1]?.updatedAt ||
-        recipientMessages[index - 1]?.createdAt
+        recipientMessages[index - 1]?.createdAt,
     );
 
     return (
@@ -149,7 +154,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         id="chat-content"
       >
         {recipientMessages.map((message, index) =>
-          renderMessageItem(message, index)
+          renderMessageItem(message, index),
         )}
       </div>
 

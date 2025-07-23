@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Modal } from '../ui/Modal';
-import { Button } from '../ui/Button';
-import { UserPlus, Loader2 } from 'lucide-react';
-import { useFriendRequestStore } from '../../store/friendRequest.store';
-import type { User as UserType } from '../../types/auth';
+import { UserPlus, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+
+import { useFriendRequestStore } from "../../store/friendRequest.store";
+import type { User as UserType } from "../../types/auth";
+import { Button } from "../ui/Button";
+import { Modal } from "../ui/Modal";
 
 interface AddFriendDialogProps {
   user: UserType;
@@ -11,40 +12,44 @@ interface AddFriendDialogProps {
   onClose: () => void;
 }
 
-const AddFriendDialog: React.FC<AddFriendDialogProps> = ({ user, isOpen, onClose }) => {
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+const AddFriendDialog: React.FC<AddFriendDialogProps> = ({
+  user,
+  isOpen,
+  onClose,
+}) => {
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState('');
-  
+  const [success, setSuccess] = useState("");
+
   const { sendFriendRequest } = useFriendRequestStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
     setIsLoading(true);
-    
+
     try {
       await sendFriendRequest(user._id, message.trim());
       setSuccess(`Friend request sent to ${user.name}!`);
-      setMessage('');
-      
+      setMessage("");
+
       setTimeout(() => {
-        setSuccess('');
+        setSuccess("");
         onClose();
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Failed to send friend request');
+      setError(err.message || "Failed to send friend request");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    setMessage('');
-    setError('');
-    setSuccess('');
+    setMessage("");
+    setError("");
+    setSuccess("");
     setIsLoading(false);
     onClose();
   };
@@ -62,7 +67,8 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({ user, isOpen, onClose
             <UserPlus className="w-8 h-8 text-blue-600" />
           </div>
           <p className="text-gray-600">
-            Send a friend request to <span className="font-semibold">{user.name}</span>
+            Send a friend request to{" "}
+            <span className="font-semibold">{user.name}</span>
           </p>
         </div>
 
@@ -79,7 +85,10 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({ user, isOpen, onClose
         )}
 
         <div className="space-y-2">
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="message"
+            className="block text-sm font-medium text-gray-700"
+          >
             Message (Optional)
           </label>
           <textarea
@@ -92,7 +101,9 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({ user, isOpen, onClose
             maxLength={100}
             disabled={isLoading}
           />
-          <p className="text-xs text-gray-500">{message.length}/100 characters</p>
+          <p className="text-xs text-gray-500">
+            {message.length}/100 characters
+          </p>
         </div>
 
         <div className="flex gap-3 pt-4">
@@ -105,11 +116,7 @@ const AddFriendDialog: React.FC<AddFriendDialogProps> = ({ user, isOpen, onClose
           >
             Cancel
           </Button>
-          <Button
-            type="submit"
-            className="flex-1"
-            disabled={isLoading}
-          >
+          <Button type="submit" className="flex-1" disabled={isLoading}>
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />

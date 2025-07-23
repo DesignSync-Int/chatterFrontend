@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { toast } from 'react-hot-toast';
-import { resendVerificationEmail } from '../../services/auth.service';
-import { Mail, X } from 'lucide-react';
+import { Mail, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+
+import { resendVerificationEmail } from "../../services/auth.service";
 
 interface EmailVerificationReminderProps {
   email: string;
@@ -18,12 +19,12 @@ const EmailVerificationReminder: React.FC<EmailVerificationReminderProps> = ({
     setIsResending(true);
     try {
       await resendVerificationEmail(email);
-      toast.success('Verification email sent! Please check your inbox.');
+      toast.success("Verification email sent! Please check your inbox.");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to send verification email');
+        toast.error("Failed to send verification email");
       }
     } finally {
       setIsResending(false);
@@ -38,28 +39,29 @@ const EmailVerificationReminder: React.FC<EmailVerificationReminderProps> = ({
       >
         <X className="w-4 h-4" />
       </button>
-      
+
       <div className="flex items-start space-x-3">
         <div className="flex-shrink-0">
           <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
             <Mail className="w-5 h-5 text-[#FB406C]" />
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-gray-900 mb-1">
             Email Verification Required
           </h3>
           <p className="text-sm text-gray-600 mb-3">
-            Please verify your email address <strong>{email}</strong> to access all features.
+            Please verify your email address <strong>{email}</strong> to access
+            all features.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-2">
             <button
               onClick={handleResendEmail}
               disabled={isResending}
               className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-[#FB406C] hover:bg-[#fb406cd9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FB406C] disabled:opacity-50 disabled:cursor-not-allowed ${
-                isResending ? 'cursor-not-allowed' : ''
+                isResending ? "cursor-not-allowed" : ""
               }`}
             >
               {isResending ? (
@@ -68,10 +70,10 @@ const EmailVerificationReminder: React.FC<EmailVerificationReminderProps> = ({
                   Sending...
                 </>
               ) : (
-                'Resend Verification Email'
+                "Resend Verification Email"
               )}
             </button>
-            
+
             <p className="text-xs text-gray-500 mt-2 sm:mt-0 sm:ml-2 self-center">
               Check your spam folder if you don't see the email
             </p>

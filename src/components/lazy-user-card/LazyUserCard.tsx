@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, Component } from "react";
 import type { ReactNode } from "react";
-import EnhancedUserCard from "../user-card/EnhancedUserCard";
+
 import type { User } from "../../types/auth";
+import EnhancedUserCard from "../user-card/EnhancedUserCard";
 
 interface LazyUserCardProps {
   user: User;
@@ -75,7 +76,7 @@ const LazyUserCard = ({
       {
         rootMargin,
         threshold: 0.1,
-      }
+      },
     );
 
     observer.observe(currentRef);

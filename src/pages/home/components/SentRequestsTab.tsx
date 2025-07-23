@@ -1,26 +1,25 @@
-import React, { useEffect } from 'react';
-import { Clock, X } from 'lucide-react';
-import { useFriendRequestStore } from '../../../store/friendRequest.store';
-import type { FriendRequest } from '../../../types/friendRequest';
+import { Clock, X } from "lucide-react";
+import React, { useEffect } from "react";
+
+import { useFriendRequestStore } from "../../../store/friendRequest.store";
+import type { FriendRequest } from "../../../types/friendRequest";
 
 const SentRequestsTab: React.FC = () => {
-  const {
-    sentRequests,
-    isLoading,
-    getSentRequests,
-    declineFriendRequest,
-  } = useFriendRequestStore();
+  const { sentRequests, isLoading, getSentRequests, declineFriendRequest } =
+    useFriendRequestStore();
 
   useEffect(() => {
     getSentRequests();
   }, [getSentRequests]);
 
   const handleCancel = async (requestId: string) => {
-    if (window.confirm('Are you sure you want to cancel this friend request?')) {
+    if (
+      window.confirm("Are you sure you want to cancel this friend request?")
+    ) {
       try {
         await declineFriendRequest(requestId);
       } catch (error) {
-        console.error('Failed to cancel friend request:', error);
+        console.error("Failed to cancel friend request:", error);
       }
     }
   };
@@ -40,8 +39,12 @@ const SentRequestsTab: React.FC = () => {
     return (
       <div className="text-center py-8">
         <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No sent requests</h3>
-        <p className="text-gray-500">You haven't sent any friend requests yet.</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          No sent requests
+        </h3>
+        <p className="text-gray-500">
+          You haven't sent any friend requests yet.
+        </p>
       </div>
     );
   }
@@ -62,7 +65,9 @@ const SentRequestsTab: React.FC = () => {
                 {request.receiver.name.charAt(0).toUpperCase()}
               </div>
               <div>
-                <p className="font-medium text-gray-900">{request.receiver.name}</p>
+                <p className="font-medium text-gray-900">
+                  {request.receiver.name}
+                </p>
                 <p className="text-sm text-gray-500">Request Pending</p>
               </div>
             </div>

@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { Check, X, Clock } from 'lucide-react';
-import { useFriendRequestStore } from '../../../store/friendRequest.store';
-import type { FriendRequest } from '../../../types/friendRequest';
+import { Check, X, Clock } from "lucide-react";
+import React, { useEffect } from "react";
+
+import { useFriendRequestStore } from "../../../store/friendRequest.store";
+import type { FriendRequest } from "../../../types/friendRequest";
 
 const ReceivedRequestsTab: React.FC = () => {
   const {
@@ -20,7 +21,7 @@ const ReceivedRequestsTab: React.FC = () => {
     try {
       await acceptFriendRequest(requestId);
     } catch (error) {
-      console.error('Failed to accept friend request:', error);
+      console.error("Failed to accept friend request:", error);
     }
   };
 
@@ -28,7 +29,7 @@ const ReceivedRequestsTab: React.FC = () => {
     try {
       await declineFriendRequest(requestId);
     } catch (error) {
-      console.error('Failed to decline friend request:', error);
+      console.error("Failed to decline friend request:", error);
     }
   };
 
@@ -47,8 +48,12 @@ const ReceivedRequestsTab: React.FC = () => {
     return (
       <div className="text-center py-8">
         <Clock className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No pending requests</h3>
-        <p className="text-gray-500">You don't have any pending friend requests.</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          No pending requests
+        </h3>
+        <p className="text-gray-500">
+          You don't have any pending friend requests.
+        </p>
       </div>
     );
   }

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { Users, MessageCircle, Trash2 } from 'lucide-react';
-import { useFriendRequestStore } from '../../../store/friendRequest.store';
-import { useChatWindowsStore } from '../../../store/chatWindows.store';
-import type { User } from '../../../types/auth';
+import { Users, MessageCircle, Trash2 } from "lucide-react";
+import React, { useEffect } from "react";
+
+import { useChatWindowsStore } from "../../../store/chatWindows.store";
+import { useFriendRequestStore } from "../../../store/friendRequest.store";
+import type { User } from "../../../types/auth";
 
 interface Friend {
   _id: string;
@@ -11,12 +12,8 @@ interface Friend {
 }
 
 const FriendsTab: React.FC = () => {
-  const {
-    friends,
-    isLoading,
-    getFriends,
-    removeFriend,
-  } = useFriendRequestStore();
+  const { friends, isLoading, getFriends, removeFriend } =
+    useFriendRequestStore();
 
   const { openChat } = useChatWindowsStore();
 
@@ -25,11 +22,11 @@ const FriendsTab: React.FC = () => {
   }, [getFriends]);
 
   const handleRemoveFriend = async (friendId: string) => {
-    if (window.confirm('Are you sure you want to remove this friend?')) {
+    if (window.confirm("Are you sure you want to remove this friend?")) {
       try {
         await removeFriend(friendId);
       } catch (error) {
-        console.error('Failed to remove friend:', error);
+        console.error("Failed to remove friend:", error);
       }
     }
   };
@@ -59,8 +56,12 @@ const FriendsTab: React.FC = () => {
     return (
       <div className="text-center py-8">
         <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No friends yet</h3>
-        <p className="text-gray-500">Start by sending friend requests to other users.</p>
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
+          No friends yet
+        </h3>
+        <p className="text-gray-500">
+          Start by sending friend requests to other users.
+        </p>
       </div>
     );
   }

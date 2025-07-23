@@ -1,47 +1,51 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { signup } from '../../services/auth.service';
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { toast } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+
+import { signup } from "../../services/auth.service";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    fullName: '',
+    name: "",
+    email: "",
+    password: "",
+    fullName: "",
   });
   const [errors, setErrors] = useState({
-    email: '',
+    email: "",
   });
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !email.trim()) {
-      setErrors(prev => ({ ...prev, email: 'Email address is required' }));
+      setErrors((prev) => ({ ...prev, email: "Email address is required" }));
       return false;
     }
     if (!emailRegex.test(email.trim())) {
-      setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+      setErrors((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
       return false;
     }
     // Additional validation for minimum length
     if (email.trim().length < 5) {
-      setErrors(prev => ({ ...prev, email: 'Email address is too short' }));
+      setErrors((prev) => ({ ...prev, email: "Email address is too short" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, email: '' }));
+    setErrors((prev) => ({ ...prev, email: "" }));
     return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     // Validate all required fields
     if (!formData.email || !validateEmail(formData.email)) {
-      setErrors(prev => ({ ...prev, email: 'Email address is required' }));
+      setErrors((prev) => ({ ...prev, email: "Email address is required" }));
       return;
     }
 
@@ -51,14 +55,16 @@ const Signup = () => {
         ...formData,
         captchaCompleted: true,
       });
-      
-      toast.success(response.message || 'Please check your email to verify your account');
-      navigate('/login');
+
+      toast.success(
+        response.message || "Please check your email to verify your account",
+      );
+      navigate("/login");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to sign up');
+        toast.error("Failed to sign up");
       }
     } finally {
       setLoading(false);

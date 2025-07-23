@@ -1,10 +1,11 @@
-import { create } from 'zustand';
-import toast from 'react-hot-toast';
-import { axiosInstance } from '../lib/axios';
-import { useAuthStore } from './auth.store';
+import toast from "react-hot-toast";
+import { create } from "zustand";
 
-import type { User } from '../types/auth';
-import type { Message, ChatStore } from '../types/messages';
+import { axiosInstance } from "../lib/axios";
+import type { User } from "../types/auth";
+import type { Message, ChatStore } from "../types/messages";
+
+import { useAuthStore } from "./auth.store";
 
 interface ChatStoreFun extends Omit<ChatStore, "messages"> {
   messages: Record<string, Message[]>;
@@ -46,7 +47,9 @@ export const useChatStore = create<ChatStoreFun>((set, get) => ({
       }
 
       const queryString = params.toString();
-      const url = queryString ? `/messages/users?${queryString}` : '/messages/users';
+      const url = queryString
+        ? `/messages/users?${queryString}`
+        : "/messages/users";
       const res: any = await axiosInstance.get(url);
       const { users, totalUsers } = res.data;
 
@@ -97,7 +100,7 @@ export const useChatStore = create<ChatStoreFun>((set, get) => ({
     try {
       const res: any = await axiosInstance.post(
         `/messages/send/${messageData.recipientId}`,
-        messageData
+        messageData,
       );
 
       set((state) => ({

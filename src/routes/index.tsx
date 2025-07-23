@@ -1,9 +1,10 @@
-import { lazy } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import MainLayout from '../layouts/MainLayout';
+import { lazy } from "react";
+import { Route, Routes } from "react-router-dom";
 
-const Home = lazy(() => import('../pages/home/Home'));
-const Login = lazy(() => import('../pages/login/Login'));
+import MainLayout from "../layouts/MainLayout";
+
+const Home = lazy(() => import("../pages/home/Home"));
+const Login = lazy(() => import("../pages/login/Login"));
 const Signup = lazy(() => import("../pages/auth/Signup"));
 const EmailVerification = lazy(() => import("../pages/auth/EmailVerification"));
 const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));

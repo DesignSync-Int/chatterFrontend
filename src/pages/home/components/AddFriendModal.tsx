@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Modal } from '../../../components/ui/Modal';
-import { Button } from '../../../components/ui/Button';
-import { useFriendRequestStore } from '../../../store/friendRequest.store';
-import { User, UserPlus, Loader2 } from 'lucide-react';
+import { User, UserPlus, Loader2 } from "lucide-react";
+import React, { useState } from "react";
+
+import { Button } from "../../../components/ui/Button";
+import { Modal } from "../../../components/ui/Modal";
+import { useFriendRequestStore } from "../../../store/friendRequest.store";
 
 interface AddFriendModalProps {
   isOpen: boolean;
@@ -10,45 +11,45 @@ interface AddFriendModalProps {
 }
 
 const AddFriendModal: React.FC<AddFriendModalProps> = ({ isOpen, onClose }) => {
-  const [username, setUsername] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [success, setSuccess] = useState('');
-  
+  const [success, setSuccess] = useState("");
+
   const { sendFriendRequest } = useFriendRequestStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
-    
+    setError("");
+    setSuccess("");
+
     if (!username.trim()) {
-      setError('Please enter a username');
+      setError("Please enter a username");
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
       await sendFriendRequest(username.trim());
       setSuccess(`Friend request sent to ${username}!`);
-      setUsername('');
-      
+      setUsername("");
+
       setTimeout(() => {
-        setSuccess('');
+        setSuccess("");
         onClose();
       }, 2000);
     } catch (err: any) {
-      setError(err.message || 'Failed to send friend request');
+      setError(err.message || "Failed to send friend request");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClose = () => {
-    setUsername('');
-    setError('');
-    setSuccess('');
+    setUsername("");
+    setError("");
+    setSuccess("");
     onClose();
   };
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { BasePath } from "../config";
 import { TokenStorage } from "../utils/tokenStorage";
 
@@ -20,7 +21,7 @@ axiosInstance.interceptors.request.use(
   },
   (error: any) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add response interceptor to handle token from responses
@@ -67,7 +68,7 @@ axiosInstance.interceptors.response.use(
           "401 interceptor - Current path:",
           fullPath,
           "Is public:",
-          isPublicPage
+          isPublicPage,
         );
 
         if (!isPublicPage) {
@@ -81,5 +82,5 @@ axiosInstance.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );

@@ -1,41 +1,51 @@
-import React, { useState, useEffect } from 'react';
 import { Shield, Save } from "lucide-react";
-import { messageCensor } from '../../utils/messageCensorship';
+import React, { useState, useEffect } from "react";
+
+import { messageCensor } from "../../utils/messageCensorship";
 
 interface CensorshipSettingsProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const CensorshipSettings: React.FC<CensorshipSettingsProps> = ({ isOpen, onClose }) => {
+const CensorshipSettings: React.FC<CensorshipSettingsProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const [strictMode, setStrictMode] = useState(false);
-  const [customWords, setCustomWords] = useState('');
+  const [customWords, setCustomWords] = useState("");
   const [allowWhitelist, setAllowWhitelist] = useState(true);
-  const [whitelist, setWhitelist] = useState('');
+  const [whitelist, setWhitelist] = useState("");
 
   useEffect(() => {
     if (isOpen) {
       const config = messageCensor.getConfig();
       setStrictMode(config.strictMode);
-      setCustomWords(config.customWords.join(', '));
+      setCustomWords(config.customWords.join(", "));
       setAllowWhitelist(config.allowWhitelist);
-      setWhitelist(config.whitelist.join(', '));
+      setWhitelist(config.whitelist.join(", "));
     }
   }, [isOpen]);
 
   const handleSave = () => {
     const newConfig = {
       strictMode,
-      customWords: customWords.split(',').map(word => word.trim()).filter(word => word),
+      customWords: customWords
+        .split(",")
+        .map((word) => word.trim())
+        .filter((word) => word),
       allowWhitelist,
-      whitelist: whitelist.split(',').map(word => word.trim()).filter(word => word)
+      whitelist: whitelist
+        .split(",")
+        .map((word) => word.trim())
+        .filter((word) => word),
     };
 
     messageCensor.updateConfig(newConfig);
-    
+
     // Save to localStorage for persistence
-    localStorage.setItem('censorshipConfig', JSON.stringify(newConfig));
-    
+    localStorage.setItem("censorshipConfig", JSON.stringify(newConfig));
+
     onClose();
   };
 
@@ -53,8 +63,12 @@ const CensorshipSettings: React.FC<CensorshipSettingsProps> = ({ isOpen, onClose
           {/* Strict Mode */}
           <div className="flex items-center justify-between">
             <label className="flex flex-col">
-              <span className="text-sm font-medium text-gray-700">Strict Mode</span>
-              <span className="text-xs text-gray-500">Block messages instead of censoring</span>
+              <span className="text-sm font-medium text-gray-700">
+                Strict Mode
+              </span>
+              <span className="text-xs text-gray-500">
+                Block messages instead of censoring
+              </span>
             </label>
             <input
               type="checkbox"
@@ -84,8 +98,12 @@ const CensorshipSettings: React.FC<CensorshipSettingsProps> = ({ isOpen, onClose
           {/* Allow Whitelist */}
           <div className="flex items-center justify-between">
             <label className="flex flex-col">
-              <span className="text-sm font-medium text-gray-700">Allow Whitelist</span>
-              <span className="text-xs text-gray-500">Allow certain words to bypass censorship</span>
+              <span className="text-sm font-medium text-gray-700">
+                Allow Whitelist
+              </span>
+              <span className="text-xs text-gray-500">
+                Allow certain words to bypass censorship
+              </span>
             </label>
             <input
               type="checkbox"
@@ -116,11 +134,21 @@ const CensorshipSettings: React.FC<CensorshipSettingsProps> = ({ isOpen, onClose
 
           {/* Preview */}
           <div className="bg-gray-50 p-3 rounded-lg">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Test Message</h4>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">
+              Test Message
+            </h4>
             <div className="text-xs space-y-1">
-              <p><strong>Original:</strong> "This is a damn good example!"</p>
-              <p><strong>Censored:</strong> "This is a d**n good example!"</p>
-              {strictMode && <p className="text-red-600"><strong>Strict Mode:</strong> Message would be blocked</p>}
+              <p>
+                <strong>Original:</strong> "This is a damn good example!"
+              </p>
+              <p>
+                <strong>Censored:</strong> "This is a d**n good example!"
+              </p>
+              {strictMode && (
+                <p className="text-red-600">
+                  <strong>Strict Mode:</strong> Message would be blocked
+                </p>
+              )}
             </div>
           </div>
         </div>

@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import UserCard from "../../../components/user-card/UserCard";
-import NotificationPanel from "../../../components/notifications/NotificationPanel";
-import ProfileModal from "./ProfileModal";
 import { LogOut, User2 } from "lucide-react";
+import React, { useState } from "react";
+
+import NotificationPanel from "../../../components/notifications/NotificationPanel";
+import UserCard from "../../../components/user-card/UserCard";
 import type { User } from "../../../types/auth";
+
+import ProfileModal from "./ProfileModal";
 
 interface MergedHeaderProps {
   user: User;

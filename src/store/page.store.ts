@@ -1,14 +1,14 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
-export type Route = 'login' | 'home' | 'chat' | 'profile';
+export type Route = "login" | "home" | "chat" | "profile";
 
-type PageState = {
+interface PageState {
   currentPage: Route;
   setCurrentPage: (page: Route) => void;
-};
+}
 
-const usePageStore = create<PageState>(set => ({
-  currentPage: 'login',
+const usePageStore = create<PageState>((set) => ({
+  currentPage: "login",
   setCurrentPage: (page: Route) => set({ currentPage: page }),
 }));
 

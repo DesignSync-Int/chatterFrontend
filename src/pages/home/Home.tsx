@@ -1,15 +1,17 @@
-import useUserStore from "../../store/user.store.ts";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import EmailVerificationReminder from "../../components/auth/EmailVerificationReminder.tsx";
 import { useAuthStore } from "../../store/auth.store.ts";
-import usePageStore from "../../store/page.store.ts";
-import FloatingChatManager from "../chat/components/FloatingChatManager.tsx";
 import { useChatWindowsStore } from "../../store/chatWindows.store";
+import usePageStore from "../../store/page.store.ts";
+import useUserStore from "../../store/user.store.ts";
+import type { User } from "../../types/auth.ts";
+import FloatingChatManager from "../chat/components/FloatingChatManager.tsx";
+
+import ContentArea from "./components/ContentArea.tsx";
 import MergedHeader from "./components/MergedHeader.tsx";
 import TabNavigation from "./components/TabNavigation.tsx";
-import ContentArea from "./components/ContentArea.tsx";
-import EmailVerificationReminder from "../../components/auth/EmailVerificationReminder.tsx";
-import type { User } from "../../types/auth.ts";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState<

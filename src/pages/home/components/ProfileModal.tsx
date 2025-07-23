@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Modal } from "../../../components/ui/Modal";
-import { Button } from "../../../components/ui/Button";
 import { User2, Save } from "lucide-react";
+import React, { useState, useEffect } from "react";
+
+import { Button } from "../../../components/ui/Button";
+import { Modal } from "../../../components/ui/Modal";
 import { useAuthStore } from "../../../store/auth.store";
 import type { User } from "../../../types/auth";
 
@@ -36,7 +37,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({
   }, [user]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({

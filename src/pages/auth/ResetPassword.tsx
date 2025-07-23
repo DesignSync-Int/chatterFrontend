@@ -1,44 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+
 import { axiosInstance } from "../../lib/axios";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   useEffect(() => {
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError("Invalid or missing reset token");
     }
   }, [token]);
 
   const validatePassword = (password: string) => {
     if (password.length < 6) {
-      return 'Password must be at least 6 characters long';
+      return "Password must be at least 6 characters long";
     }
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError("Invalid or missing reset token");
       return;
     }
 
     if (!password.trim()) {
-      setError('Password is required');
+      setError("Password is required");
       return;
     }
 
@@ -49,7 +50,7 @@ const ResetPassword: React.FC = () => {
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
@@ -67,8 +68,11 @@ const ResetPassword: React.FC = () => {
         navigate("/login");
       }, 3000);
     } catch (error: any) {
-      console.error('Reset password error:', error);
-      const errorMessage = error.response?.data?.message || error.message || 'Failed to reset password. Please try again.';
+      console.error("Reset password error:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to reset password. Please try again.";
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -99,7 +103,8 @@ const ResetPassword: React.FC = () => {
                 Password Reset Successful
               </h2>
               <p className="text-gray-600 mb-4">
-                Your password has been successfully reset. You can now log in with your new password.
+                Your password has been successfully reset. You can now log in
+                with your new password.
               </p>
               <p className="text-sm text-gray-500">
                 Redirecting to login page in 3 seconds...
@@ -132,7 +137,8 @@ const ResetPassword: React.FC = () => {
                 Invalid Reset Link
               </h2>
               <p className="text-gray-600 mb-6">
-                This password reset link is invalid or has expired. Please request a new one.
+                This password reset link is invalid or has expired. Please
+                request a new one.
               </p>
               <div className="flex gap-2 justify-center">
                 <Link

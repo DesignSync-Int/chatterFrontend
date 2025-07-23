@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Users, UserPlus, Check, X, Clock } from 'lucide-react';
-import { useFriendRequestStore } from '../../store/friendRequest.store';
-import type { FriendRequest } from '../../types/friendRequest';
+import { Users, UserPlus, Check, X, Clock } from "lucide-react";
+import React, { useEffect, useState } from "react";
+
+import { useFriendRequestStore } from "../../store/friendRequest.store";
+import type { FriendRequest } from "../../types/friendRequest";
 
 const FriendRequestPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'received' | 'sent' | 'friends'>('received');
-  
+  const [activeTab, setActiveTab] = useState<"received" | "sent" | "friends">(
+    "received",
+  );
+
   const {
     receivedRequests,
     sentRequests,
@@ -29,7 +32,7 @@ const FriendRequestPanel: React.FC = () => {
     try {
       await acceptFriendRequest(requestId);
     } catch (error) {
-      console.error('Failed to accept friend request:', error);
+      console.error("Failed to accept friend request:", error);
     }
   };
 
@@ -37,16 +40,16 @@ const FriendRequestPanel: React.FC = () => {
     try {
       await declineFriendRequest(requestId);
     } catch (error) {
-      console.error('Failed to decline friend request:', error);
+      console.error("Failed to decline friend request:", error);
     }
   };
 
   const handleRemoveFriend = async (friendId: string) => {
-    if (window.confirm('Are you sure you want to remove this friend?')) {
+    if (window.confirm("Are you sure you want to remove this friend?")) {
       try {
         await removeFriend(friendId);
       } catch (error) {
-        console.error('Failed to remove friend:', error);
+        console.error("Failed to remove friend:", error);
       }
     }
   };
@@ -164,7 +167,10 @@ const FriendRequestPanel: React.FC = () => {
         </div>
       ) : (
         friends.map((friend: any) => (
-          <div key={friend._id} className="bg-white rounded-lg p-4 shadow-sm border">
+          <div
+            key={friend._id}
+            className="bg-white rounded-lg p-4 shadow-sm border"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold">
