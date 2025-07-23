@@ -7,7 +7,6 @@ import MergedHeader from "./components/MergedHeader.tsx";
 import TabNavigation from "./components/TabNavigation.tsx";
 import ContentArea from "./components/ContentArea.tsx";
 import EmailVerificationReminder from "../../components/auth/EmailVerificationReminder.tsx";
-import ProfileTestComponent from "../../components/profile/ProfileTestComponent.tsx";
 import type { User } from "../../types/auth.ts";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
