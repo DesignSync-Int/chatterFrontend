@@ -7,6 +7,7 @@ import MergedHeader from "./components/MergedHeader.tsx";
 import TabNavigation from "./components/TabNavigation.tsx";
 import ContentArea from "./components/ContentArea.tsx";
 import EmailVerificationReminder from "../../components/auth/EmailVerificationReminder.tsx";
+import ProfileTestComponent from "../../components/profile/ProfileTestComponent.tsx";
 import type { User } from "../../types/auth.ts";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -27,8 +28,9 @@ const Home = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authUser && !currentUser) {
-      console.log("Home: Setting currentUser from authUser");
+    if (authUser) {
+      // Always update currentUser when authUser changes (including after profile updates)
+      console.log("Home: Updating currentUser from authUser");
       setCurrentUser(authUser);
 
       const { connectSocket } = useAuthStore.getState();
