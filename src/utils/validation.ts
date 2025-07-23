@@ -7,7 +7,7 @@ export const emailSchema = z
   .email('Please enter a valid email address')
   .min(1, 'Email is required');
 
-// password requirements - maybe too strict but better safe than sorry
+// password requirements
 export const passwordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')

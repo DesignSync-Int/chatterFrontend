@@ -53,16 +53,11 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="Add Friend"
-      size="sm"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="Add Friend" size="sm">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="text-center mb-6">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <UserPlus className="w-8 h-8 text-blue-600" />
+          <div className="mx-auto w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+            <UserPlus className="w-8 h-8 text-[#FB406C]" />
           </div>
           <p className="text-gray-600">
             Enter the username of the person you'd like to add as a friend
@@ -82,7 +77,10 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({ isOpen, onClose }) => {
         )}
 
         <div className="space-y-2">
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="username"
+            className="block text-sm font-medium text-gray-700"
+          >
             Username
           </label>
           <div className="relative">
@@ -93,7 +91,7 @@ const AddFriendModal: React.FC<AddFriendModalProps> = ({ isOpen, onClose }) => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter username"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB406C] focus:border-[#FB406C] transition-colors"
               disabled={isLoading}
               autoFocus
             />

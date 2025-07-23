@@ -12,7 +12,7 @@ interface ChatStoreFun extends Omit<ChatStore, "messages"> {
 
   getUsers: (search?: string) => Promise<void>;
   searchUsers: (searchTerm: string) => Promise<void>; // for search functionality
-  setUsers: (users: User[]) => void; // For testing purposes
+  setUsers: (users: User[]) => void;
   resetUsers: () => void; // reset state
   getMessages: (userId: string) => Promise<void>;
   sendMessage: (messageData: {

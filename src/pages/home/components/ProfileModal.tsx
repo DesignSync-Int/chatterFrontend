@@ -65,18 +65,19 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
     >
       <div className="space-y-6">
         <div className="text-center mb-6">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-            <User2 className="w-8 h-8 text-blue-600" />
+          <div className="mx-auto w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
+            <User2 className="w-8 h-8 text-[#FB406C]" />
           </div>
-          <p className="text-gray-600">
-            Update your profile information
-          </p>
+          <p className="text-gray-600">Update your profile information</p>
         </div>
 
         <div className="space-y-4">
           {/* Full Name */}
           <div className="space-y-1">
-            <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="fullName"
+              className="block text-sm font-medium text-gray-700"
+            >
               Full Name
             </label>
             <input
@@ -86,13 +87,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
               value={formData.fullName}
               onChange={handleInputChange}
               placeholder="Enter your full name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB406C] focus:border-[#FB406C] transition-colors"
             />
           </div>
 
           {/* Email */}
           <div className="space-y-1">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Email Address
             </label>
             <input
@@ -102,13 +106,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
               value={formData.email}
               onChange={handleInputChange}
               placeholder="Enter your email address"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB406C] focus:border-[#FB406C] transition-colors"
             />
           </div>
 
           {/* Gender */}
           <div className="space-y-1">
-            <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="gender"
+              className="block text-sm font-medium text-gray-700"
+            >
               Gender
             </label>
             <select
@@ -116,7 +123,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
               name="gender"
               value={formData.gender}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB406C] focus:border-[#FB406C] transition-colors"
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
@@ -127,7 +134,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
 
           {/* Date of Birth */}
           <div className="space-y-1">
-            <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="dateOfBirth"
+              className="block text-sm font-medium text-gray-700"
+            >
               Date of Birth
             </label>
             <input
@@ -136,7 +146,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
               name="dateOfBirth"
               value={formData.dateOfBirth}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FB406C] focus:border-[#FB406C] transition-colors"
             />
           </div>
         </div>

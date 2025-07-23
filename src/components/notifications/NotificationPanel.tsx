@@ -66,7 +66,7 @@ const NotificationPanel: React.FC = () => {
         <Bell size={20} />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-            {unreadCount > 99 ? '99+' : unreadCount}
+            {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}
       </button>
@@ -96,27 +96,42 @@ const NotificationPanel: React.FC = () => {
 
           <div className="max-h-80 overflow-y-auto">
             {filteredNotifications.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">No notifications yet</div>
+              <div className="p-4 text-center text-gray-500">
+                No notifications yet
+              </div>
             ) : (
-              filteredNotifications.map(notification => (
+              filteredNotifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
-                    !notification.read ? 'bg-blue-50' : ''
+                    !notification.read ? "bg-blue-50" : ""
                   }`}
                   onClick={() => handleNotificationClick(notification)}
                 >
                   <div className="flex items-start gap-3">
                     <div className="flex-shrink-0">
-                      {notification.type === 'message' && <span className="text-blue-500">●</span>}
-                      {notification.type === 'user_online' && <span className="text-green-500">●</span>}
-                      {notification.type === 'user_offline' && <span className="text-red-500">●</span>}
+                      {notification.type === "message" && (
+                        <span className="text-blue-500">●</span>
+                      )}
+                      {notification.type === "user_online" && (
+                        <span className="text-[#FB406C]">●</span>
+                      )}
+                      {notification.type === "user_offline" && (
+                        <span className="text-red-500">●</span>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800">{notification.title}</p>
-                      <p className="text-sm text-gray-600 truncate">{notification.message}</p>
-                      {(notification.type === 'message' || notification.type === 'user_online') && (
-                        <p className="text-xs text-blue-500 mt-1">Click to open chat</p>
+                      <p className="text-sm font-medium text-gray-800">
+                        {notification.title}
+                      </p>
+                      <p className="text-sm text-gray-600 truncate">
+                        {notification.message}
+                      </p>
+                      {(notification.type === "message" ||
+                        notification.type === "user_online") && (
+                        <p className="text-xs text-blue-500 mt-1">
+                          Click to open chat
+                        </p>
                       )}
                       <p className="text-xs text-gray-400 mt-1">
                         {notification.timestamp.toLocaleTimeString()}

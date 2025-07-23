@@ -159,11 +159,11 @@ const LazyLoadUserList = ({ onUserClick }: LazyLoadUserListProps) => {
               placeholder="Search users..."
               value={searchTerm}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#FB406C] focus:border-[#FB406C]"
             />
             {isUsersLoading && (
               <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                <div className="animate-spin h-4 w-4 border-2 border-[#FB406C] border-t-transparent rounded-full"></div>
               </div>
             )}
           </div>
@@ -199,7 +199,7 @@ const LazyLoadUserList = ({ onUserClick }: LazyLoadUserListProps) => {
               <p>No users match "{searchTerm}"</p>
               <button
                 onClick={() => handleSearchChange("")}
-                className="mt-2 text-blue-600 hover:text-blue-800 text-sm"
+                className="mt-2 text-[#FB406C] hover:text-[#fb406cd9] text-sm"
               >
                 Clear search
               </button>

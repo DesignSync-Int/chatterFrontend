@@ -3,6 +3,7 @@ export type User = {
   name: string;
   fullName?: string;
   email?: string;
+  isEmailVerified?: boolean;
   gender?: "male" | "female" | "other";
   dateOfBirth?: string;
   profile?: string;
