@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import AppRoutes from './routes';
 import { Suspense } from "react";
 import { Toaster } from "react-hot-toast";
@@ -6,7 +6,7 @@ import FloatingBuyButton from './components/ui/FloatingBuyButton';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Suspense
         fallback={
           <div className="flex items-center justify-center h-screen">
@@ -30,7 +30,7 @@ function App() {
           }}
         />
       </Suspense>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
