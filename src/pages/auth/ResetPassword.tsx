@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from "lucide-react";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -178,9 +179,7 @@ const ResetPassword: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               🔑 Reset Your Password
             </h2>
-            <p className="text-gray-600">
-              Enter your new password below
-            </p>
+            <p className="text-gray-600">Enter your new password below</p>
           </div>
 
           <form
@@ -193,7 +192,7 @@ const ResetPassword: React.FC = () => {
             <div className="space-y-1">
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="New Password"
                   className="border rounded-md p-2 pr-10 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                   id="password"
@@ -205,9 +204,13 @@ const ResetPassword: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? '👁️' : '🙈'}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -215,7 +218,7 @@ const ResetPassword: React.FC = () => {
             <div className="space-y-1">
               <div className="relative">
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm New Password"
                   className="border rounded-md p-2 pr-10 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                   id="confirmPassword"
@@ -227,16 +230,18 @@ const ResetPassword: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showConfirmPassword ? '👁️' : '🙈'}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className="text-red-600 text-sm">{error}</div>
-            )}
+            {error && <div className="text-red-600 text-sm">{error}</div>}
 
             <button
               type="submit"
@@ -247,7 +252,7 @@ const ResetPassword: React.FC = () => {
                   : "hover:bg-[#fb406cd9]"
               }`}
             >
-              {isLoading ? 'Resetting...' : 'Reset Password'}
+              {isLoading ? "Resetting..." : "Reset Password"}
             </button>
 
             <div className="flex justify-between items-center mt-4 text-sm">

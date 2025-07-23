@@ -39,10 +39,28 @@ axiosInstance.interceptors.response.use(
       TokenStorage.removeToken();
 
       // Clear any user data from stores
-      if (typeof window !== "undefined" && window.location.pathname !== "/") {
-        // Only redirect if not already on login page
-        sessionStorage?.setItem("justLoggedOut", "true");
-        window.location.href = "/";
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+
+        // Don't redirect if we're on public/auth pages that should be accessible without login
+        const publicPages = [
+          "/",
+          "/login",
+          "/signup",
+          "/forgot-password",
+          "/reset-password",
+          "/verify-email",
+        ];
+
+        const isPublicPage = publicPages.some((page) =>
+          currentPath.startsWith(page)
+        );
+
+        if (!isPublicPage) {
+          // Only redirect if not already on a public page
+          sessionStorage?.setItem("justLoggedOut", "true");
+          window.location.href = "/";
+        }
       }
     }
     return Promise.reject(error);
