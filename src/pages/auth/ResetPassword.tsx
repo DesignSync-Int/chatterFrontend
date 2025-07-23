@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from "lucide-react";
+import { axiosInstance } from "../../lib/axios";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -55,26 +56,20 @@ const ResetPassword: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/auth/reset-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, password }),
+      await axiosInstance.post("/auth/reset-password", {
+        token,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsSuccess(true);
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
-      } else {
-        setError(data.message || 'Failed to reset password');
-      }
-    } catch {
-      setError('Network error. Please try again.');
+      // Success response
+      setIsSuccess(true);
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (error: any) {
+      console.error('Reset password error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to reset password. Please try again.';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

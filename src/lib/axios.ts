@@ -41,6 +41,8 @@ axiosInstance.interceptors.response.use(
       // Clear any user data from stores
       if (typeof window !== "undefined") {
         const currentPath = window.location.pathname;
+        const currentSearch = window.location.search;
+        const fullPath = currentPath + currentSearch;
 
         // Don't redirect if we're on public/auth pages that should be accessible without login
         const publicPages = [
@@ -52,14 +54,29 @@ axiosInstance.interceptors.response.use(
           "/verify-email",
         ];
 
-        const isPublicPage = publicPages.some((page) =>
-          currentPath.startsWith(page)
+        const isPublicPage = publicPages.some((page) => {
+          // Handle exact matches and paths with query parameters
+          return (
+            currentPath === page ||
+            currentPath.startsWith(page + "/") ||
+            (page === "/reset-password" && currentPath === "/reset-password")
+          );
+        });
+
+        console.log(
+          "401 interceptor - Current path:",
+          fullPath,
+          "Is public:",
+          isPublicPage
         );
 
         if (!isPublicPage) {
           // Only redirect if not already on a public page
+          console.log("Redirecting to home due to 401 on protected page");
           sessionStorage?.setItem("justLoggedOut", "true");
           window.location.href = "/";
+        } else {
+          console.log("Staying on public page despite 401");
         }
       }
     }
