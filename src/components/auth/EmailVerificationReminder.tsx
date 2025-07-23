@@ -1,8 +1,9 @@
 import { Mail, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 
 import { resendVerificationEmail } from "../../services/auth.service";
+import { useAuthStore } from "../../store/auth.store";
 
 interface EmailVerificationReminderProps {
   email: string;
@@ -14,6 +15,26 @@ const EmailVerificationReminder: React.FC<EmailVerificationReminderProps> = ({
   onClose,
 }) => {
   const [isResending, setIsResending] = useState(false);
+  const authUser = useAuthStore((state) => state.authUser);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
+  // Check if user is verified and auto-close the reminder
+  useEffect(() => {
+    if (authUser && authUser.isEmailVerified) {
+      onClose();
+    }
+  }, [authUser, onClose]);
+
+  // Periodically check auth status to catch verification updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (authUser && !authUser.isEmailVerified) {
+        checkAuth();
+      }
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(interval);
+  }, [authUser, checkAuth]);
 
   const handleResendEmail = async () => {
     setIsResending(true);

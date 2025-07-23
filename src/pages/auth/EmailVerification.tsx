@@ -3,6 +3,7 @@ import { toast } from "react-hot-toast";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
 import { verifyEmail as verifyEmailService } from "../../services/auth.service";
+import { useAuthStore } from "../../store/auth.store";
 
 const EmailVerification = () => {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,8 @@ const EmailVerification = () => {
     "verifying" | "success" | "error"
   >("verifying");
   const token = searchParams.get("token");
+  const authUser = useAuthStore((state) => state.authUser);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
   useEffect(() => {
     const verifyEmail = async () => {
@@ -24,8 +27,16 @@ const EmailVerification = () => {
         await verifyEmailService(token);
         setVerificationStatus("success");
         toast.success("Email verified successfully!");
-        // Redirect to login after 3 seconds
-        setTimeout(() => navigate("/login"), 3000);
+
+        // If user is already logged in, refresh their auth data to update verification status
+        if (authUser) {
+          await checkAuth();
+          // Redirect to home if logged in
+          setTimeout(() => navigate("/home"), 2000);
+        } else {
+          // Redirect to login if not logged in
+          setTimeout(() => navigate("/login"), 3000);
+        }
       } catch (error) {
         setVerificationStatus("error");
         if (error instanceof Error) {
@@ -37,7 +48,7 @@ const EmailVerification = () => {
     };
 
     verifyEmail();
-  }, [token, navigate]);
+  }, [token, navigate, authUser, checkAuth]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
