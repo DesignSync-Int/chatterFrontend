@@ -1,7 +1,7 @@
 import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-import MainLayout from "../layouts/MainLayout";
 
+import MainLayout from "../layouts/MainLayout";
 const Home = lazy(() => import("../pages/home/Home"));
 const Login = lazy(() => import("../pages/login/Login"));
 const Signup = lazy(() => import("../pages/auth/Signup"));

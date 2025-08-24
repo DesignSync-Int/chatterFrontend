@@ -1,14 +1,21 @@
-import { useState, useEffect, useRef } from 'react';
-import useUserStore from '../../../../store/user.store.ts';
-import MessageItem from './MessageItem.tsx';
-import type { Message } from '../../../../types/messages.ts';
-import useChatStore from '../../../../store/messages.store.ts';
-import { getTimeDifferenceInSeconds, formatTimestamp } from '../../../../utils/time.ts';
-import { TimeConfig } from '../../../../config.ts';
-import type { User } from '../../../../types/auth.ts';
-import { validateField } from "../../../../utils/validation.ts";
-import { censorText } from "../../../../utils/messageCensorship.ts";
+import { Smile, Send } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
+
+import EmojiPicker from "../../../../components/chat/EmojiPicker.tsx";
+import { TimeConfig } from "../../../../config.ts";
+import useChatStore from "../../../../store/messages.store.ts";
+import useUserStore from "../../../../store/user.store.ts";
+import type { User } from "../../../../types/auth.ts";
+import type { Message } from "../../../../types/messages.ts";
+import { censorText } from "../../../../utils/messageCensorship.ts";
+import {
+  getTimeDifferenceInSeconds,
+  formatTimestamp,
+} from "../../../../utils/time.ts";
+import { validateField } from "../../../../utils/validation.ts";
+
+import MessageItem from "./MessageItem.tsx";
 
 interface ChatTabProps {
   recipient: User;
@@ -18,6 +25,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageError, setMessageError] = useState("");
   const [censorshipWarning, setCensorshipWarning] = useState("");
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const currentUser = useUserStore((state) => state.currentUser);
   const {
     messages,
@@ -29,6 +37,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement>(null);
+  const emojiButtonRef = useRef<HTMLButtonElement>(null);
 
   const recipientMessages = messages[recipient._id] || [];
 
@@ -39,7 +48,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
     .max(1000, "Message must be less than 1000 characters")
     .refine(
       (val) => val.trim().length > 0,
-      "Message cannot be just whitespace"
+      "Message cannot be just whitespace",
     );
 
   const handleMessageSend = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,11 +98,16 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
     }
   };
 
+  const handleEmojiSelect = (emoji: string) => {
+    setCurrentMessage((prev) => prev + emoji);
+    setIsEmojiPickerOpen(false);
+  };
+
   const renderMessageItem = (message: Message, index: number) => {
     const timeDifference = getTimeDifferenceInSeconds(
       message.updatedAt || message.createdAt,
       recipientMessages[index - 1]?.updatedAt ||
-        recipientMessages[index - 1]?.createdAt
+        recipientMessages[index - 1]?.createdAt,
     );
 
     return (
@@ -149,7 +163,7 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
         id="chat-content"
       >
         {recipientMessages.map((message, index) =>
-          renderMessageItem(message, index)
+          renderMessageItem(message, index),
         )}
       </div>
 
@@ -165,11 +179,11 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
             {censorshipWarning}
           </div>
         )}
-        <form onSubmit={handleMessageSend} className="flex gap-2">
+        <form onSubmit={handleMessageSend} className="flex gap-2 relative">
           <input
             type="text"
             placeholder={`Message ${recipient?.name || ""}`}
-            className={`flex-1 rounded-full border-[8px] px-[12px] py-[8px] ${
+            className={`flex-1 rounded-full border-[8px] px-[12px] py-[8px] pr-[50px] ${
               messageError
                 ? "border-red-300 focus:border-red-500"
                 : "border-[#cfcfcf] focus:border-[#FB406C]"
@@ -187,8 +201,35 @@ const ChatTab = ({ recipient }: ChatTabProps) => {
             }}
             maxLength={1000}
           />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            <button
+              type="button"
+              ref={emojiButtonRef}
+              onClick={() => setIsEmojiPickerOpen(!isEmojiPickerOpen)}
+              className="p-2 text-gray-500 hover:text-[#FB406C] hover:bg-gray-100 rounded-full transition-colors"
+              title="Add emoji"
+            >
+              <Smile size={20} />
+            </button>
+            <button
+              type="submit"
+              disabled={!currentMessage.trim()}
+              className="p-2 text-gray-500 hover:text-[#FB406C] hover:bg-gray-100 rounded-full transition-colors disabled:text-gray-300 disabled:hover:text-gray-300"
+              title="Send message"
+            >
+              <Send size={20} />
+            </button>
+          </div>
         </form>
       </div>
+
+      {/* Emoji Picker - Rendered via Portal */}
+      <EmojiPicker
+        isOpen={isEmojiPickerOpen}
+        onClose={() => setIsEmojiPickerOpen(false)}
+        onEmojiSelect={handleEmojiSelect}
+        anchorRef={emojiButtonRef}
+      />
     </div>
   );
 };

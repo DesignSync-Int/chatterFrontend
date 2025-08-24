@@ -1,4 +1,4 @@
-export type User = {
+export interface User {
   _id: string;
   name: string;
   fullName?: string;
@@ -12,15 +12,15 @@ export type User = {
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
-};
+}
 
-export type UserState = {
+export interface UserState {
   currentUser?: User;
   setCurrentUser: (user: User) => void;
   currentRecipient: User | null;
   setCurrentRecipient: (user: User | null) => void;
   resetCurrentUser: () => void;
-};
+}
 
 export interface AuthStore {
   authUser: User | null;

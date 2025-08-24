@@ -48,10 +48,15 @@ const UserCard = ({ user, onClick }: { user: User; onClick?: () => void }) => {
         <div
           className={`w-10 h-10 rounded-full ${getAvatarColor(user.name)} flex items-center justify-center text-white font-bold text-sm ${user.profile ? "hidden" : ""}`}
         >
-          {getInitials(user.name)}
+          {getInitials(user.fullName || user.name)}
         </div>
       </div>
-      <div className="font-semibold text-center">{user.name}</div>
+      <div className="text-center">
+        <div className="font-semibold">{user.fullName || user.name}</div>
+        {user.fullName && user.fullName !== user.name && (
+          <div className="text-xs text-gray-500">@{user.name}</div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,19 +1,20 @@
-import { z } from 'zod';
+import { z } from "zod";
+
 import { validateName } from "./messageCensorship";
 
 // validation schemas for forms - using zod for type safety
 export const emailSchema = z
   .string()
-  .email('Please enter a valid email address')
-  .min(1, 'Email is required');
+  .email("Please enter a valid email address")
+  .min(1, "Email is required");
 
 // password requirements
 export const passwordSchema = z
   .string()
-  .min(8, 'Password must be at least 8 characters')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number');
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number");
 
 export const nameSchema = z
   .string()
@@ -29,13 +30,13 @@ export const nameSchema = z
       message:
         "Name contains inappropriate language. Please choose a different name that follows our community guidelines.",
       path: [],
-    }
+    },
   );
 
 // schemas for auth forms - keeping these simple to match backend expectations
 export const loginSchema = z.object({
   name: nameSchema,
-  password: z.string().min(1, 'Password is required'), // simplified for login
+  password: z.string().min(1, "Password is required"), // simplified for login
 });
 
 export const signupSchema = z
@@ -50,7 +51,7 @@ export const signupSchema = z
       .refine(
         (val) =>
           !val || val.trim() === "" || z.string().url().safeParse(val).success,
-        "Profile must be a valid URL if provided"
+        "Profile must be a valid URL if provided",
       ),
     captcha: z.string().min(1, "Please complete the captcha"),
   })
@@ -62,7 +63,7 @@ export const signupSchema = z
     {
       message: "Passwords do not match",
       path: ["verifyPassword"],
-    }
+    },
   );
 
 export const updateProfileSchema = z.object({
@@ -73,7 +74,7 @@ export const updateProfileSchema = z.object({
     .refine(
       (val) =>
         !val || val.trim() === "" || z.string().url().safeParse(val).success,
-      "Profile must be a valid URL if provided"
+      "Profile must be a valid URL if provided",
     ),
 });
 
@@ -81,9 +82,9 @@ export const updateProfileSchema = z.object({
 export const messageSchema = z.object({
   content: z
     .string()
-    .min(1, 'Message cannot be empty')
-    .max(1000, 'Message must be less than 1000 characters'),
-  receiverId: z.string().min(1, 'Receiver is required'),
+    .min(1, "Message cannot be empty")
+    .max(1000, "Message must be less than 1000 characters"),
+  receiverId: z.string().min(1, "Receiver is required"),
 });
 
 // Type exports
@@ -95,7 +96,7 @@ export type MessageFormData = z.infer<typeof messageSchema>;
 // Validation helper
 export const validateField = <T>(
   schema: z.ZodSchema<T>,
-  value: unknown
+  value: unknown,
 ): { isValid: boolean; error?: string } => {
   try {
     schema.parse(value);
@@ -104,17 +105,17 @@ export const validateField = <T>(
     if (error instanceof z.ZodError) {
       return {
         isValid: false,
-        error: error.issues[0]?.message || 'Invalid input',
+        error: error.issues[0]?.message || "Invalid input",
       };
     }
-    return { isValid: false, error: 'Validation failed' };
+    return { isValid: false, error: "Validation failed" };
   }
 };
 
 // Form validation helper
 export const validateForm = <T>(
   schema: z.ZodSchema<T>,
-  data: unknown
+  data: unknown,
 ): { isValid: boolean; errors: Record<string, string>; data?: T } => {
   try {
     const validatedData = schema.parse(data);
@@ -123,11 +124,11 @@ export const validateForm = <T>(
     if (error instanceof z.ZodError) {
       const errors: Record<string, string> = {};
       error.issues.forEach((err: z.ZodIssue) => {
-        const path = err.path.join('.');
+        const path = err.path.join(".");
         errors[path] = err.message;
       });
       return { isValid: false, errors };
     }
-    return { isValid: false, errors: { form: 'Validation failed' } };
+    return { isValid: false, errors: { form: "Validation failed" } };
   }
 };

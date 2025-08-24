@@ -1,10 +1,11 @@
+import React from "react";
 
-import React from 'react';
-import ChatTab from './chat-tab/ChatTab';
-import { useChatWindowsStore } from '../../../store/chatWindows.store';
-import { useUserStore } from '../../../store/user.store';
 import { useDraggable } from "../../../hooks/useDraggable";
+import { useChatWindowsStore } from "../../../store/chatWindows.store";
+import { useUserStore } from "../../../store/user.store";
 import type { User } from "../../../types/auth.ts";
+
+import ChatTab from "./chat-tab/ChatTab";
 
 interface ChatWindowProps {
   user: User;

@@ -1,7 +1,9 @@
-import { create } from "zustand";
-import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import io from "socket.io-client";
+import { create } from "zustand";
+
+import { BasePath } from "../config";
+import { axiosInstance } from "../lib/axios";
 import type {
   AuthStore,
   User,
@@ -11,13 +13,13 @@ import type {
   UpdateUserInfoData,
 } from "../types/auth";
 import type { Notification } from "../types/notifications";
-import { BasePath } from "../config";
-import { TokenStorage } from "../utils/tokenStorage";
 import {
   clearUserSession,
   isUserLoggedOut,
   setLogoutFlag,
 } from "../utils/sessionCleanup";
+import { TokenStorage } from "../utils/tokenStorage";
+
 import useChatStore from "./messages.store";
 import { useChatWindowsStore } from "./chatWindows.store";
 import { visibilityManager } from "../utils/visibilityManager";
@@ -38,7 +40,7 @@ interface AuthStoreFun extends AuthStore {
   connectSocket: () => void;
   disconnectSocket: () => void;
   addNotification: (
-    notification: Omit<Notification, "id" | "timestamp" | "read">
+    notification: Omit<Notification, "id" | "timestamp" | "read">,
   ) => void;
   markNotificationAsRead: (id: string) => void;
   clearAllNotifications: () => void;
@@ -250,13 +252,15 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   updateUserInfo: async (data: UpdateUserInfoData) => {
     set({ isUpdatingProfile: true });
     try {
+      console.log("Updating user info with data:", data);
       const res: any = await axiosInstance.put("/auth/update-info", data);
+      console.log("Update response:", res.data);
       set({ authUser: res.data });
       toast.success("Profile information updated successfully");
     } catch (error: any) {
       console.error("Error in updateUserInfo:", error);
       toast.error(
-        error.response?.data?.message || "Failed to update profile information"
+        error.response?.data?.message || "Failed to update profile information",
       );
     } finally {
       set({ isUpdatingProfile: false });
@@ -290,7 +294,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
       // Check for newly online users
       const newlyOnlineUsers = userIds.filter(
-        (id) => !previousOnlineUsers.includes(id) && id !== authUser._id
+        (id) => !previousOnlineUsers.includes(id) && id !== authUser._id,
       );
 
       newlyOnlineUsers.forEach((userId) => {
@@ -386,7 +390,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       // Handle in friend request store via window reference
       if ((window as any).friendRequestStoreHandlers) {
         (window as any).friendRequestStoreHandlers.handleNewFriendRequest(
-          requestData
+          requestData,
         );
       }
     });
@@ -395,7 +399,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       // Handle in friend request store via window reference
       if ((window as any).friendRequestStoreHandlers) {
         (window as any).friendRequestStoreHandlers.handleRequestAccepted(
-          requestData
+          requestData,
         );
       }
     });
@@ -422,7 +426,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   },
 
   addNotification: (
-    notificationData: Omit<Notification, "id" | "timestamp" | "read">
+    notificationData: Omit<Notification, "id" | "timestamp" | "read">,
   ) => {
     const notification: Notification = {
       ...notificationData,
@@ -450,7 +454,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   markNotificationAsRead: (id: string) => {
     set((state) => ({
       notifications: state.notifications.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification
+        notification.id === id ? { ...notification, read: true } : notification,
       ),
     }));
   },

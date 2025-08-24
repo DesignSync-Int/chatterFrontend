@@ -1,0 +1,8 @@
+# Run lint-staged for code quality checks
+npx lint-staged
+
+# Run type checking
+npm run typecheck
+
+# Run tests if they exist and are quick
+# npm run test:unit 2>/dev/null || true

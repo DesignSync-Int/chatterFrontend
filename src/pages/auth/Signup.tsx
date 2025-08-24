@@ -1,47 +1,51 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
-import { signup } from '../../services/auth.service';
+import { useState } from "react";
+import type { FormEvent } from "react";
+import { toast } from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom";
+
+import { signup } from "../../services/auth.service";
 
 const Signup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    fullName: '',
+    name: "",
+    email: "",
+    password: "",
+    fullName: "",
   });
   const [errors, setErrors] = useState({
-    email: '',
+    email: "",
   });
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !email.trim()) {
-      setErrors(prev => ({ ...prev, email: 'Email address is required' }));
+      setErrors((prev) => ({ ...prev, email: "Email address is required" }));
       return false;
     }
     if (!emailRegex.test(email.trim())) {
-      setErrors(prev => ({ ...prev, email: 'Please enter a valid email address' }));
+      setErrors((prev) => ({
+        ...prev,
+        email: "Please enter a valid email address",
+      }));
       return false;
     }
     // Additional validation for minimum length
     if (email.trim().length < 5) {
-      setErrors(prev => ({ ...prev, email: 'Email address is too short' }));
+      setErrors((prev) => ({ ...prev, email: "Email address is too short" }));
       return false;
     }
-    setErrors(prev => ({ ...prev, email: '' }));
+    setErrors((prev) => ({ ...prev, email: "" }));
     return true;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     // Validate all required fields
     if (!formData.email || !validateEmail(formData.email)) {
-      setErrors(prev => ({ ...prev, email: 'Email address is required' }));
+      setErrors((prev) => ({ ...prev, email: "Email address is required" }));
       return;
     }
 
@@ -51,14 +55,16 @@ const Signup = () => {
         ...formData,
         captchaCompleted: true,
       });
-      
-      toast.success(response.message || 'Please check your email to verify your account');
-      navigate('/login');
+
+      toast.success(
+        response.message || "Please check your email to verify your account",
+      );
+      navigate("/login");
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else {
-        toast.error('Failed to sign up');
+        toast.error("Failed to sign up");
       }
     } finally {
       setLoading(false);
@@ -73,7 +79,8 @@ const Signup = () => {
             Chatter
           </h1>
           <p className="text-gray-600 max-w-md">
-            Join our community and start connecting with friends.
+            Join our community and start connecting with friends. Or sign in if
+            you already have an account.
           </p>
         </div>
       </div>
@@ -88,27 +95,44 @@ const Signup = () => {
             }}
           >
             <div className="space-y-1">
+              <label
+                htmlFor="name"
+                className="text-sm font-medium text-gray-700"
+              >
+                Username <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
-                placeholder="Username"
+                placeholder="Choose a username"
                 className="border rounded-md p-2 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                 id="name"
+                name="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </div>
-            
+
             <div className="space-y-1">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
+                Email <span className="text-red-500">*</span>
+              </label>
               <input
                 type="email"
-                placeholder="Email address"
+                placeholder="Enter your email address (required)"
                 className={`border rounded-md p-2 focus:outline-none focus:ring-2 w-full ${
                   errors.email
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-[#FB406C]"
                 }`}
                 id="email"
+                name="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={(e) => {
                   setFormData({ ...formData, email: e.target.value });
@@ -118,30 +142,49 @@ const Signup = () => {
                 required
               />
               {errors.email && (
-                <div className="text-red-600 text-sm">{errors.email}</div>
+                <p className="text-red-500 text-sm">{errors.email}</p>
               )}
             </div>
 
             <div className="space-y-1">
+              <label
+                htmlFor="fullName"
+                className="text-sm font-medium text-gray-700"
+              >
+                Full Name <span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
-                placeholder="Full Name"
+                placeholder="Your full name"
                 className="border rounded-md p-2 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                 id="fullName"
+                name="fullName"
                 value={formData.fullName}
-                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, fullName: e.target.value })
+                }
                 required
               />
             </div>
 
             <div className="space-y-1">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
+                Password <span className="text-red-500">*</span>
+              </label>
               <input
                 type="password"
-                placeholder="Password (min 6 characters)"
+                placeholder="••••••••"
                 className="border rounded-md p-2 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                 id="password"
+                name="password"
+                autoComplete="new-password"
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, password: e.target.value })
+                }
                 minLength={6}
                 required
               />

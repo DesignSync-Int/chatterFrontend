@@ -1,10 +1,11 @@
-import LazyUserCard from "../../components/lazy-user-card/LazyUserCard.tsx";
-import { useFriendRequestStore } from "../../store/friendRequest.store.ts";
-import useUserStore from "../../store/user.store.ts";
-import { useChatStore } from "../../store/messages.store.ts";
-import { useAuthStore } from "../../store/auth.store.ts";
-import { useEffect, useCallback, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useEffect, useCallback, useMemo, useState } from "react";
+
+import LazyUserCard from "../../components/lazy-user-card/LazyUserCard.tsx";
+import { useAuthStore } from "../../store/auth.store.ts";
+import { useFriendRequestStore } from "../../store/friendRequest.store.ts";
+import { useChatStore } from "../../store/messages.store.ts";
+import useUserStore from "../../store/user.store.ts";
 import type { User } from "../../types/auth.ts";
 
 interface LazyLoadUserListProps {
@@ -14,7 +15,7 @@ interface LazyLoadUserListProps {
 const LazyLoadUserList = ({ onUserClick }: LazyLoadUserListProps) => {
   const currentUser = useUserStore((state) => state.currentUser);
   const setCurrentRecipient = useUserStore(
-    (state) => state.setCurrentRecipient
+    (state) => state.setCurrentRecipient,
   );
   const {
     getUsers,
@@ -56,7 +57,7 @@ const LazyLoadUserList = ({ onUserClick }: LazyLoadUserListProps) => {
 
       setSearchDebounceTimer(timer);
     },
-    [searchUsers, searchDebounceTimer]
+    [searchUsers, searchDebounceTimer],
   );
 
   const messageUser = useCallback(
@@ -70,14 +71,14 @@ const LazyLoadUserList = ({ onUserClick }: LazyLoadUserListProps) => {
         onUserClick(user);
       }
     },
-    [setCurrentRecipient, setSelectedUser, onUserClick]
+    [setCurrentRecipient, setSelectedUser, onUserClick],
   );
 
   const isUserOnline = useCallback(
     (userId: string) => {
       return onlineUsers.includes(userId);
     },
-    [onlineUsers]
+    [onlineUsers],
   );
 
   // Filter and sort users (client-side filtering for priority, server handles search)
@@ -88,10 +89,10 @@ const LazyLoadUserList = ({ onUserClick }: LazyLoadUserListProps) => {
     // Create sets for quick lookup
     const friendIds = new Set(friends.map((friend: any) => friend._id));
     const pendingReceivedIds = new Set(
-      receivedRequests.map((req: any) => req.sender._id)
+      receivedRequests.map((req: any) => req.sender._id),
     );
     const pendingSentIds = new Set(
-      sentRequests.map((req: any) => req.receiver._id)
+      sentRequests.map((req: any) => req.receiver._id),
     );
 
     // Sort users by priority: Friends > Pending Requests > Others

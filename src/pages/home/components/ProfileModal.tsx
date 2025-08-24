@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { Modal } from '../../../components/ui/Modal';
-import { Button } from '../../../components/ui/Button';
-import { User2, Save } from 'lucide-react';
-import { useAuthStore } from '../../../store/auth.store';
-import type { User } from '../../../types/auth';
+import { User2, Save } from "lucide-react";
+import React, { useState, useEffect } from "react";
+
+import { Button } from "../../../components/ui/Button";
+import { Modal } from "../../../components/ui/Modal";
+import { useAuthStore } from "../../../store/auth.store";
+import type { User } from "../../../types/auth";
 
 interface ProfileModalProps {
   user: User;
@@ -11,30 +12,47 @@ interface ProfileModalProps {
   onClose: () => void;
 }
 
-const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) => {
+const ProfileModal: React.FC<ProfileModalProps> = ({
+  user,
+  isOpen,
+  onClose,
+}) => {
   const [formData, setFormData] = useState({
-    fullName: user.fullName || '',
-    email: user.email || '',
-    gender: user.gender || '',
-    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '',
+    fullName: user.fullName || "",
+    email: user.email || "",
+    gender: user.gender || "",
+    dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
   });
 
   const { updateUserInfo, isUpdatingProfile } = useAuthStore();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Update form data when user prop changes
+  useEffect(() => {
+    setFormData({
+      fullName: user.fullName || "",
+      email: user.email || "",
+      gender: user.gender || "",
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
+    });
+  }, [user]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSave = async () => {
     try {
       const updateData: any = {};
-      
+
       // Only include fields that have values
-      if (formData.fullName.trim()) updateData.fullName = formData.fullName.trim();
+      if (formData.fullName.trim())
+        updateData.fullName = formData.fullName.trim();
       if (formData.email.trim()) updateData.email = formData.email.trim();
       if (formData.gender) updateData.gender = formData.gender;
       if (formData.dateOfBirth) updateData.dateOfBirth = formData.dateOfBirth;
@@ -42,16 +60,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, isOpen, onClose }) =>
       await updateUserInfo(updateData);
       onClose();
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      console.error("Failed to update profile:", error);
     }
   };
 
   const handleCancel = () => {
     setFormData({
-      fullName: user.fullName || '',
-      email: user.email || '',
-      gender: user.gender || '',
-      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split('T')[0] : '',
+      fullName: user.fullName || "",
+      email: user.email || "",
+      gender: user.gender || "",
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.split("T")[0] : "",
     });
     onClose();
   };

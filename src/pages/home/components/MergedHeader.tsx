@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import UserCard from "../../../components/user-card/UserCard";
-import NotificationPanel from "../../../components/notifications/NotificationPanel";
-import ProfileModal from "./ProfileModal";
 import { LogOut, User2 } from "lucide-react";
+import React, { useState } from "react";
+
+import NotificationPanel from "../../../components/notifications/NotificationPanel";
+import UserCard from "../../../components/user-card/UserCard";
 import type { User } from "../../../types/auth";
+
+import ProfileModal from "./ProfileModal";
 
 interface MergedHeaderProps {
   user: User;
@@ -45,6 +47,25 @@ const MergedHeader: React.FC<MergedHeaderProps> = ({ user, onLogout }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <UserCard user={user} />
+                {/* Additional profile info */}
+                <div className="hidden md:block">
+                  <div className="text-sm text-gray-600">
+                    {user.email && (
+                      <div className="flex items-center gap-1">
+                        <span>✉️</span>
+                        <span>{user.email}</span>
+                        {user.isEmailVerified && (
+                          <span className="text-green-500">✓</span>
+                        )}
+                      </div>
+                    )}
+                    {user.gender && (
+                      <div className="text-xs text-gray-500 capitalize">
+                        {user.gender}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex items-center gap-3">

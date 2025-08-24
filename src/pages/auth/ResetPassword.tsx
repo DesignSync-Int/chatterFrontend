@@ -1,42 +1,45 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+
+import { axiosInstance } from "../../lib/axios";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   useEffect(() => {
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError("Invalid or missing reset token");
     }
   }, [token]);
 
   const validatePassword = (password: string) => {
     if (password.length < 6) {
-      return 'Password must be at least 6 characters long';
+      return "Password must be at least 6 characters long";
     }
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!token) {
-      setError('Invalid or missing reset token');
+      setError("Invalid or missing reset token");
       return;
     }
 
     if (!password.trim()) {
-      setError('Password is required');
+      setError("Password is required");
       return;
     }
 
@@ -47,33 +50,30 @@ const ResetPassword: React.FC = () => {
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/auth/reset-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token, password }),
+      await axiosInstance.post("/auth/reset-password", {
+        token,
+        password,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setIsSuccess(true);
-        setTimeout(() => {
-          navigate('/login');
-        }, 3000);
-      } else {
-        setError(data.message || 'Failed to reset password');
-      }
-    } catch {
-      setError('Network error. Please try again.');
+      // Success response
+      setIsSuccess(true);
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to reset password. Please try again.";
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -103,7 +103,8 @@ const ResetPassword: React.FC = () => {
                 Password Reset Successful
               </h2>
               <p className="text-gray-600 mb-4">
-                Your password has been successfully reset. You can now log in with your new password.
+                Your password has been successfully reset. You can now log in
+                with your new password.
               </p>
               <p className="text-sm text-gray-500">
                 Redirecting to login page in 3 seconds...
@@ -136,7 +137,8 @@ const ResetPassword: React.FC = () => {
                 Invalid Reset Link
               </h2>
               <p className="text-gray-600 mb-6">
-                This password reset link is invalid or has expired. Please request a new one.
+                This password reset link is invalid or has expired. Please
+                request a new one.
               </p>
               <div className="flex gap-2 justify-center">
                 <Link
@@ -178,9 +180,7 @@ const ResetPassword: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               🔑 Reset Your Password
             </h2>
-            <p className="text-gray-600">
-              Enter your new password below
-            </p>
+            <p className="text-gray-600">Enter your new password below</p>
           </div>
 
           <form
@@ -193,7 +193,7 @@ const ResetPassword: React.FC = () => {
             <div className="space-y-1">
               <div className="relative">
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="New Password"
                   className="border rounded-md p-2 pr-10 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                   id="password"
@@ -205,9 +205,13 @@ const ResetPassword: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? '👁️' : '🙈'}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -215,7 +219,7 @@ const ResetPassword: React.FC = () => {
             <div className="space-y-1">
               <div className="relative">
                 <input
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm New Password"
                   className="border rounded-md p-2 pr-10 focus:outline-none focus:ring-2 w-full border-gray-300 focus:ring-[#FB406C]"
                   id="confirmPassword"
@@ -227,16 +231,18 @@ const ResetPassword: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showConfirmPassword ? '👁️' : '🙈'}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
-            {error && (
-              <div className="text-red-600 text-sm">{error}</div>
-            )}
+            {error && <div className="text-red-600 text-sm">{error}</div>}
 
             <button
               type="submit"
@@ -247,7 +253,7 @@ const ResetPassword: React.FC = () => {
                   : "hover:bg-[#fb406cd9]"
               }`}
             >
-              {isLoading ? 'Resetting...' : 'Reset Password'}
+              {isLoading ? "Resetting..." : "Reset Password"}
             </button>
 
             <div className="flex justify-between items-center mt-4 text-sm">

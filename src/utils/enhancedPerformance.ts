@@ -54,7 +54,7 @@ interface PerformanceReport {
 
 /**
  * Enhanced Performance Monitor - Our performance guardian angel
- * 
+ *
  * This class helps us understand how well Chatter performs in the real world.
  * It's like having a performance expert constantly watching and giving advice.
  */
@@ -68,11 +68,11 @@ class EnhancedPerformanceMonitor {
 
   // Performance thresholds - these help us categorize performance
   private readonly PERFORMANCE_THRESHOLDS = {
-    EXCELLENT: 100,   // Under 100ms - users don't notice
-    GOOD: 500,        // Under 500ms - feels snappy  
-    FAIR: 1000,       // Under 1s - acceptable
-    POOR: 2000,       // Over 1s - users start to notice
-    CRITICAL: 2000    // Over 2s - definitely needs attention
+    EXCELLENT: 100, // Under 100ms - users don't notice
+    GOOD: 500, // Under 500ms - feels snappy
+    FAIR: 1000, // Under 1s - acceptable
+    POOR: 2000, // Over 1s - users start to notice
+    CRITICAL: 2000, // Over 2s - definitely needs attention
   };
 
   constructor(enabled = true) {

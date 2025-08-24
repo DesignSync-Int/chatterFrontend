@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { BasePath } from "../config";
 import { TokenStorage } from "../utils/tokenStorage";
 
@@ -20,7 +21,7 @@ axiosInstance.interceptors.request.use(
   },
   (error: any) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 // Add response interceptor to handle token from responses
@@ -39,12 +40,47 @@ axiosInstance.interceptors.response.use(
       TokenStorage.removeToken();
 
       // Clear any user data from stores
-      if (typeof window !== "undefined" && window.location.pathname !== "/") {
-        // Only redirect if not already on login page
-        sessionStorage?.setItem("justLoggedOut", "true");
-        window.location.href = "/";
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+        const currentSearch = window.location.search;
+        const fullPath = currentPath + currentSearch;
+
+        // Don't redirect if we're on public/auth pages that should be accessible without login
+        const publicPages = [
+          "/",
+          "/login",
+          "/signup",
+          "/forgot-password",
+          "/reset-password",
+          "/verify-email",
+        ];
+
+        const isPublicPage = publicPages.some((page) => {
+          // Handle exact matches and paths with query parameters
+          return (
+            currentPath === page ||
+            currentPath.startsWith(page + "/") ||
+            (page === "/reset-password" && currentPath === "/reset-password")
+          );
+        });
+
+        console.log(
+          "401 interceptor - Current path:",
+          fullPath,
+          "Is public:",
+          isPublicPage,
+        );
+
+        if (!isPublicPage) {
+          // Only redirect if not already on a public page
+          console.log("Redirecting to home due to 401 on protected page");
+          sessionStorage?.setItem("justLoggedOut", "true");
+          window.location.href = "/";
+        } else {
+          console.log("Staying on public page despite 401");
+        }
       }
     }
     return Promise.reject(error);
-  }
+  },
 );

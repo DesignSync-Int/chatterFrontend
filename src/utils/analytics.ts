@@ -48,7 +48,7 @@ interface ApplicationMetrics {
 
 /**
  * Analytics Service - The brain behind Chatter's data insights
- * 
+ *
  * This service carefully tracks user behavior while respecting privacy.
  * It helps us understand what works well and what needs improvement.
  */
@@ -57,7 +57,7 @@ class AnalyticsService {
   private sessionStartTime: number;
   private activityQueue: UserActivity[] = [];
   private performanceQueue: PerformanceMetric[] = [];
-  
+
   // Configuration constants - easy to adjust as needed
   private readonly BATCH_UPLOAD_INTERVAL = 30000; // 30 seconds feels right
   private readonly MAX_QUEUE_SIZE = 50; // Prevent memory issues
@@ -69,7 +69,7 @@ class AnalyticsService {
       process.env.NODE_ENV === "production" ||
       process.env.VITE_ENABLE_ANALYTICS === "true" ||
       import.meta.env?.VITE_TEST_ANALYTICS === "true";
-    
+
     this.sessionStartTime = Date.now();
 
     if (this.isEnabled) {
@@ -326,7 +326,10 @@ class AnalyticsService {
       // Only re-queue data if we have space and it's not a page unload situation
       if (!isBeforeUnload && this.activityQueue.length < this.MAX_QUEUE_SIZE) {
         this.activityQueue.unshift(
-          ...activities.slice(0, this.MAX_QUEUE_SIZE - this.activityQueue.length)
+          ...activities.slice(
+            0,
+            this.MAX_QUEUE_SIZE - this.activityQueue.length
+          )
         );
         this.performanceQueue.unshift(
           ...performances.slice(

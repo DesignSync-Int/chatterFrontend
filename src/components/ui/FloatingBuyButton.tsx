@@ -1,5 +1,6 @@
-import React, { useState } from "react";
 import { ShoppingCart, X, Phone, Mail, Clock, User } from "lucide-react";
+import React, { useState } from "react";
+
 import { axiosInstance } from "../../lib/axios";
 
 interface BuyFormData {
@@ -84,12 +85,21 @@ const FloatingBuyButton: React.FC = () => {
         setShowForm(false);
         setSubmitSuccess(false);
       }, 2000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error submitting buy request:", error);
       setErrors({
         submit:
-          error.response?.data?.message ||
-          "Failed to submit request. Please try again.",
+          error instanceof Error &&
+          "response" in error &&
+          error.response &&
+          typeof error.response === "object" &&
+          "data" in error.response &&
+          error.response.data &&
+          typeof error.response.data === "object" &&
+          "message" in error.response.data &&
+          typeof error.response.data.message === "string"
+            ? error.response.data.message
+            : "Failed to submit request. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -123,7 +133,7 @@ const FloatingBuyButton: React.FC = () => {
       <button
         data-cy="floating-buy-button"
         onClick={() => setShowForm(true)}
-        className="fixed top-4 right-4 z-50 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 flex items-center gap-2 group"
+        className="fixed top-12 right-4 z-50 bg-green-600 hover:bg-green-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 flex items-center gap-2 group"
         title="Buy or Hire"
       >
         <ShoppingCart className="w-5 h-5" />

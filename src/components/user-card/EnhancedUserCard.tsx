@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+
 import type { User } from "../../types/auth";
 import FriendRequestButton from "../friend-requests/FriendRequestButton";
 
@@ -8,10 +9,10 @@ interface EnhancedUserCardProps {
   showFriendRequestButton?: boolean;
 }
 
-const EnhancedUserCard: React.FC<EnhancedUserCardProps> = ({ 
-  user, 
-  onChatClick, 
-  showFriendRequestButton = true 
+const EnhancedUserCard: React.FC<EnhancedUserCardProps> = ({
+  user,
+  onChatClick,
+  showFriendRequestButton = true,
 }) => {
   // Generate a color based on the user's name
   const getAvatarColor = (name: string) => {
@@ -48,36 +49,37 @@ const EnhancedUserCard: React.FC<EnhancedUserCardProps> = ({
               alt={`${user.name}'s profile picture`}
               onError={(e) => {
                 e.currentTarget.style.display = "none";
-                const letterAvatar = e.currentTarget.nextElementSibling as HTMLElement;
+                const letterAvatar = e.currentTarget
+                  .nextElementSibling as HTMLElement;
                 if (letterAvatar) letterAvatar.style.display = "flex";
               }}
             />
           ) : null}
           <div
-            className={`w-12 h-12 rounded-full ${getAvatarColor(user.name)} flex items-center justify-center text-white font-bold text-lg ${user.profile ? "hidden" : ""}`}
+            className={`w-12 h-12 rounded-full ${getAvatarColor(user.fullName || user.name)} flex items-center justify-center text-white font-bold text-lg ${user.profile ? "hidden" : ""}`}
           >
-            {getInitials(user.name)}
+            {getInitials(user.fullName || user.name)}
           </div>
         </div>
 
         {/* User Info */}
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-gray-900 truncate">
-            {user.name}
+            {user.fullName || user.name}
           </h3>
-          <p className="text-sm text-gray-500">
-            {user.profile ? 'Profile available' : 'Default avatar'}
-          </p>
+          {user.fullName && user.fullName !== user.name && (
+            <p className="text-sm text-gray-500 truncate">@{user.name}</p>
+          )}
+          {user.email && (
+            <p className="text-xs text-gray-400 truncate">{user.email}</p>
+          )}
         </div>
       </div>
 
       {/* Action Button - Moved below user info */}
       {showFriendRequestButton && (
         <div className="flex justify-center">
-          <FriendRequestButton 
-            user={user} 
-            onChatClick={onChatClick}
-          />
+          <FriendRequestButton user={user} onChatClick={onChatClick} />
         </div>
       )}
     </div>

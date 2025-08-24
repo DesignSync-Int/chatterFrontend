@@ -1,17 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { UserPlus, MessageCircle } from 'lucide-react';
-import { useFriendRequestStore } from '../../store/friendRequest.store';
+import { UserPlus, MessageCircle } from "lucide-react";
+import React, { useState, useEffect } from "react";
+
+import { useFriendRequestStore } from "../../store/friendRequest.store";
+import type { User } from "../../types/auth";
+import type { FriendshipStatus } from "../../types/friendRequest";
+
 import AddFriendDialog from "./AddFriendDialog";
-import type { FriendshipStatus } from '../../types/friendRequest';
-import type { User } from '../../types/auth';
 
 interface FriendRequestButtonProps {
   user: User;
   onChatClick?: () => void;
 }
 
-const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatClick }) => {
-  const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus | null>(null);
+const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({
+  user,
+  onChatClick,
+}) => {
+  const [friendshipStatus, setFriendshipStatus] =
+    useState<FriendshipStatus | null>(null);
   const [showAddFriendDialog, setShowAddFriendDialog] = useState(false);
 
   const {
@@ -27,7 +33,7 @@ const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatC
       const status = await checkFriendshipStatus(user._id);
       setFriendshipStatus(status);
     }
-    
+
     loadStatus();
   }, [user._id, checkFriendshipStatus]);
 
@@ -41,7 +47,7 @@ const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatC
   // accept friend request handler
   const handleAcceptRequest = async () => {
     if (!friendshipStatus?.requestId) return;
-    
+
     try {
       await acceptFriendRequest(friendshipStatus.requestId);
       // refresh the status after accepting
@@ -56,7 +62,7 @@ const FriendRequestButton: React.FC<FriendRequestButtonProps> = ({ user, onChatC
   // decline request handler
   const handleDeclineRequest = async () => {
     if (!friendshipStatus?.requestId) return;
-    
+
     try {
       await declineFriendRequest(friendshipStatus.requestId);
       const status = await checkFriendshipStatus(user._id);
