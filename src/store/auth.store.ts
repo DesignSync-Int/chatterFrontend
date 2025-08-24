@@ -40,7 +40,7 @@ interface AuthStoreFun extends AuthStore {
   connectSocket: () => void;
   disconnectSocket: () => void;
   addNotification: (
-    notification: Omit<Notification, "id" | "timestamp" | "read">,
+    notification: Omit<Notification, "id" | "timestamp" | "read">
   ) => void;
   markNotificationAsRead: (id: string) => void;
   clearAllNotifications: () => void;
@@ -260,7 +260,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     } catch (error: any) {
       console.error("Error in updateUserInfo:", error);
       toast.error(
-        error.response?.data?.message || "Failed to update profile information",
+        error.response?.data?.message || "Failed to update profile information"
       );
     } finally {
       set({ isUpdatingProfile: false });
@@ -294,7 +294,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
       // Check for newly online users
       const newlyOnlineUsers = userIds.filter(
-        (id) => !previousOnlineUsers.includes(id) && id !== authUser._id,
+        (id) => !previousOnlineUsers.includes(id) && id !== authUser._id
       );
 
       newlyOnlineUsers.forEach((userId) => {
@@ -390,7 +390,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       // Handle in friend request store via window reference
       if ((window as any).friendRequestStoreHandlers) {
         (window as any).friendRequestStoreHandlers.handleNewFriendRequest(
-          requestData,
+          requestData
         );
       }
     });
@@ -399,7 +399,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
       // Handle in friend request store via window reference
       if ((window as any).friendRequestStoreHandlers) {
         (window as any).friendRequestStoreHandlers.handleRequestAccepted(
-          requestData,
+          requestData
         );
       }
     });
@@ -426,7 +426,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   },
 
   addNotification: (
-    notificationData: Omit<Notification, "id" | "timestamp" | "read">,
+    notificationData: Omit<Notification, "id" | "timestamp" | "read">
   ) => {
     const notification: Notification = {
       ...notificationData,
@@ -454,7 +454,7 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   markNotificationAsRead: (id: string) => {
     set((state) => ({
       notifications: state.notifications.map((notification) =>
-        notification.id === id ? { ...notification, read: true } : notification,
+        notification.id === id ? { ...notification, read: true } : notification
       ),
     }));
   },
