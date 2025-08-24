@@ -1,15 +1,15 @@
-import { useAuthStore } from '../../store/auth.store.ts';
-import { useState } from 'react';
-import usePageStore from '../../store/page.store.ts';
-import useUserStore from '../../store/user.store.ts';
-import type { User } from '../../types/auth';
-import { useEffect } from 'react';
+import { useAuthStore } from "../../store/auth.store.ts";
+import { useState } from "react";
+import usePageStore from "../../store/page.store.ts";
+import useUserStore from "../../store/user.store.ts";
+import type { User } from "../../types/auth";
+import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { isUserLoggedOut, clearLogoutFlag } from "../../utils/sessionCleanup";
 import { validateForm, loginSchema } from "../../utils/validation";
 
 const Login = () => {
-  const { login, isLoggingIn, checkUser } = useAuthStore();
+  const { login, guestLogin, isLoggingIn, checkUser } = useAuthStore();
   const setCurrentPage = usePageStore((state) => state.setCurrentPage);
   const setCurrentUser = useUserStore((state) => state.setCurrentUser);
   const navigate = useNavigate();
@@ -45,6 +45,26 @@ const Login = () => {
       })
       .catch((error) => {
         setErrorMessage(error.response?.data?.message || "Login failed");
+      });
+  };
+
+  const handleGuestLogin = () => {
+    setErrorMessage("");
+    setLoginErrors({});
+
+    guestLogin()
+      .then((user: User | null) => {
+        if (user) {
+          console.log("Guest logged in successfully");
+          setCurrentPage("home");
+          navigate("/home");
+          setCurrentUser(user);
+        } else {
+          setErrorMessage("Guest login failed");
+        }
+      })
+      .catch((error) => {
+        setErrorMessage(error.response?.data?.message || "Guest login failed");
       });
   };
 
@@ -175,6 +195,24 @@ const Login = () => {
                 Forgot your password?
               </Link>
             </p>
+
+            {/* Guest Login Button */}
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <button
+                onClick={handleGuestLogin}
+                disabled={isLoggingIn}
+                className={`w-full bg-gray-100 text-gray-700 rounded-md py-2 transition border border-gray-300 ${
+                  isLoggingIn
+                    ? "opacity-60 cursor-not-allowed"
+                    : "hover:bg-gray-200 hover:border-gray-400"
+                }`}
+              >
+                {isLoggingIn ? "Logging in..." : "Continue as Guest (Testing)"}
+              </button>
+              <p className="text-center mt-2 text-xs text-gray-500">
+                Try the app without creating an account
+              </p>
+            </div>
           </form>
         </div>
       </div>

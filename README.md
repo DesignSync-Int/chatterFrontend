@@ -14,8 +14,10 @@ A modern, real-time chat application built with React, TypeScript, and Socket.IO
 - **Dark Mode Support**: Automatic dark/light theme support
 - **Message Censorship**: Built-in profanity filtering
 - **File Uploads**: Profile picture and file sharing capabilities
-- **Notifications**: Real-time notifications for messages and friend requests
+- **Smart Notifications**: Context-aware notification system that prevents spam
 - **Chat Windows**: Multiple floating chat windows support
+- **AI Integration**: Google Gemini-powered ChatterBot with comprehensive platform knowledge
+- **Guest Login**: Temporary user access with instant AI friend connection
 
 ## 🛠️ Tech Stack
 
@@ -62,30 +64,34 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Running Chatter Backend server
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/kumasachin/chatter-frontend.git
 cd chatter-frontend
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Create environment configuration:
+
 ```bash
 # Create src/config.ts with your backend URL
 export const API_BASE_URL = 'http://localhost:4000/api';
 ```
 
 4. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -115,11 +121,13 @@ The project includes comprehensive end-to-end testing with Cypress:
 - CAPTCHA integration testing
 
 Run tests with:
+
 ```bash
 npm run test:e2e
 ```
 
 Open Cypress UI:
+
 ```bash
 npm run test:e2e:open
 ```
@@ -131,9 +139,10 @@ npm run test:e2e:open
 The application uses configuration files rather than environment variables. Update `src/config.ts`:
 
 ```typescript
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.com/api'
-  : 'http://localhost:4000/api';
+export const API_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://your-backend-url.com/api"
+    : "http://localhost:4000/api";
 ```
 
 ### Backend Integration
@@ -151,12 +160,14 @@ Ensure the backend server is running on port 4000 (default) or update the API_BA
 ## 📱 Features Overview
 
 ### Authentication
+
 - User registration with email verification
 - Secure login with JWT tokens
 - Password reset functionality
 - CAPTCHA protection against bots
 
 ### Real-time Chat
+
 - Instant messaging with Socket.IO
 - Multiple chat windows
 - Message history
@@ -164,12 +175,14 @@ Ensure the backend server is running on port 4000 (default) or update the API_BA
 - Message censorship and filtering
 
 ### Social Features
+
 - Friend request system
 - User search and discovery
 - Profile management
 - Notification system
 
 ### Security
+
 - Input validation with Zod schemas
 - XSS protection
 - CAPTCHA verification
@@ -186,11 +199,13 @@ npm run build
 ### Deploy to Vercel (Recommended)
 
 1. Install Vercel CLI:
+
 ```bash
 npm i -g vercel
 ```
 
 2. Deploy:
+
 ```bash
 vercel
 ```
@@ -198,6 +213,7 @@ vercel
 ### Deploy to Netlify
 
 1. Build the project:
+
 ```bash
 npm run build
 ```
@@ -223,6 +239,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👨‍💻 Author
 
 **Sachin Kumar**
+
 - GitHub: [@kumasachin](https://github.com/kumasachin)
 
 ## 🙏 Acknowledgments

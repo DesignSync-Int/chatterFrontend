@@ -3,11 +3,28 @@
 declare namespace Cypress {
   interface Chainable {
     /**
+     * Custom command to register a new user
+     * @param user - User object with registration details
+     */
+    registerUser(user: {
+      name: string;
+      fullName: string;
+      email: string;
+      password: string;
+    }): Chainable<void>;
+
+    /**
+     * Custom command to login an existing user
+     * @param user - User object with login credentials
+     */
+    loginUser(user: { name: string; password: string }): Chainable<void>;
+
+    /**
      * Custom command to login
      * @param name - Username for login
      * @param password - Password for login
      */
-    login(name: string, password: string): Chainable<void>
+    login(name: string, password: string): Chainable<void>;
 
     /**
      * Custom command to signup
@@ -15,27 +32,27 @@ declare namespace Cypress {
      * @param password - Password for signup
      * @param profile - Optional profile information
      */
-    signup(name: string, password: string, profile?: string): Chainable<void>
+    signup(name: string, password: string, profile?: string): Chainable<void>;
 
     /**
      * Custom command to logout
      */
-    logout(): Chainable<void>
+    logout(): Chainable<void>;
 
     /**
      * Custom command to wait for page load
      */
-    waitForPageLoad(): Chainable<void>
+    waitForPageLoad(): Chainable<void>;
 
     /**
      * Custom command to clear notifications
      */
-    clearNotifications(): Chainable<void>
+    clearNotifications(): Chainable<void>;
 
     /**
      * Custom command to open chat with a user
      * @param userName - Name of the user to chat with
      */
-    openChatWith(userName: string): Chainable<void>
+    openChatWith(userName: string): Chainable<void>;
   }
 }

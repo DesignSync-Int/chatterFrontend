@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { axiosInstance } from '../lib/axios';
-import toast from 'react-hot-toast';
+import { create } from "zustand";
+import { axiosInstance } from "../lib/axios";
+import toast from "react-hot-toast";
 import io from "socket.io-client";
 import type {
   AuthStore,
@@ -19,6 +19,9 @@ import {
   setLogoutFlag,
 } from "../utils/sessionCleanup";
 import useChatStore from "./messages.store";
+import { useChatWindowsStore } from "./chatWindows.store";
+import { visibilityManager } from "../utils/visibilityManager";
+import { enhancedPerf as perf, timeAsync } from "../utils/enhancedPerformance";
 
 // extend the base AuthStore with additional functions
 interface AuthStoreFun extends AuthStore {
@@ -27,6 +30,7 @@ interface AuthStoreFun extends AuthStore {
   checkAuth: () => Promise<void>;
   signup: (data: SignupData) => Promise<User | null>;
   login: (data: LoginData) => Promise<User | null>;
+  guestLogin: () => Promise<User | null>;
   logout: () => Promise<void>;
   checkUser: () => Promise<User | null>;
   updateProfile: (data: UpdateProfileData) => Promise<void>;
@@ -84,14 +88,75 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
 
   login: async (data: LoginData) => {
     set({ isLoggingIn: true });
+    perf.start("total-login-flow");
+
     try {
-      const res: any = await axiosInstance.post("/auth/login", data);
+      // Time the API request
+      const res: any = await timeAsync("login-api-request", async () => {
+        return axiosInstance.post("/auth/login", data);
+      });
+
+      // Time setting auth user
+      perf.start("set-auth-user");
       set({ authUser: res.data });
-      toast.success("Logged in successfully");
-      get().connectSocket();
+      perf.end("set-auth-user");
+
+      // Time socket connection
+      await timeAsync("socket-connection", async () => {
+        get().connectSocket();
+      });
+
+      // Show appropriate welcome message
+      if (res.data.isFirstLogin) {
+        toast.success(
+          "Welcome to Chatter! 🎉 Check your email for the complete guide."
+        );
+      } else {
+        toast.success("Welcome back! 👋");
+      }
+
+      perf.end("total-login-flow");
+      perf.logReport();
+
       return res.data;
     } catch (error: any) {
+      perf.end("total-login-flow");
       toast.error(error.response?.data?.message || "Login failed");
+      return null;
+    } finally {
+      set({ isLoggingIn: false });
+    }
+  },
+
+  guestLogin: async () => {
+    set({ isLoggingIn: true });
+    perf.start("guest-login-flow");
+
+    try {
+      // Time the guest API request
+      const res: any = await timeAsync("guest-login-api-request", async () => {
+        return axiosInstance.post("/auth/guest-login");
+      });
+
+      // Time setting auth user
+      perf.start("set-guest-auth-user");
+      set({ authUser: res.data });
+      perf.end("set-guest-auth-user");
+
+      // Time socket connection
+      await timeAsync("guest-socket-connection", async () => {
+        get().connectSocket();
+      });
+
+      toast.success("Logged in as guest successfully");
+
+      perf.end("guest-login-flow");
+      perf.logReport();
+
+      return res.data;
+    } catch (error: any) {
+      perf.end("guest-login-flow");
+      toast.error(error.response?.data?.message || "Guest login failed");
       return null;
     } finally {
       set({ isLoggingIn: false });
@@ -199,17 +264,24 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
   },
 
   connectSocket: () => {
+    perf.start("socket-connect-setup");
     const { authUser } = get();
-    if (!authUser || get().socket?.connected) return;
+    if (!authUser || get().socket?.connected) {
+      perf.end("socket-connect-setup");
+      return;
+    }
 
+    perf.start("socket-io-connection");
     const socket = io(BasePath, {
       auth: {
         userId: authUser._id,
       },
     } as any);
     socket.connect();
+    perf.end("socket-io-connection");
 
     set({ socket });
+    perf.end("socket-connect-setup");
 
     // Listen for online users
     socket.on("getOnlineUsers", (userIds: string[]) => {
@@ -237,39 +309,60 @@ export const useAuthStore = create<AuthStoreFun>((set, get) => ({
     // Listen for new messages
     socket.on("newMessage", async (messageData: any) => {
       if (messageData.senderId !== authUser._id) {
-        // Get sender's name from users store or use fallback
+        // Check if the user is currently viewing this conversation
         const chatStore = useChatStore.getState();
-        let senderUser = chatStore.users.find(
-          (user: any) => user._id === messageData.senderId
+        const chatWindowsStore = useChatWindowsStore.getState();
+        const selectedUser = chatStore.selectedUser;
+
+        // Check if there's an open, non-minimized chat window for this sender
+        const openChatWindow = chatWindowsStore.openChats.find(
+          (chat) => chat.user._id === messageData.senderId && !chat.minimized
         );
-        let senderName = senderUser?.name || messageData.senderName;
 
-        // If we don't have the sender's info, try to get it from the API
-        if (!senderName && messageData.senderId) {
-          try {
-            const response = await axiosInstance.get(
-              `/users/${messageData.senderId}`
-            );
-            senderUser = response.data as User;
-            senderName = senderUser?.name;
-          } catch (error) {
-            console.error("Failed to fetch sender info:", error);
+        // Check if the browser tab is active
+        const isTabActive = visibilityManager.isTabActive();
+
+        // Don't show toast notification if:
+        // 1. User is actively viewing this chat (selectedUser matches), OR
+        // 2. There's an open, non-minimized chat window for this sender AND tab is active
+        const isViewingThisChat =
+          selectedUser && selectedUser._id === messageData.senderId;
+        const hasActiveChatWindow = !!openChatWindow && isTabActive;
+
+        if (!isViewingThisChat && !hasActiveChatWindow) {
+          // Get sender's name from users store or use fallback
+          let senderUser = chatStore.users.find(
+            (user: any) => user._id === messageData.senderId
+          );
+          let senderName = senderUser?.name || messageData.senderName;
+
+          // If we don't have the sender's info, try to get it from the API
+          if (!senderName && messageData.senderId) {
+            try {
+              const response = await axiosInstance.get(
+                `/users/${messageData.senderId}`
+              );
+              senderUser = response.data as User;
+              senderName = senderUser?.name;
+            } catch (error) {
+              console.error("Failed to fetch sender info:", error);
+            }
           }
+
+          // Final fallback
+          senderName = senderName || "Someone";
+
+          get().addNotification({
+            type: "message",
+            title: "New Message",
+            message: `${senderName}: ${messageData.content || messageData.message || "New message"}`,
+            fromUser: {
+              _id: messageData.senderId,
+              name: senderName,
+              profile: messageData.senderProfile || senderUser?.profile,
+            },
+          });
         }
-
-        // Final fallback
-        senderName = senderName || "Someone";
-
-        get().addNotification({
-          type: "message",
-          title: "New Message",
-          message: `${senderName}: ${messageData.content || messageData.message || "New message"}`,
-          fromUser: {
-            _id: messageData.senderId,
-            name: senderName,
-            profile: messageData.senderProfile || senderUser?.profile,
-          },
-        });
       }
     });
 

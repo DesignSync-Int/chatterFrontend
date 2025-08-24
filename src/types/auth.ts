@@ -8,6 +8,7 @@ export type User = {
   dateOfBirth?: string;
   profile?: string;
   friends?: string[];
+  isGuest?: boolean;
   createdAt?: string;
   updatedAt?: string;
   __v?: number;
