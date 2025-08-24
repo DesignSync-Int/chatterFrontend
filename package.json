@@ -7,7 +7,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && cp public/_redirects dist/_redirects",
+    "build": "npx vite build && cp public/_redirects dist/_redirects",
+    "build:production": "bash scripts/build-production.sh",
     "preview": "vite preview",
     "test:unit": "vitest",
     "test:unit:run": "vitest run",
@@ -47,6 +48,9 @@
     "tailwindcss": "^4.1.10",
     "zod": "^4.0.5",
     "zustand": "^5.0.5"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.28.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
