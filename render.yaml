@@ -2,7 +2,11 @@ services:
   - type: web
     name: chatterfrontend
     env: static
-    buildCommand: npm ci && npm run build && echo "Build completed, checking _redirects..." && ls -la dist/ && cat dist/_redirects
+    buildCommand: |
+      echo "Installing dependencies with optional binaries..."
+      npm ci --include=optional
+      echo "Running production build..."
+      npm run build:production
     staticPublishPath: ./dist
     routes:
       - type: rewrite

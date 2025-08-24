@@ -5,21 +5,33 @@ echo "🚀 Starting production build..."
 # Set production environment
 export NODE_ENV=production
 
-# Function to install rollup binaries with fallback
-install_rollup_binaries() {
-    echo "📦 Installing Rollup native binaries..."
+# Function to install native binaries with fallback
+install_native_binaries() {
+    echo "📦 Installing native binaries for Linux deployment..."
     
-    # Try to install the most common Linux binary
+    # Install Rollup binaries
+    echo "🔄 Installing Rollup native binaries..."
     if npm install --no-save @rollup/rollup-linux-x64-gnu; then
         echo "✅ Successfully installed rollup-linux-x64-gnu"
     else
-        echo "⚠️  Failed to install rollup-linux-x64-gnu, trying alternatives..."
-        
-        # Try ARM64 binary
+        echo "⚠️  Failed to install rollup-linux-x64-gnu, trying ARM64..."
         if npm install --no-save @rollup/rollup-linux-arm64-gnu; then
             echo "✅ Successfully installed rollup-linux-arm64-gnu"
         else
-            echo "⚠️  Failed to install ARM64 binary, trying to continue without native binaries..."
+            echo "⚠️  Failed to install Rollup ARM64 binary, continuing..."
+        fi
+    fi
+    
+    # Install esbuild binaries
+    echo "🔄 Installing esbuild native binaries..."
+    if npm install --no-save @esbuild/linux-x64; then
+        echo "✅ Successfully installed @esbuild/linux-x64"
+    else
+        echo "⚠️  Failed to install @esbuild/linux-x64, trying ARM64..."
+        if npm install --no-save @esbuild/linux-arm64; then
+            echo "✅ Successfully installed @esbuild/linux-arm64"
+        else
+            echo "⚠️  Failed to install esbuild ARM64 binary, continuing..."
         fi
     fi
 }
@@ -50,8 +62,8 @@ copy_redirects() {
 
 # Main build process
 main() {
-    # Install Rollup binaries
-    install_rollup_binaries
+    # Install native binaries (Rollup and esbuild)
+    install_native_binaries
     
     # Run Vite build (which includes TypeScript checking)
     run_vite_build
