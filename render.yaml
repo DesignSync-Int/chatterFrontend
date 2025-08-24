@@ -8,6 +8,9 @@ services:
       echo "Running production build..."
       npm run build:production
     staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BASE_URL
+        value: https://chatterbackend.onrender.com
     routes:
       - type: rewrite
         source: "/*"
