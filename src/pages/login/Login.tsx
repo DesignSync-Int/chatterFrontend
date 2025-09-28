@@ -109,6 +109,19 @@ const Login = () => {
 
       <div className="p-6 flex-grow flex flex-col gap-6">
         <div className="flex flex-col gap-4 max-w-[400px] mx-auto w-full">
+          <div className="max-w-[400px] mx-auto mb-4">
+            <div className="bg-yellow-50 border border-yellow-200 rounded px-4 py-3 text-sm text-yellow-800">
+              This app is{" "}
+              <span className="font-semibold">free deployed on Render.com</span>
+              .<br />
+              Due to free hosting,{" "}
+              <span className="font-semibold">
+                first login may take up to 30 seconds
+              </span>{" "}
+              as the backend wakes up.
+            </div>
+          </div>
+
           <form
             className="flex flex-col gap-3"
             onSubmit={(e) => {
